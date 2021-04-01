@@ -42,7 +42,7 @@ namespace ToyBlockChain
         public override string ToString()
         {
             return String.Format("{0},{1},{2},{3}",
-                                 Timestamp, Sender, Recipient, Value);
+                                 Sender, Recipient, Value, Timestamp);
         }
     }
 }
