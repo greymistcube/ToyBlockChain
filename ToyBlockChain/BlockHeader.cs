@@ -1,6 +1,6 @@
 using System;
 
-namespace BlockHeader
+namespace ToyBlockChain
 {
     public class BlockHeader
     {
