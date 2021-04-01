@@ -20,10 +20,5 @@ namespace ToyBlockChain
                 return BlockHeader.Index;
             }
         }
-
-        public bool IsValid()
-        {
-            return BlockHeader.IsValid();
-        }
     }
 }

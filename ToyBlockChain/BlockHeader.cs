@@ -31,7 +31,7 @@ namespace ToyBlockChain
 
         public bool IsValid()
         {
-            return true;
+            throw new NotImplementedException();
         }
 
         public byte[] HashBytes()
@@ -52,10 +52,11 @@ namespace ToyBlockChain
 
         public override string ToString()
         {
-            return String.Format("{0},{1},{2},{3},{4},{5}",
-                                 Index,
-                                 PreviousHashString, TransactionHashString,
-                                 Nonce, Difficulty, Timestamp);
+            return String.Format(
+                "{0},{1},{2},{3},{4},{5}",
+                Index,
+                PreviousHashString, TransactionHashString,
+                Nonce, Difficulty, Timestamp);
         }
     }
 }
