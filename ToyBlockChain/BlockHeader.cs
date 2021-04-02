@@ -31,7 +31,15 @@ namespace ToyBlockChain
 
         public bool IsValid()
         {
-            throw new NotImplementedException();
+            var bytes = HashBytes();
+            for (int i = 0; i < Difficulty; i++)
+            {
+                if (bytes[i] != 0)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         public byte[] HashBytes()

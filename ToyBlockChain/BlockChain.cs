@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace ToyBlockChain
 {
@@ -52,7 +51,14 @@ namespace ToyBlockChain
 
         private bool ValidateTransaction(Transaction transaction)
         {
-            throw new NotImplementedException();
+            foreach (Block block in _chain)
+            {
+                if (transaction.HashBytes() == block.Transaction.HashBytes())
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         public int TargetDifficulty()

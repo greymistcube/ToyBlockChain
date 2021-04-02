@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 
 namespace ToyBlockChain
 {
@@ -7,10 +8,10 @@ namespace ToyBlockChain
         public Transaction Transaction;
         public BlockHeader BlockHeader;
 
-        public Block(Transaction transaction, BlockHeader blockHeader)
+        public Block(BlockHeader blockHeader, Transaction transaction)
         {
-            Transaction = transaction;
             BlockHeader = blockHeader;
+            Transaction = transaction;
         }
 
         public int Index
@@ -19,6 +20,19 @@ namespace ToyBlockChain
             {
                 return BlockHeader.Index;
             }
+        }
+
+        public byte[] Serialize()
+        {
+            return Encoding.UTF8.GetBytes(ToString());
+        }
+
+        public override string ToString()
+        {
+            return String.Format(
+                "{0},{1}",
+                BlockHeader.ToString(),
+                Transaction.ToString());
         }
     }
 }
