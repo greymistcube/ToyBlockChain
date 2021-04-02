@@ -6,27 +6,35 @@ namespace ToyBlockChain
 {
     public class Transaction
     {
-        private readonly string _sender;
-        private readonly string _recipient;
-        private readonly float _value;
         private readonly int _timestamp;
+        private readonly string _sender;
+        private readonly string _publicKey;
+        private readonly float _value;
+        private readonly string _recipient;
+        private readonly string _signature;
 
         public Transaction(
             int timestamp,
             string sender,
+            string publicKey,
+            float value,
             string recipient,
-            float value)
+            string signature)
         {
             _timestamp = timestamp;
             _sender = sender;
-            _recipient = recipient;
+            _publicKey = publicKey;
             _value = value;
+            _recipient = recipient;
+            _signature = signature;
         }
 
-        public string Sender { get; }
-        public string Recipient { get; }
-        public float Value { get; }
         public int Timestamp { get; }
+        public string Sender { get; }
+        public string PublicKey { get; }
+        public float Value { get; }
+        public string Recipient { get; }
+        public string Signature { get; }
 
         public byte[] HashBytes
         {
@@ -43,6 +51,11 @@ namespace ToyBlockChain
             {
                 return BitConverter.ToString(HashBytes).Replace("-", "");
             }
+        }
+
+        public bool IsValid()
+        {
+            throw new NotImplementedException();
         }
 
         public byte[] Serialize()
