@@ -49,7 +49,7 @@ namespace ToyBlockChain
         {
             get
             {
-                return BitConverter.ToString(HashBytes).Replace("-", "");
+                return Convert.ToBase64String(HashBytes);
             }
         }
 
@@ -65,8 +65,9 @@ namespace ToyBlockChain
 
         public override string ToString()
         {
-            return String.Format("{0},{1},{2},{3}",
-                                 Sender, Recipient, Value, Timestamp);
+            return String.Format("{0},{1},{2},{3},{4},{5}",
+                                 Timestamp, Sender, PublicKey, Value,
+                                 Recipient, Signature);
         }
     }
 }

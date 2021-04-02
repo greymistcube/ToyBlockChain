@@ -49,7 +49,7 @@ namespace ToyBlockChain
         {
             get
             {
-                return BitConverter.ToString(HashBytes).Replace("-", "");
+                return Convert.ToBase64String(HashBytes);
             }
         }
 
