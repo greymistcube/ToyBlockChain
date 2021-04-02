@@ -5,13 +5,13 @@ namespace ToyBlockChain
 {
     public class Block
     {
-        public Transaction Transaction;
-        public BlockHeader BlockHeader;
+        private readonly Transaction _transaction;
+        private readonly BlockHeader _blockHeader;
 
         public Block(BlockHeader blockHeader, Transaction transaction)
         {
-            BlockHeader = blockHeader;
-            Transaction = transaction;
+            _blockHeader = blockHeader;
+            _transaction = transaction;
         }
 
         public int Index
@@ -20,6 +20,14 @@ namespace ToyBlockChain
             {
                 return BlockHeader.Index;
             }
+        }
+
+        public Transaction Transaction { get; }
+        public BlockHeader BlockHeader { get; }
+
+        public bool IsValid()
+        {
+            return _blockHeader.TransactionHashString == _transaction.HashString();
         }
 
         public byte[] Serialize()

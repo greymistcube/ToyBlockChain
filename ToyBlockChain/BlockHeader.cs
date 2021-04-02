@@ -6,12 +6,12 @@ namespace ToyBlockChain
 {
     public class BlockHeader
     {
-        public int Index;
-        public string PreviousHashString;
-        public string TransactionHashString;
-        public int Difficulty;
-        public int Nonce;
-        public int Timestamp;
+        private readonly int _index;
+        private readonly string _previousHashString;
+        private readonly string _transactionHashString;
+        private readonly int _difficulty;
+        private readonly int _nonce;
+        private readonly int _timestamp;
 
         public BlockHeader(
             int index,
@@ -21,13 +21,20 @@ namespace ToyBlockChain
             int nonce,
             int difficulty)
         {
-            Index = index;
-            PreviousHashString = previousHashString;
-            TransactionHashString = transactionHashString;
-            Timestamp = timestamp;
-            Nonce = nonce;
-            Difficulty = difficulty;
+            _index = index;
+            _previousHashString = previousHashString;
+            _transactionHashString = transactionHashString;
+            _timestamp = timestamp;
+            _nonce = nonce;
+            _difficulty = difficulty;
         }
+
+        public int Index { get; }
+        public string PreviousHashString { get; }
+        public string TransactionHashString { get; }
+        public int Difficulty { get; }
+        public int Nonce { get; }
+        public int Timestamp { get; }
 
         public bool IsValid()
         {

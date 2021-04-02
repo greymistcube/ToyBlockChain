@@ -6,10 +6,10 @@ namespace ToyBlockChain
 {
     public class Transaction
     {
-        public string Sender;
-        public string Recipient;
-        public float Value;
-        public int Timestamp;
+        private readonly string _sender;
+        private readonly string _recipient;
+        private readonly float _value;
+        private readonly int _timestamp;
 
         public Transaction(
             int timestamp,
@@ -17,11 +17,16 @@ namespace ToyBlockChain
             string recipient,
             float value)
         {
-            Timestamp = timestamp;
-            Sender = sender;
-            Recipient = recipient;
-            Value = value;
+            _timestamp = timestamp;
+            _sender = sender;
+            _recipient = recipient;
+            _value = value;
         }
+
+        public string Sender { get; }
+        public string Recipient { get; }
+        public float Value { get; }
+        public int Timestamp { get; }
 
         public byte[] HashBytes()
         {
