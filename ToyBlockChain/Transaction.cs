@@ -28,15 +28,21 @@ namespace ToyBlockChain
         public float Value { get; }
         public int Timestamp { get; }
 
-        public byte[] HashBytes()
+        public byte[] HashBytes
         {
-            SHA256 sha256 = SHA256.Create();
-            return sha256.ComputeHash(Serialize());
+            get
+            {
+                SHA256 sha256 = SHA256.Create();
+                return sha256.ComputeHash(Serialize());
+            }
         }
 
-        public string HashString()
+        public string HashString
         {
-            return BitConverter.ToString(HashBytes()).Replace("-", "");
+            get
+            {
+                return BitConverter.ToString(HashBytes).Replace("-", "");
+            }
         }
 
         public byte[] Serialize()

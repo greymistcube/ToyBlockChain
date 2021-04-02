@@ -36,9 +36,26 @@ namespace ToyBlockChain
         public int Nonce { get; }
         public int Timestamp { get; }
 
+        public byte[] HashBytes
+        {
+            get
+            {
+                SHA256 sha256 = SHA256.Create();
+                return sha256.ComputeHash(Serialize());
+            }
+        }
+
+        public string HashString
+        {
+            get
+            {
+                return BitConverter.ToString(HashBytes).Replace("-", "");
+            }
+        }
+
         public bool IsValid()
         {
-            var bytes = HashBytes();
+            var bytes = HashBytes;
             for (int i = 0; i < Difficulty; i++)
             {
                 if (bytes[i] != 0)
@@ -47,17 +64,6 @@ namespace ToyBlockChain
                 }
             }
             return true;
-        }
-
-        public byte[] HashBytes()
-        {
-            SHA256 sha256 = SHA256.Create();
-            return sha256.ComputeHash(Serialize());
-        }
-
-        public string HashString()
-        {
-            return BitConverter.ToString(HashBytes()).Replace("-", "");
         }
 
         public byte[] Serialize()

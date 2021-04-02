@@ -53,7 +53,7 @@ namespace ToyBlockChain
         {
             foreach (Block block in _chain)
             {
-                if (transaction.HashBytes() == block.Transaction.HashBytes())
+                if (transaction.HashBytes == block.Transaction.HashBytes)
                 {
                     return false;
                 }
