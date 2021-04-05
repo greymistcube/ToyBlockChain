@@ -22,6 +22,22 @@ namespace ToyBlockChain
             }
         }
 
+        public byte[] HashBytes
+        {
+            get
+            {
+                return BlockHeader.HashBytes;
+            }
+        }
+
+        public string HashString
+        {
+            get
+            {
+                return BlockHeader.HashString;
+            }
+        }
+
         public Transaction Transaction { get; }
         public BlockHeader BlockHeader { get; }
 
