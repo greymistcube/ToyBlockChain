@@ -14,26 +14,26 @@ namespace ToyBlockChain
         private readonly string _signature;
 
         public Transaction(
-            int timestamp,
             string sender,
-            string publicKey,
             float value,
             string recipient,
+            int timestamp,
+            string publicKey,
             string signature)
         {
-            _timestamp = timestamp;
             _sender = sender;
-            _publicKey = publicKey;
             _value = value;
             _recipient = recipient;
+            _timestamp = timestamp;
+            _publicKey = publicKey;
             _signature = signature;
         }
 
-        public int Timestamp { get; }
         public string Sender { get; }
-        public string PublicKey { get; }
         public float Value { get; }
         public string Recipient { get; }
+        public int Timestamp { get; }
+        public string PublicKey { get; }
         public string Signature { get; }
 
         public byte[] HashBytes
