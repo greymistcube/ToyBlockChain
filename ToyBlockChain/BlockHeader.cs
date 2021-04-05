@@ -55,7 +55,7 @@ namespace ToyBlockChain
 
         public bool IsValid()
         {
-            var bytes = HashBytes;
+            byte[] bytes = HashBytes;
             for (int i = 0; i < Difficulty; i++)
             {
                 if (bytes[i] != 0)

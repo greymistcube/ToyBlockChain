@@ -55,7 +55,23 @@ namespace ToyBlockChain
 
         public bool IsValid()
         {
-            throw new NotImplementedException();
+            // decrypt signature using public key
+            SHA256 sha256 = SHA256.Create();
+
+            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+            RSAParameters rsaParameters = PublicKeyParameters();
+            rsa.ImportParameters(rsaParameters);
+            byte[] signatureBytes = Convert.FromBase64String(Signature);
+
+            return rsa.VerifyData(HashBytes, sha256, signatureBytes);
+        }
+
+        private RSAParameters PublicKeyParameters()
+        {
+            RSAParameters parameters = new RSAParameters();
+            parameters.Modulus = PublicKeyPairBytes()[0];
+            parameters.Exponent = PublicKeyPairBytes()[1];
+            return parameters;
         }
 
         public override string ToString()
