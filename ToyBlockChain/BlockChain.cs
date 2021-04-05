@@ -41,32 +41,20 @@ namespace ToyBlockChain
         {
             return (
                 block.IsValid()
-                && ValidateBlockHeader(block.BlockHeader)
-                && ValidateTransaction(block.Transaction));
+                && ValidateBlockHistory(block));
         }
 
-        private bool ValidateBlockHeader(BlockHeader blockHeader)
+        private bool ValidateBlockHistory(Block block)
         {
-            return blockHeader.IsValid();
-        }
-
-        private bool ValidateTransaction(Transaction transaction)
-        {
-            if (transaction.IsValid())
+            Transaction transaction = block.Transaction;
+            foreach (Block oldBlock in _chain)
             {
-                foreach (Block block in _chain)
+                if (transaction.HashBytes == oldBlock.Transaction.HashBytes)
                 {
-                    if (transaction.HashBytes == block.Transaction.HashBytes)
-                    {
-                        return false;
-                    }
+                    return false;
                 }
-                return true;
             }
-            else
-            {
-                return false;
-            }
+            return true;
         }
 
         public int TargetDifficulty()

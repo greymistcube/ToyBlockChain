@@ -28,7 +28,9 @@ namespace ToyBlockChain
         public bool IsValid()
         {
             return (
-                _blockHeader.TransactionHashString == _transaction.HashString);
+                _blockHeader.TransactionHashString == _transaction.HashString
+                && BlockHeader.IsValid()
+                && Transaction.IsValid());
         }
 
         public byte[] Serialize()
