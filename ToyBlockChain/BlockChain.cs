@@ -42,7 +42,10 @@ namespace ToyBlockChain
             return (
                 block.IsValid()
                 && block.Index == _chain.Count
-                && ValidateBlockHistory(block));
+                && ValidateBlockHistory(block)
+            ) && (
+                LastBlock() == null
+                || LastBlock().HashString == block.HashString);
         }
 
         private bool ValidateBlockHistory(Block block)
