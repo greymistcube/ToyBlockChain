@@ -41,6 +41,7 @@ namespace ToyBlockChain
         {
             return (
                 block.IsValid()
+                && block.Index == _chain.Count
                 && ValidateBlockHistory(block));
         }
 
