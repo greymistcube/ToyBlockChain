@@ -41,7 +41,7 @@ namespace ToyBlockChain
             get
             {
                 SHA256 sha256 = SHA256.Create();
-                return sha256.ComputeHash(HashInputBytes());
+                return sha256.ComputeHash(Serialize());
             }
         }
 
@@ -78,19 +78,6 @@ namespace ToyBlockChain
         public byte[] Serialize()
         {
             return Encoding.UTF8.GetBytes(ToString());
-        }
-
-        public string HashInputString()
-        {
-            return String.Format(
-                "{0},{1},{2},{3},{4}",
-                Index, PreviousHashString, TransactionHashString,
-                Nonce, Timestamp);
-        }
-
-        public byte[] HashInputBytes()
-        {
-            return Encoding.UTF8.GetBytes(HashInputString());
         }
     }
 }

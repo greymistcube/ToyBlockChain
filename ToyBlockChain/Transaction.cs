@@ -41,7 +41,7 @@ namespace ToyBlockChain
             get
             {
                 SHA256 sha256 = SHA256.Create();
-                return sha256.ComputeHash(HashInputBytes());
+                return sha256.ComputeHash(SignatureHashInputBytes());
             }
         }
 
@@ -61,7 +61,8 @@ namespace ToyBlockChain
             rsa.ImportParameters(rsaParameters);
             byte[] signatureBytes = Convert.FromBase64String(Signature);
 
-            return rsa.VerifyData(HashBytes, sha256, signatureBytes);
+            return rsa.VerifyData(SignatureHashInputBytes(),
+                                  sha256, signatureBytes);
         }
 
         private RSAParameters PublicKeyParameters()
@@ -84,15 +85,16 @@ namespace ToyBlockChain
             return Encoding.UTF8.GetBytes(ToString());
         }
 
-        public string HashInputString()
+        public string SignatureHashInputString()
         {
-            return String.Format("{0},{1},{2},{3}",
-                                 Sender, Value, Recipient, Timestamp);
+            return String.Format("{0},{1},{2},{3},{4}",
+                                 Sender, Value, Recipient, Timestamp,
+                                 PublicKey);
         }
 
-        public byte[] HashInputBytes()
+        public byte[] SignatureHashInputBytes()
         {
-            return Encoding.UTF8.GetBytes(HashInputString());
+            return Encoding.UTF8.GetBytes(SignatureHashInputString());
         }
 
         public string[] PublicKeyPairString()
