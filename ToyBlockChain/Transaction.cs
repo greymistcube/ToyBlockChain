@@ -55,9 +55,7 @@ namespace ToyBlockChain
 
         public bool IsValid()
         {
-            // decrypt signature using public key
             SHA256 sha256 = SHA256.Create();
-
             RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
             RSAParameters rsaParameters = PublicKeyParameters();
             rsa.ImportParameters(rsaParameters);
