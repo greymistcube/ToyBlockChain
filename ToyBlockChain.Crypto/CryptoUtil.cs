@@ -17,6 +17,8 @@ namespace ToyBlockChain.Crypto
 
         public static string Sign(string data, RSAParameters rsaParameters)
         {
+            // TODO: Possible Security hole.
+            // Private key information should be funged.
             byte[] dataBytes = Encoding.UTF8.GetBytes(data);
 
             _rsa.ImportParameters(rsaParameters);
@@ -24,7 +26,8 @@ namespace ToyBlockChain.Crypto
             return Convert.ToBase64String(signatureBytes);
         }
 
-        public static bool Verify(string data, string signature, RSAParameters rsaParameters)
+        public static bool Verify(
+            string data, string signature, RSAParameters rsaParameters)
         {
             byte[] dataBytes = Convert.FromBase64String(data);
             byte[] signatureBytes = Convert.FromBase64String(signature);
