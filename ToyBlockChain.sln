@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.6.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToyBlockChain", "ToyBlockChain\ToyBlockChain.csproj", "{4501ACF0-AC16-4961-9751-99CAF5AF10C2}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToyBlockChain.Service", "ToyBlockChain.Service\ToyBlockChain.Service.csproj", "{CB4E8B1B-48AF-4B6C-87AE-FBC24723534E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToyBlockChain.App", "ToyBlockChain.App\ToyBlockChain.App.csproj", "{19FEEF5F-526B-4D18-BFB9-DB36968CC782}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToyBlockChain.Crypto", "ToyBlockChain.Crypto\ToyBlockChain.Crypto.csproj", "{FD6835E4-4F73-44BB-ACD8-D057CAD3156D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToyBlockChain.Core", "ToyBlockChain.Core\ToyBlockChain.Core.csproj", "{CBA91344-BCDC-4175-A99B-A6061F1C44DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,18 +24,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4501ACF0-AC16-4961-9751-99CAF5AF10C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4501ACF0-AC16-4961-9751-99CAF5AF10C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4501ACF0-AC16-4961-9751-99CAF5AF10C2}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{4501ACF0-AC16-4961-9751-99CAF5AF10C2}.Debug|x64.Build.0 = Debug|Any CPU
-		{4501ACF0-AC16-4961-9751-99CAF5AF10C2}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{4501ACF0-AC16-4961-9751-99CAF5AF10C2}.Debug|x86.Build.0 = Debug|Any CPU
-		{4501ACF0-AC16-4961-9751-99CAF5AF10C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4501ACF0-AC16-4961-9751-99CAF5AF10C2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4501ACF0-AC16-4961-9751-99CAF5AF10C2}.Release|x64.ActiveCfg = Release|Any CPU
-		{4501ACF0-AC16-4961-9751-99CAF5AF10C2}.Release|x64.Build.0 = Release|Any CPU
-		{4501ACF0-AC16-4961-9751-99CAF5AF10C2}.Release|x86.ActiveCfg = Release|Any CPU
-		{4501ACF0-AC16-4961-9751-99CAF5AF10C2}.Release|x86.Build.0 = Release|Any CPU
 		{CB4E8B1B-48AF-4B6C-87AE-FBC24723534E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CB4E8B1B-48AF-4B6C-87AE-FBC24723534E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CB4E8B1B-48AF-4B6C-87AE-FBC24723534E}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -72,5 +60,17 @@ Global
 		{FD6835E4-4F73-44BB-ACD8-D057CAD3156D}.Release|x64.Build.0 = Release|Any CPU
 		{FD6835E4-4F73-44BB-ACD8-D057CAD3156D}.Release|x86.ActiveCfg = Release|Any CPU
 		{FD6835E4-4F73-44BB-ACD8-D057CAD3156D}.Release|x86.Build.0 = Release|Any CPU
+		{CBA91344-BCDC-4175-A99B-A6061F1C44DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBA91344-BCDC-4175-A99B-A6061F1C44DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBA91344-BCDC-4175-A99B-A6061F1C44DF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CBA91344-BCDC-4175-A99B-A6061F1C44DF}.Debug|x64.Build.0 = Debug|Any CPU
+		{CBA91344-BCDC-4175-A99B-A6061F1C44DF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CBA91344-BCDC-4175-A99B-A6061F1C44DF}.Debug|x86.Build.0 = Debug|Any CPU
+		{CBA91344-BCDC-4175-A99B-A6061F1C44DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBA91344-BCDC-4175-A99B-A6061F1C44DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBA91344-BCDC-4175-A99B-A6061F1C44DF}.Release|x64.ActiveCfg = Release|Any CPU
+		{CBA91344-BCDC-4175-A99B-A6061F1C44DF}.Release|x64.Build.0 = Release|Any CPU
+		{CBA91344-BCDC-4175-A99B-A6061F1C44DF}.Release|x86.ActiveCfg = Release|Any CPU
+		{CBA91344-BCDC-4175-A99B-A6061F1C44DF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

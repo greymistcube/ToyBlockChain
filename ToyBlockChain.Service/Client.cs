@@ -1,6 +1,8 @@
 using System;
 using System.Text;
 using System.Security.Cryptography;
+using ToyBlockChain.Core;
+using ToyBlockChain.Crypto;
 
 namespace ToyBlockChain.Service
 {
@@ -19,12 +21,9 @@ namespace ToyBlockChain.Service
             long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
             string signature = Sign(_address, value, recipient, timestamp, PublicKey);
 
-            Transaction transaction = new Transaction(_address,
-                                                      value,
-                                                      recipient,
-                                                      timestamp,
-                                                      PublicKey,
-                                                      signature);
+            Transaction transaction = new Transaction(_address, value,
+                                                      recipient, timestamp,
+                                                      PublicKey, signature);
             return transaction;
         }
 
@@ -32,14 +31,10 @@ namespace ToyBlockChain.Service
             string sender, float value, string recipient,
             long timestamp, string publicKey)
         {
-            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-            SHA256 sha256 = SHA256.Create();
-            string stringToSign = String.Format("{0},{1},{2},{3},{4}");
-            byte[] bytesToSign = Encoding.UTF8.GetBytes(stringToSign);
-
-            rsa.ImportParameters(_rsaParameters);
-            byte[] signatureBytes = rsa.SignData(bytesToSign, sha256);
-            return Convert.ToBase64String(signatureBytes);
+            string stringToSign = String.Format("{0},{1},{2},{3},{4}",
+                                                sender, value, recipient,
+                                                timestamp, publicKey);
+            return CryptoUtil.Sign(stringToSign, _rsaParameters);
         }
 
         public string PublicKey

@@ -1,8 +1,9 @@
 using System;
 using System.Text;
 using System.Security.Cryptography;
+using ToyBlockChain.Crypto;
 
-namespace ToyBlockChain
+namespace ToyBlockChain.Core
 {
     public class Transaction
     {
@@ -41,7 +42,7 @@ namespace ToyBlockChain
             get
             {
                 SHA256 sha256 = SHA256.Create();
-                return sha256.ComputeHash(SignatureHashInputBytes());
+                return sha256.ComputeHash(Serialize());
             }
         }
 
@@ -55,22 +56,15 @@ namespace ToyBlockChain
 
         public bool IsValid()
         {
-            SHA256 sha256 = SHA256.Create();
-            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-            RSAParameters rsaParameters = PublicKeyParameters();
-            rsa.ImportParameters(rsaParameters);
-            byte[] signatureBytes = Convert.FromBase64String(Signature);
-
-            return rsa.VerifyData(SignatureHashInputBytes(),
-                                  sha256, signatureBytes);
+            return CryptoUtil.Verify(
+                SignatureInputString(),
+                Signature,
+                CryptoUtil.ExtractRSAParameters(PublicKey));
         }
 
         private RSAParameters PublicKeyParameters()
         {
-            RSAParameters parameters = new RSAParameters();
-            parameters.Modulus = PublicKeyPairBytes()[0];
-            parameters.Exponent = PublicKeyPairBytes()[1];
-            return parameters;
+            return CryptoUtil.ExtractRSAParameters(PublicKey);
         }
 
         public override string ToString()
@@ -85,29 +79,11 @@ namespace ToyBlockChain
             return Encoding.UTF8.GetBytes(ToString());
         }
 
-        public string SignatureHashInputString()
+        public string SignatureInputString()
         {
             return String.Format("{0},{1},{2},{3},{4}",
                                  Sender, Value, Recipient, Timestamp,
                                  PublicKey);
-        }
-
-        public byte[] SignatureHashInputBytes()
-        {
-            return Encoding.UTF8.GetBytes(SignatureHashInputString());
-        }
-
-        public string[] PublicKeyPairString()
-        {
-            return PublicKey.Split(":");
-        }
-
-        public byte[][] PublicKeyPairBytes()
-        {
-            string[] publicKeyPairString = PublicKeyPairString();
-            return new byte[][] {
-                Convert.FromBase64String(publicKeyPairString[0]),
-                Convert.FromBase64String(publicKeyPairString[1])};
         }
     }
 }
