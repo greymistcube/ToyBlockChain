@@ -14,18 +14,22 @@ namespace ToyBlockChain.Crypto
             _rsa = new RSACryptoServiceProvider();
             _sha256 = SHA256.Create();
         }
-        static string Sign(string str, RSAParameters rsaParameters)
+        static string Sign(string data, RSAParameters rsaParameters)
         {
-            byte[] bytesToSign = Encoding.UTF8.GetBytes(str);
+            byte[] dataBytes = Encoding.UTF8.GetBytes(data);
 
             _rsa.ImportParameters(rsaParameters);
-            byte[] signatureBytes = _rsa.SignData(bytesToSign, _sha256);
+            byte[] signatureBytes = _rsa.SignData(dataBytes, _sha256);
             return Convert.ToBase64String(signatureBytes);
         }
 
-        static bool Verify(string str, RSAParameters rsaParameters)
+        static bool Verify(string data, string signature, RSAParameters rsaParameters)
         {
-            throw new NotImplementedException();
+            byte[] dataBytes = Convert.FromBase64String(data);
+            byte[] signatureBytes = Convert.FromBase64String(signature);
+
+            _rsa.ImportParameters(rsaParameters);
+            return _rsa.VerifyData(dataBytes, _sha256, signatureBytes);
         }
     }
 }
