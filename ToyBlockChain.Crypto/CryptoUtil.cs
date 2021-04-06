@@ -4,12 +4,12 @@ using System.Security.Cryptography;
 
 namespace ToyBlockChain.Crypto
 {
-    public static class Crypto
+    public static class CryptoUtil
     {
         private static RSACryptoServiceProvider _rsa;
         private static SHA256 _sha256;
 
-        static Crypto()
+        static CryptoUtil()
         {
             _rsa = new RSACryptoServiceProvider();
             _sha256 = SHA256.Create();
