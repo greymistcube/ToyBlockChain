@@ -6,7 +6,7 @@ namespace ToyBlockChain
 {
     public class Transaction
     {
-        private readonly int _timestamp;
+        private readonly long _timestamp;
         private readonly string _sender;
         private readonly string _publicKey;
         private readonly float _value;
@@ -17,7 +17,7 @@ namespace ToyBlockChain
             string sender,
             float value,
             string recipient,
-            int timestamp,
+            long timestamp,
             string publicKey,
             string signature)
         {
@@ -32,7 +32,7 @@ namespace ToyBlockChain
         public string Sender { get; }
         public float Value { get; }
         public string Recipient { get; }
-        public int Timestamp { get; }
+        public long Timestamp { get; }
         public string PublicKey { get; }
         public string Signature { get; }
 
