@@ -2,7 +2,7 @@ using System;
 using System.Text;
 using System.Security.Cryptography;
 
-namespace ToyBlockChain
+namespace ToyBlockChain.Core
 {
     public class Transaction
     {

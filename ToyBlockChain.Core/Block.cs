@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 
-namespace ToyBlockChain
+namespace ToyBlockChain.Core
 {
     public class Block
     {

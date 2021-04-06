@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ToyBlockChain
+namespace ToyBlockChain.Core
 {
     public class BlockChain
     {
