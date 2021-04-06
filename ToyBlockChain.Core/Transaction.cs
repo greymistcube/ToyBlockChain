@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using System.Security.Cryptography;
+using ToyBlockChain.Crypto;
 
 namespace ToyBlockChain.Core
 {

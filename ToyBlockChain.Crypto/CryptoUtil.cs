@@ -14,7 +14,7 @@ namespace ToyBlockChain.Crypto
             _rsa = new RSACryptoServiceProvider();
             _sha256 = SHA256.Create();
         }
-        static string Sign(string data, RSAParameters rsaParameters)
+        public static string Sign(string data, RSAParameters rsaParameters)
         {
             byte[] dataBytes = Encoding.UTF8.GetBytes(data);
 
@@ -23,7 +23,7 @@ namespace ToyBlockChain.Crypto
             return Convert.ToBase64String(signatureBytes);
         }
 
-        static bool Verify(string data, string signature, RSAParameters rsaParameters)
+        public static bool Verify(string data, string signature, RSAParameters rsaParameters)
         {
             byte[] dataBytes = Convert.FromBase64String(data);
             byte[] signatureBytes = Convert.FromBase64String(signature);
