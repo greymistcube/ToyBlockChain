@@ -28,17 +28,29 @@ namespace ToyBlockChain.Service
 
         public void Run()
         {
-            throw new NotImplementedException();
+            // TODO: Temporary running script.
+            _node.RegisterAddress(_address);
+
+            Random rnd = new Random();
+
+            double value;
+            string recipient;
+            Transaction transaction;
+
+            value = rnd.NextDouble();
+            recipient = "foo";
+            transaction = CreateTransaction(value, recipient);
+            _node.RegisterTransaction(transaction);
         }
 
         public Transaction CreateTransaction(double value, string recipient)
         {
-            // create an unsigned, invalid transaction
+            // Create an unsigned, invalid transaction.
             long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
             Transaction transaction = new Transaction(
                 _address, value, recipient, timestamp, PublicKey);
 
-            // create valid signature and sign the transaction
+            // Create a valid signature and sign the transaction.
             string signature = CryptoUtil.Sign(
                 transaction.SignatureInputString(), _rsaParameters);
             transaction.Sign(signature);

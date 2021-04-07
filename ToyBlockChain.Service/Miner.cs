@@ -27,7 +27,7 @@ namespace ToyBlockChain.Service
         {
             while (true)
             {
-                // check if transaction is still in the pool
+                // Check if transaction is still in the pool.
                 if (_node.HasTransactionInPool(transaction))
                 {
                     Block block = Pick(transaction);
