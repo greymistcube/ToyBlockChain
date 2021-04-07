@@ -8,12 +8,15 @@ namespace ToyBlockChain.Service
 {
     public class Client
     {
+        private Node _node;
         private RSAParameters _rsaParameters;
         private string _publicKey;
         private string _address;
 
-        public Client()
+        public Client(Node node)
         {
+            _node = node;
+
             RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
             _rsaParameters = rsa.ExportParameters(true);
 

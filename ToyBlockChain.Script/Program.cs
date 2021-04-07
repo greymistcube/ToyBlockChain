@@ -7,9 +7,9 @@ namespace ToyBlockChain.Script
     {
         static void Main(string[] args)
         {
-            Client client = new Client();
+            Node node = new Node();
+            Client client = new Client(node);
 
-            client.Run();
             Console.WriteLine(client);
         }
     }
