@@ -25,6 +25,7 @@ namespace ToyBlockChain.Service
 
         public void Run()
         {
+            throw new NotImplementedException();
         }
 
         public Transaction CreateTransaction(float value, string recipient)
