@@ -30,23 +30,17 @@ namespace ToyBlockChain.Service
 
         public Transaction CreateTransaction(float value, string recipient)
         {
+            // create an unsigned, invalid transaction
             long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
-            string signature = Sign(_address, value, recipient, timestamp, PublicKey);
+            Transaction transaction = new Transaction(
+                _address, value, recipient, timestamp, PublicKey);
 
-            Transaction transaction = new Transaction(_address, value,
-                                                      recipient, timestamp,
-                                                      PublicKey, signature);
+            // create valid signature and sign the transaction
+            string signature = CryptoUtil.Sign(
+                transaction.SignatureInputString(), _rsaParameters);
+            transaction.Sign(signature);
+
             return transaction;
-        }
-
-        private string Sign(
-            string sender, float value, string recipient,
-            long timestamp, string publicKey)
-        {
-            string stringToSign = String.Format("{0},{1},{2},{3},{4}",
-                                                sender, value, recipient,
-                                                timestamp, publicKey);
-            return CryptoUtil.Sign(stringToSign, _rsaParameters);
         }
 
         public string Address
@@ -67,9 +61,10 @@ namespace ToyBlockChain.Service
 
         public override string ToString()
         {
-            return String.Format("Address: {0}\n"
-                                 + "Public Key: {1}",
-                                 Address, PublicKey);
+            return String.Format(
+                "Address: {0}\n"
+                + "Public Key: {1}",
+                Address, PublicKey);
         }
     }
 }
