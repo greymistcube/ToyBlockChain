@@ -31,7 +31,7 @@ namespace ToyBlockChain.Service
             throw new NotImplementedException();
         }
 
-        public Transaction CreateTransaction(float value, string recipient)
+        public Transaction CreateTransaction(double value, string recipient)
         {
             // create an unsigned, invalid transaction
             long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
