@@ -9,15 +9,15 @@ namespace ToyBlockChain.Core
         private readonly int _index;
         private readonly string _previousHashString;
         private readonly string _transactionHashString;
-        private readonly int _difficulty;
+        private readonly long _timestamp;
         private readonly string _nonce;
-        private readonly int _timestamp;
+        private readonly int _difficulty;
 
         public BlockHeader(
             int index,
             string previousHashString,
             string transactionHashString,
-            int timestamp,
+            long timestamp,
             string nonce,
             int difficulty)
         {
@@ -69,7 +69,7 @@ namespace ToyBlockChain.Core
             }
         }
 
-        public int Timestamp
+        public long Timestamp
         {
             get
             {
