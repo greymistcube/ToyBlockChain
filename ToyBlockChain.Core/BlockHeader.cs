@@ -29,12 +29,53 @@ namespace ToyBlockChain.Core
             _difficulty = difficulty;
         }
 
-        public int Index { get; }
-        public string PreviousHashString { get; }
-        public string TransactionHashString { get; }
-        public int Difficulty { get; }
-        public int Nonce { get; }
-        public int Timestamp { get; }
+        public int Index
+        {
+            get
+            {
+                return _index;
+            }
+        }
+
+        public string PreviousHashString
+        {
+            get
+            {
+                return _previousHashString;
+            }
+        }
+
+        public string TransactionHashString
+        {
+            get
+            {
+                return _transactionHashString;
+            }
+        }
+
+        public int Difficulty
+        {
+            get
+            {
+                return _difficulty;
+            }
+        }
+
+        public int Nonce
+        {
+            get
+            {
+                return _nonce;
+            }
+        }
+
+        public int Timestamp
+        {
+            get
+            {
+                return _timestamp;
+            }
+        }
 
         public byte[] HashBytes
         {
