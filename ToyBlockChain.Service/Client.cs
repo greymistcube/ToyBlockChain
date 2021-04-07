@@ -8,23 +8,24 @@ namespace ToyBlockChain.Service
 {
     public class Client
     {
-        public const int ADDRESS_LENGTH = 8;
-        private string _address;
         private RSAParameters _rsaParameters;
+        private string _publicKey;
+        private string _address;
 
         public Client()
         {
-            RandomNumberGenerator rng = RandomNumberGenerator.Create();
-            byte[] addressBytes = new byte[ADDRESS_LENGTH];
-            rng.GetBytes(addressBytes);
-            _address = Convert.ToBase64String(addressBytes);
-
             RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
             _rsaParameters = rsa.ExportParameters(true);
+
+            string modulus = Convert.ToBase64String(_rsaParameters.Modulus);
+            string exponent = Convert.ToBase64String(_rsaParameters.Exponent);
+            _publicKey = $"{modulus}:{exponent}";
+            _address = CryptoUtil.HashString(_publicKey);
         }
 
         public void Run()
         {
+            throw new NotImplementedException();
         }
 
         public Transaction CreateTransaction(float value, string recipient)
@@ -60,9 +61,7 @@ namespace ToyBlockChain.Service
         {
             get
             {
-                string modulus = Convert.ToBase64String(_rsaParameters.Modulus);
-                string exponent = Convert.ToBase64String(_rsaParameters.Exponent);
-                return $"{modulus}:{exponent}";
+                return _publicKey;
             }
         }
 

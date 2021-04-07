@@ -15,6 +15,17 @@ namespace ToyBlockChain.Crypto
             _sha256 = SHA256.Create();
         }
 
+        public static byte[] HashBytes(byte[] bytes)
+        {
+            return _sha256.ComputeHash(bytes);
+        }
+
+        public static string HashString(string str)
+        {
+            return Convert.ToBase64String(
+                _sha256.ComputeHash(Encoding.UTF8.GetBytes(str)));
+        }
+
         public static string Sign(string data, RSAParameters rsaParameters)
         {
             // TODO: Possible Security hole.
