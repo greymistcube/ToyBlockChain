@@ -48,6 +48,14 @@ namespace ToyBlockChain.Service
             return CryptoUtil.Sign(stringToSign, _rsaParameters);
         }
 
+        public string Address
+        {
+            get
+            {
+                return _address;
+            }
+        }
+
         public string PublicKey
         {
             get
@@ -56,6 +64,13 @@ namespace ToyBlockChain.Service
                 string exponent = Convert.ToBase64String(_rsaParameters.Exponent);
                 return $"{modulus}:{exponent}";
             }
+        }
+
+        public override string ToString()
+        {
+            return String.Format("Address: {0}\n"
+                                 + "Public Key: {1}",
+                                 Address, PublicKey);
         }
     }
 }

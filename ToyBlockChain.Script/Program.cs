@@ -10,6 +10,7 @@ namespace ToyBlockChain.Script
             Client client = new Client();
 
             client.Run();
+            Console.WriteLine(client);
         }
     }
 }
