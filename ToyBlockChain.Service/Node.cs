@@ -7,14 +7,16 @@ namespace ToyBlockChain.Service
     public class Node
     {
         private readonly BlockChain _blockChain;
-        private readonly List<string> _addressBook;
+        private readonly HashSet<string> _addressBook;
         private readonly Dictionary<string, Transaction> _transactionPool;
+        private readonly bool _logging;
 
-        public Node()
+        public Node(bool logging = false)
         {
             _blockChain = new BlockChain();
-            _addressBook = new List<string>();
+            _addressBook = new HashSet<string>();
             _transactionPool = new Dictionary<string, Transaction>();
+            _logging = logging;
         }
 
         /// <summary>
@@ -62,6 +64,11 @@ namespace ToyBlockChain.Service
             else
             {
                 _addressBook.Add(address);
+                if (_logging)
+                {
+                    Console.WriteLine(
+                        $"address {address} added to the address book");
+                }
             }
         }
 
@@ -115,6 +122,12 @@ namespace ToyBlockChain.Service
             else
             {
                 _transactionPool.Add(transaction.HashString, transaction);
+                if (_logging)
+                {
+                    Console.WriteLine(
+                        $"transaction {transaction.HashString} "
+                        + "added to the transaction pool");
+                }
             }
         }
 
@@ -144,6 +157,14 @@ namespace ToyBlockChain.Service
             get
             {
                 return new List<string>(_addressBook);
+            }
+        }
+
+        public List<Transaction> TransactionPool
+        {
+            get
+            {
+                return new List<Transaction>(_transactionPool.Values);
             }
         }
     }
