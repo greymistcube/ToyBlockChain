@@ -25,7 +25,26 @@ namespace ToyBlockChain.Service
         /// </summary>
         private Block Mine(Transaction transaction)
         {
-            throw new NotImplementedException();
+            while (true)
+            {
+                // check if transaction is still in the pool
+                if (_node.HasTransactionInPool(transaction))
+                {
+                    Block block = Pick(transaction);
+                    if (block != null)
+                    {
+                        return block;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    return null;
+                }
+            }
         }
 
         /// <summary>
