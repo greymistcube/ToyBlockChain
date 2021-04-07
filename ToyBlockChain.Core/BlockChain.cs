@@ -47,6 +47,18 @@ namespace ToyBlockChain.Core
                 || LastBlock().HashString == block.HashString);
         }
 
+        public bool HasTransaction(Transaction transaction)
+        {
+            foreach (Block block in _chain)
+            {
+                if (transaction.HashString == block.Transaction.HashString)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public int TargetDifficulty()
         {
             return _chain.Count;

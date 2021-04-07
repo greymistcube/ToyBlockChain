@@ -17,11 +17,29 @@ namespace ToyBlockChain.Service
             _pool = new Dictionary<string, Transaction>();
         }
 
+        /// <summary>
+        /// Adds a block to the chain. Only metablockchain validations
+        /// are performed. Additional validations occur when given block
+        /// is passed to the <see cref="BlockChain"/> class.
+        /// </summary>
         public void AddBlock(Block block)
         {
-            // TODO: transaction check against the existing chain has been
-            // removed from BlockChain class. should be reimplemented here.
-            throw new NotImplementedException();
+            if (HasTransactionInChain(block.Transaction))
+            {
+                throw new ArgumentException(
+                    "given transaction already exists in the chain");
+            }
+            // possibly unnecessarily restricts block validation
+            else if (!HasTransactionInPool(block.Transaction))
+            {
+                throw new ArgumentException(
+                    "given transaction is not from the pool");
+            }
+            else
+            {
+                _chain.AddBlock(block);
+            }
+            return;
         }
 
         /// <summary>
@@ -54,7 +72,7 @@ namespace ToyBlockChain.Service
         /// </summary>
         public bool HasTransactionInChain(Transaction transaction)
         {
-            throw new NotImplementedException();
+            return _chain.HasTransaction(transaction);
         }
 
         /// <summary>
