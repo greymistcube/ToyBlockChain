@@ -42,23 +42,21 @@ namespace ToyBlockChain.Core
             return (
                 block.IsValid()
                 && block.Index == _chain.Count
-                && ValidateBlockHistory(block)
             ) && (
                 LastBlock() == null
                 || LastBlock().HashString == block.HashString);
         }
 
-        private bool ValidateBlockHistory(Block block)
+        public bool HasTransaction(Transaction transaction)
         {
-            Transaction transaction = block.Transaction;
-            foreach (Block oldBlock in _chain)
+            foreach (Block block in _chain)
             {
-                if (transaction.HashBytes == oldBlock.Transaction.HashBytes)
+                if (transaction.HashString == block.Transaction.HashString)
                 {
-                    return false;
+                    return true;
                 }
             }
-            return true;
+            return false;
         }
 
         public int TargetDifficulty()

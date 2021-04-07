@@ -6,13 +6,16 @@ namespace ToyBlockChain.Crypto
 {
     public static class CryptoUtil
     {
-        private static RSACryptoServiceProvider _rsa;
+        public static readonly int NONCE_LENGTH = 8;
+        private static RandomNumberGenerator _rng;
         private static SHA256 _sha256;
+        private static RSACryptoServiceProvider _rsa;
 
         static CryptoUtil()
         {
-            _rsa = new RSACryptoServiceProvider();
+            _rng = RandomNumberGenerator.Create();
             _sha256 = SHA256.Create();
+            _rsa = new RSACryptoServiceProvider();
         }
 
         public static byte[] HashBytes(byte[] bytes)
@@ -58,6 +61,13 @@ namespace ToyBlockChain.Crypto
             parameters.Modulus = pairBytes[0];
             parameters.Exponent = pairBytes[1];
             return parameters;
+        }
+
+        public static string GenerateNonce()
+        {
+            byte[] nonce = new byte[NONCE_LENGTH];
+            _rng.GetBytes(nonce);
+            return Convert.ToBase64String(nonce);
         }
     }
 }

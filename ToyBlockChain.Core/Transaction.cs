@@ -12,7 +12,21 @@ namespace ToyBlockChain.Core
         private readonly string _publicKey;
         private readonly float _value;
         private readonly string _recipient;
-        private readonly string _signature;
+        private string _signature = null;
+
+        public Transaction(
+            string sender,
+            float value,
+            string recipient,
+            long timestamp,
+            string publicKey)
+        {
+            _sender = sender;
+            _value = value;
+            _recipient = recipient;
+            _timestamp = timestamp;
+            _publicKey = publicKey;
+        }
 
         public Transaction(
             string sender,
@@ -93,6 +107,15 @@ namespace ToyBlockChain.Core
             {
                 return Convert.ToBase64String(HashBytes);
             }
+        }
+
+        /// <summary>
+        /// Signs this transaction with given signature.
+        /// Simply overwrites the previous signature.
+        /// </summary>
+        public void Sign(string signature)
+        {
+            _signature = signature;
         }
 
         public bool IsValid()
