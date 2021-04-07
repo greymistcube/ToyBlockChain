@@ -37,7 +37,7 @@ namespace ToyBlockChain.Service
                     block = Mine(transaction);
                     if (block != null)
                     {
-                        lock(_node)
+                        lock (_node)
                         {
                             _node.AddBlock(block);
                         }

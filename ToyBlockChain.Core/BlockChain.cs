@@ -45,7 +45,7 @@ namespace ToyBlockChain.Core
                 && block.Index == _chain.Count
             ) && (
                 LastBlock() == null
-                || LastBlock().HashString == block.HashString);
+                || LastBlock().HashString == block.PreviousHashString);
         }
 
         public bool HasTransaction(Transaction transaction)

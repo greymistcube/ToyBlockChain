@@ -26,7 +26,7 @@ namespace ToyBlockChain.Service
             _publicKey = $"{modulus}:{exponent}";
             _address = CryptoUtil.HashString(_publicKey);
 
-            lock(_node)
+            lock (_node)
             {
                 _node.RegisterAddress(_address);
             }
@@ -48,7 +48,7 @@ namespace ToyBlockChain.Service
                 value = rnd.NextDouble();
                 recipient = addressBook[rnd.Next(addressBook.Count)];
                 transaction = CreateTransaction(value, recipient);
-                lock(_node)
+                lock (_node)
                 {
                     _node.RegisterTransaction(transaction);
                 }
