@@ -29,19 +29,60 @@ namespace ToyBlockChain.Core
             _difficulty = difficulty;
         }
 
-        public int Index { get; }
-        public string PreviousHashString { get; }
-        public string TransactionHashString { get; }
-        public int Difficulty { get; }
-        public int Nonce { get; }
-        public int Timestamp { get; }
+        public int Index
+        {
+            get
+            {
+                return _index;
+            }
+        }
+
+        public string PreviousHashString
+        {
+            get
+            {
+                return _previousHashString;
+            }
+        }
+
+        public string TransactionHashString
+        {
+            get
+            {
+                return _transactionHashString;
+            }
+        }
+
+        public int Difficulty
+        {
+            get
+            {
+                return _difficulty;
+            }
+        }
+
+        public int Nonce
+        {
+            get
+            {
+                return _nonce;
+            }
+        }
+
+        public int Timestamp
+        {
+            get
+            {
+                return _timestamp;
+            }
+        }
 
         public byte[] HashBytes
         {
             get
             {
                 SHA256 sha256 = SHA256.Create();
-                return sha256.ComputeHash(Serialize());
+                return sha256.ComputeHash(ToSerializedBytes());
             }
         }
 
@@ -68,16 +109,28 @@ namespace ToyBlockChain.Core
 
         public override string ToString()
         {
-            return String.Format(
-                "{0},{1},{2},{3},{4},{5}",
-                Index, PreviousHashString, TransactionHashString,
-                Nonce, Timestamp,
-                Difficulty);
+            return String.Format("Index: {0}\n"
+                                 + "Previous Hash: {1}\n"
+                                 + "Transaction Hash: {2}\n"
+                                 + "Timestamp: {3}\n"
+                                 + "Nonce: {4}\n"
+                                 + "Difficulty: {5}",
+                                 Index,
+                                 PreviousHashString, TransactionHashString,
+                                 Timestamp, Nonce, Difficulty);
         }
 
-        public byte[] Serialize()
+        public string ToSerializedString()
         {
-            return Encoding.UTF8.GetBytes(ToString());
+            return String.Format("{0},{1},{2},{3},{4},{5}",
+                                 Index,
+                                 PreviousHashString, TransactionHashString,
+                                 Timestamp, Nonce, Difficulty);
+        }
+
+        public byte[] ToSerializedBytes()
+        {
+            return Encoding.UTF8.GetBytes(ToSerializedString());
         }
     }
 }

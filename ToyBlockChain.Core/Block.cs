@@ -38,8 +38,21 @@ namespace ToyBlockChain.Core
             }
         }
 
-        public Transaction Transaction { get; }
-        public BlockHeader BlockHeader { get; }
+        public BlockHeader BlockHeader
+        {
+            get
+            {
+                return _blockHeader;
+            }
+        }
+
+        public Transaction Transaction
+        {
+            get
+            {
+                return _transaction;
+            }
+        }
 
         public bool IsValid()
         {
@@ -49,17 +62,25 @@ namespace ToyBlockChain.Core
                 && Transaction.IsValid());
         }
 
-        public byte[] Serialize()
-        {
-            return Encoding.UTF8.GetBytes(ToString());
-        }
-
         public override string ToString()
         {
-            return String.Format(
-                "{0},{1}",
-                BlockHeader.ToString(),
-                Transaction.ToString());
+            return String.Format("BLOCK HEADER:\n{0}\n"
+                                 + "TRANSACTION: \n{1}",
+                                 BlockHeader.ToString(),
+                                 Transaction.ToString());
         }
+
+        public string ToSerializedString()
+        {
+            return String.Format("{0},{1}",
+                                 BlockHeader.ToSerializedString(),
+                                 Transaction.ToSerializedString());
+        }
+
+        public byte[] ToSerializedBytes()
+        {
+            return Encoding.UTF8.GetBytes(ToSerializedString());
+        }
+
     }
 }

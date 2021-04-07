@@ -83,7 +83,7 @@ namespace ToyBlockChain.Core
             get
             {
                 SHA256 sha256 = SHA256.Create();
-                return sha256.ComputeHash(Serialize());
+                return sha256.ComputeHash(ToSerializedBytes());
             }
         }
 
@@ -110,14 +110,26 @@ namespace ToyBlockChain.Core
 
         public override string ToString()
         {
+            return String.Format("Sender: {0}\n"
+                                 + "Value: {1}\n"
+                                 + "Recipient: {2}\n"
+                                 + "Timestamp: {3}\n"
+                                 + "Public Key: {4}\n"
+                                 + "Signature: {5}",
+                                 Sender, Value, Recipient, Timestamp,
+                                 PublicKey, Signature);
+        }
+
+        public string ToSerializedString()
+        {
             return String.Format("{0},{1},{2},{3},{4},{5}",
                                  Sender, Value, Recipient, Timestamp,
                                  PublicKey, Signature);
         }
 
-        public byte[] Serialize()
+        public byte[] ToSerializedBytes()
         {
-            return Encoding.UTF8.GetBytes(ToString());
+            return Encoding.UTF8.GetBytes(ToSerializedString());
         }
 
         public string SignatureInputString()
