@@ -39,7 +39,15 @@ namespace ToyBlockChain.Service
             }
             else
             {
+                RemoveTransaction(block.Transaction);
                 _blockChain.AddBlock(block);
+                if (_logging)
+                {
+                    Console.WriteLine(
+                        $"block {block.HashString} added to the blockchain");
+                    Console.WriteLine(
+                        $"transaction {block.Transaction.HashString} processed");
+                }
             }
             return;
         }
