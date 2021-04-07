@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Text;
 using System.Security.Cryptography;
 
@@ -96,10 +97,11 @@ namespace ToyBlockChain.Core
 
         public bool IsValid()
         {
-            byte[] bytes = HashBytes;
+            BitArray bits = new BitArray(HashBytes);
+
             for (int i = 0; i < Difficulty; i++)
             {
-                if (bytes[i] != 0)
+                if (bits[i] != false)
                 {
                     return false;
                 }
