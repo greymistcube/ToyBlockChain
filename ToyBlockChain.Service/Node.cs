@@ -6,9 +6,9 @@ namespace ToyBlockChain.Service
 {
     public class Node
     {
-        private BlockChain _chain;
-        private HashSet<string> _book;
-        private Dictionary<string, Transaction> _pool;
+        private readonly BlockChain _chain;
+        private readonly HashSet<string> _book;
+        private readonly Dictionary<string, Transaction> _pool;
 
         public Node()
         {
