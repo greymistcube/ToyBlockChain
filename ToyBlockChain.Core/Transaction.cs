@@ -30,12 +30,53 @@ namespace ToyBlockChain.Core
             _signature = signature;
         }
 
-        public string Sender { get; }
-        public float Value { get; }
-        public string Recipient { get; }
-        public long Timestamp { get; }
-        public string PublicKey { get; }
-        public string Signature { get; }
+        public string Sender
+        {
+            get
+            {
+                return _sender;
+            }
+        }
+
+        public float Value
+        {
+            get
+            {
+                return _value;
+            }
+        }
+
+        public string Recipient
+        {
+            get
+            {
+                return _recipient;
+            }
+        }
+
+        public long Timestamp
+        {
+            get
+            {
+                return _timestamp;
+            }
+        }
+
+        public string PublicKey
+        {
+            get
+            {
+                return _publicKey;
+            }
+        }
+
+        public string Signature
+        {
+            get
+            {
+                return _signature;
+            }
+        }
 
         public byte[] HashBytes
         {
