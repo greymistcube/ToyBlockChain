@@ -7,14 +7,14 @@ namespace ToyBlockChain.Service
     public class Node
     {
         private readonly BlockChain _blockChain;
-        private readonly HashSet<string> _book;
-        private readonly Dictionary<string, Transaction> _pool;
+        private readonly List<string> _addressBook;
+        private readonly Dictionary<string, Transaction> _transactionPool;
 
         public Node()
         {
             _blockChain = new BlockChain();
-            _book = new HashSet<string>();
-            _pool = new Dictionary<string, Transaction>();
+            _addressBook = new List<string>();
+            _transactionPool = new Dictionary<string, Transaction>();
         }
 
         /// <summary>
@@ -43,15 +43,15 @@ namespace ToyBlockChain.Service
         }
 
         /// <summary>
-        /// Checks if given address is in the book.
+        /// Checks if given address is in the address book.
         /// </summary>
         public bool HasAddressInBook(string address)
         {
-            return _book.Contains(address);
+            return _addressBook.Contains(address);
         }
 
         /// <summary>
-        /// Registers an address to the book.
+        /// Registers an address to the address book.
         /// </summary>
         public void RegisterAddress(string address)
         {
@@ -61,7 +61,7 @@ namespace ToyBlockChain.Service
             }
             else
             {
-                _book.Add(address);
+                _addressBook.Add(address);
             }
         }
 
@@ -76,18 +76,16 @@ namespace ToyBlockChain.Service
         }
 
         /// <summary>
-        /// Checks if given transaction is in the pool.
-        /// Mainly used by a client to see if its generated transaction
-        /// has been processed into the blockchain.
+        /// Checks if given transaction is in the transaction pool.
         /// </summary>
         public bool HasTransactionInPool(Transaction transaction)
         {
-            return _pool.ContainsKey(transaction.HashString);
+            return _transactionPool.ContainsKey(transaction.HashString);
         }
 
         /// <summary>
-        /// Registers a transaction to the pool. Only metablockchain level
-        /// validations are performed.
+        /// Registers a transaction to the transaction pool.
+        /// Only metablockchain level validations are performed.
         /// </summary>
         public void RegisterTransaction(Transaction transaction)
         {
@@ -116,19 +114,19 @@ namespace ToyBlockChain.Service
             */
             else
             {
-                _pool.Add(transaction.HashString, transaction);
+                _transactionPool.Add(transaction.HashString, transaction);
             }
         }
 
         /// <summary>
-        /// Removes a transaction from the pool. Made private so that
-        /// this can be called only when moving a transaction to a block
-        /// in the blockchain. This makes a registered transaction
-        /// uncancellable.
+        /// Removes a transaction from the transaction pool.
+        /// Made private so that this can be called only when moving
+        /// a transaction to a block in the blockchain.
+        /// This makes a registered transaction uncancellable.
         /// </summary>
         private void RemoveTransaction(Transaction transaction)
         {
-            _pool.Remove(transaction.HashString);
+            _transactionPool.Remove(transaction.HashString);
         }
 
         public Block LastBlock()
@@ -139,6 +137,14 @@ namespace ToyBlockChain.Service
         public int TargetDifficulty()
         {
             return _blockChain.TargetDifficulty();
+        }
+
+        public List<string> AddressBook
+        {
+            get
+            {
+                return new List<string>(_addressBook);
+            }
         }
     }
 }
