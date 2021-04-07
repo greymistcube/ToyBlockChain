@@ -6,21 +6,21 @@ namespace ToyBlockChain.Service
 {
     public class Node
     {
-        private readonly BlockChain _chain;
+        private readonly BlockChain _blockChain;
         private readonly HashSet<string> _book;
         private readonly Dictionary<string, Transaction> _pool;
 
         public Node()
         {
-            _chain = new BlockChain();
+            _blockChain = new BlockChain();
             _book = new HashSet<string>();
             _pool = new Dictionary<string, Transaction>();
         }
 
         /// <summary>
-        /// Adds a block to the chain. Only metablockchain level validations
-        /// are performed. Additional validations occur when given block
-        /// is passed to the <see cref="BlockChain"/> class.
+        /// Adds a block to the blockchain. Only metablockchain level
+        /// validations are performed. Additional validations occur
+        /// when given block is passed to the <see cref="BlockChain"/> class.
         /// </summary>
         public void AddBlock(Block block)
         {
@@ -37,7 +37,7 @@ namespace ToyBlockChain.Service
             }
             else
             {
-                _chain.AddBlock(block);
+                _blockChain.AddBlock(block);
             }
             return;
         }
@@ -66,19 +66,19 @@ namespace ToyBlockChain.Service
         }
 
         /// <summary>
-        /// Checks if given transaction is in the chain.
+        /// Checks if given transaction is in the blockchain.
         /// Mainly used to prevent the same transaction getting
         /// added to the chain more than once.
         /// </summary>
         public bool HasTransactionInChain(Transaction transaction)
         {
-            return _chain.HasTransaction(transaction);
+            return _blockChain.HasTransaction(transaction);
         }
 
         /// <summary>
         /// Checks if given transaction is in the pool.
         /// Mainly used by a client to see if its generated transaction
-        /// has been processed into the chain.
+        /// has been processed into the blockchain.
         /// </summary>
         public bool HasTransactionInPool(Transaction transaction)
         {
@@ -120,11 +120,17 @@ namespace ToyBlockChain.Service
         /// <summary>
         /// Removes a transaction from the pool. Made private so that
         /// this can be called only when moving a transaction to a block
-        /// in the chain. This makes a registered transaction uncancellable.
+        /// in the blockchain. This makes a registered transaction
+        /// uncancellable.
         /// </summary>
         private void RemoveTransaction(Transaction transaction)
         {
             _pool.Remove(transaction.HashString);
+        }
+
+        public Block LastBlock()
+        {
+            return _blockChain.LastBlock();
         }
     }
 }
