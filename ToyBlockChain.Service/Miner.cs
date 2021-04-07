@@ -55,7 +55,7 @@ namespace ToyBlockChain.Service
 
             BlockHeader blockHeader = new BlockHeader(
                 index, previousHashString, transaction.HashString,
-                timestamp, nonce, _node.TargetDifficulty());
+                timestamp, nonce, difficulty);
 
             if (blockHeader.IsValid())
             {
