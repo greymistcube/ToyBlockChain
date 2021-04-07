@@ -132,5 +132,10 @@ namespace ToyBlockChain.Service
         {
             return _blockChain.LastBlock();
         }
+
+        public int TargetDifficulty()
+        {
+            return _blockChain.TargetDifficulty();
+        }
     }
 }
