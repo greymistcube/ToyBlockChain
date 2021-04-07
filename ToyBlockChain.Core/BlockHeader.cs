@@ -109,23 +109,23 @@ namespace ToyBlockChain.Core
 
         public override string ToString()
         {
-            return String.Format("Index: {0}\n"
-                                 + "Previous Hash: {1}\n"
-                                 + "Transaction Hash: {2}\n"
-                                 + "Timestamp: {3}\n"
-                                 + "Nonce: {4}\n"
-                                 + "Difficulty: {5}",
-                                 Index,
-                                 PreviousHashString, TransactionHashString,
-                                 Timestamp, Nonce, Difficulty);
+            return String.Format(
+                "Index: {0}\n"
+                + "Previous Hash: {1}\n"
+                + "Transaction Hash: {2}\n"
+                + "Timestamp: {3}\n"
+                + "Nonce: {4}\n"
+                + "Difficulty: {5}",
+                Index, PreviousHashString, TransactionHashString,
+                Timestamp, Nonce, Difficulty);
         }
 
         public string ToSerializedString()
         {
-            return String.Format("{0},{1},{2},{3},{4},{5}",
-                                 Index,
-                                 PreviousHashString, TransactionHashString,
-                                 Timestamp, Nonce, Difficulty);
+            return String.Format(
+                "{0},{1},{2},{3},{4},{5}",
+                Index, PreviousHashString, TransactionHashString,
+                Timestamp, Nonce, Difficulty);
         }
 
         public byte[] ToSerializedBytes()
