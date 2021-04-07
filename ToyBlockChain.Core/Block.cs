@@ -64,10 +64,10 @@ namespace ToyBlockChain.Core
 
         public override string ToString()
         {
-            return String.Format(
-                "BLOCK HEADER:\n{0}\n"
-                + "TRANSACTION: \n{1}",
-                BlockHeader.ToString(), Transaction.ToString());
+            return (
+                $"BLOCK HEADER:\n{BlockHeader}".Replace("\n", "\n\t")
+                + "\n"
+                + $"TRANSACTION:\n{Transaction}".Replace("\n", "\n\t"));
         }
 
         public string ToSerializedString()
