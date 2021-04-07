@@ -19,6 +19,8 @@ namespace ToyBlockChain.Service
 
         public void AddBlock(Block block)
         {
+            // TODO: transaction check against the existing chain has been
+            // removed from BlockChain class. should be reimplemented here.
             throw new NotImplementedException();
         }
 
