@@ -106,11 +106,6 @@ namespace ToyBlockChain.Core
             return senderValid && signatureValid;
         }
 
-        private RSAParameters PublicKeyParameters()
-        {
-            return CryptoUtil.ExtractRSAParameters(PublicKey);
-        }
-
         public override string ToString()
         {
             return String.Format(
