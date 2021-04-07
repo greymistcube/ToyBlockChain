@@ -64,17 +64,18 @@ namespace ToyBlockChain.Core
 
         public override string ToString()
         {
-            return String.Format("BLOCK HEADER:\n{0}\n"
-                                 + "TRANSACTION: \n{1}",
-                                 BlockHeader.ToString(),
-                                 Transaction.ToString());
+            return String.Format(
+                "BLOCK HEADER:\n{0}\n"
+                + "TRANSACTION: \n{1}",
+                BlockHeader.ToString(), Transaction.ToString());
         }
 
         public string ToSerializedString()
         {
-            return String.Format("{0},{1}",
-                                 BlockHeader.ToSerializedString(),
-                                 Transaction.ToSerializedString());
+            return String.Format(
+                "{0},{1}",
+                BlockHeader.ToSerializedString(),
+                Transaction.ToSerializedString());
         }
 
         public byte[] ToSerializedBytes()
