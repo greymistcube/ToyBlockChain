@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using ToyBlockChain.Core;
 using ToyBlockChain.Crypto;
 
@@ -17,20 +18,31 @@ namespace ToyBlockChain.Service
 
         public void Run()
         {
+            // TODO: Temporary running script.
             Random rnd = new Random();
 
             List<Transaction> transactionPool;
             Transaction transaction;
-            // TODO: Temporary running script.
+            Block block;
+
             while (true)
             {
                 transactionPool = _node.TransactionPool;
-                transaction = transactionPool[rnd.Next(transactionPool.Count)];
 
-                Mine(transaction);
+                if (transactionPool.Count > 0)
+                {
+                    transaction = transactionPool[
+                        rnd.Next(transactionPool.Count)];
+
+                    block = Mine(transaction);
+                    if (block != null)
+                    {
+                        _node.AddBlock(block);
+                    }
+                }
+
+                Thread.Sleep(1000);
             }
-
-            throw new NotImplementedException();
         }
 
         /// <summary>
