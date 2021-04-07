@@ -18,7 +18,7 @@ namespace ToyBlockChain.Service
         }
 
         /// <summary>
-        /// Adds a block to the chain. Only metablockchain validations
+        /// Adds a block to the chain. Only metablockchain level validations
         /// are performed. Additional validations occur when given block
         /// is passed to the <see cref="BlockChain"/> class.
         /// </summary>
@@ -86,7 +86,8 @@ namespace ToyBlockChain.Service
         }
 
         /// <summary>
-        /// Registers a transaction to the pool.
+        /// Registers a transaction to the pool. Only metablockchain level
+        /// validations are performed.
         /// </summary>
         public void RegisterTransaction(Transaction transaction)
         {
@@ -99,6 +100,16 @@ namespace ToyBlockChain.Service
             {
                 throw new ArgumentException(
                     "given transaction already exists in the pool");
+            }
+            else if (!HasAddressInBook(transaction.Sender))
+            {
+                throw new ArgumentException(
+                    "sender address not found in the book");
+            }
+            else if (!HasAddressInBook(transaction.Recipient))
+            {
+                throw new ArgumentException(
+                    "recipient address not found in the book");
             }
             else
             {
