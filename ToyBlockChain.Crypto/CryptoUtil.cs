@@ -43,7 +43,7 @@ namespace ToyBlockChain.Crypto
         public static bool Verify(
             string data, string signature, RSAParameters rsaParameters)
         {
-            byte[] dataBytes = Convert.FromBase64String(data);
+            byte[] dataBytes = Encoding.UTF8.GetBytes(data);
             byte[] signatureBytes = Convert.FromBase64String(signature);
 
             _rsa.ImportParameters(rsaParameters);
@@ -55,11 +55,12 @@ namespace ToyBlockChain.Crypto
             RSAParameters parameters = new RSAParameters();
 
             string[] pairString = publicKeyString.Split(":");
-            byte[][] pairBytes = {
-                Convert.FromBase64String(pairString[0]),
-                Convert.FromBase64String(pairString[1])};
-            parameters.Modulus = pairBytes[0];
-            parameters.Exponent = pairBytes[1];
+            byte[] modulus = Convert.FromBase64String(pairString[0]);
+            byte[] exponent = Convert.FromBase64String(pairString[1]);
+
+            parameters.Modulus = modulus;
+            parameters.Exponent = exponent;
+
             return parameters;
         }
 
