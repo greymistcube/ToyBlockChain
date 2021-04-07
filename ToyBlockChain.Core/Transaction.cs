@@ -12,21 +12,7 @@ namespace ToyBlockChain.Core
         private readonly string _publicKey;
         private readonly double _value;
         private readonly string _recipient;
-        private string _signature = null;
-
-        public Transaction(
-            string sender,
-            double value,
-            string recipient,
-            long timestamp,
-            string publicKey)
-        {
-            _sender = sender;
-            _value = value;
-            _recipient = recipient;
-            _timestamp = timestamp;
-            _publicKey = publicKey;
-        }
+        private string _signature;
 
         public Transaction(
             string sender,
@@ -34,7 +20,7 @@ namespace ToyBlockChain.Core
             string recipient,
             long timestamp,
             string publicKey,
-            string signature)
+            string signature = null)
         {
             _sender = sender;
             _value = value;
