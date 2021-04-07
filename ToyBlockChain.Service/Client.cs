@@ -1,6 +1,7 @@
 using System;
-using System.Text;
+using System.Collections.Generic;
 using System.Security.Cryptography;
+using System.Threading;
 using ToyBlockChain.Core;
 using ToyBlockChain.Crypto;
 
@@ -37,10 +38,17 @@ namespace ToyBlockChain.Service
             string recipient;
             Transaction transaction;
 
-            value = rnd.NextDouble();
-            recipient = "foo";
-            transaction = CreateTransaction(value, recipient);
-            _node.RegisterTransaction(transaction);
+            while(true)
+            {
+                List<string> addressBook = _node.AddressBook;
+
+                value = rnd.NextDouble();
+                recipient = addressBook[rnd.Next(addressBook.Count)];
+                transaction = CreateTransaction(value, recipient);
+                _node.RegisterTransaction(transaction);
+
+                Thread.Sleep(1000);
+            }
         }
 
         public Transaction CreateTransaction(double value, string recipient)
