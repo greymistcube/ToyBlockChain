@@ -10,6 +10,7 @@ namespace ToyBlockChain.Core
         private readonly int _index;
         private readonly string _previousHashString;
         private readonly string _transactionHashString;
+        private readonly string _miner;
         private readonly long _timestamp;
         private readonly string _nonce;
         private readonly int _difficulty;
@@ -18,6 +19,7 @@ namespace ToyBlockChain.Core
             int index,
             string previousHashString,
             string transactionHashString,
+            string miner,
             long timestamp,
             string nonce,
             int difficulty)
@@ -25,6 +27,7 @@ namespace ToyBlockChain.Core
             _index = index;
             _previousHashString = previousHashString;
             _transactionHashString = transactionHashString;
+            _miner = miner;
             _timestamp = timestamp;
             _nonce = nonce;
             _difficulty = difficulty;
@@ -51,6 +54,14 @@ namespace ToyBlockChain.Core
             get
             {
                 return _transactionHashString;
+            }
+        }
+
+        public string Miner
+        {
+            get
+            {
+                return _miner;
             }
         }
 
@@ -115,18 +126,19 @@ namespace ToyBlockChain.Core
                 "Index: {0}\n"
                 + "Previous Hash: {1}\n"
                 + "Transaction Hash: {2}\n"
-                + "Timestamp: {3}\n"
-                + "Nonce: {4}\n"
-                + "Difficulty: {5}",
-                Index, PreviousHashString, TransactionHashString,
+                + "Miner: {3}\n"
+                + "Timestamp: {4}\n"
+                + "Nonce: {5}\n"
+                + "Difficulty: {6}",
+                Index, PreviousHashString, TransactionHashString, Miner,
                 Timestamp, Nonce, Difficulty);
         }
 
         public string ToSerializedString()
         {
             return String.Format(
-                "{0},{1},{2},{3},{4},{5}",
-                Index, PreviousHashString, TransactionHashString,
+                "{0},{1},{2},{3},{4},{5},{6}",
+                Index, PreviousHashString, TransactionHashString, Miner,
                 Timestamp, Nonce, Difficulty);
         }
 
