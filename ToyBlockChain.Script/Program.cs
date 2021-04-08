@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using ToyBlockChain.Service;
 
@@ -8,25 +9,48 @@ namespace ToyBlockChain.Script
     {
         static void Main(string[] args)
         {
+            int numClients = 4;
+            int numMiners = 4;
+
             Node node = new Node(true);
 
-            Client client1 = new Client(node);
-            Client client2 = new Client(node);
-            Miner miner1 = new Miner(node);
-            Miner miner2 = new Miner(node);
-            Miner miner3 = new Miner(node);
+            List<Client> clients = new List<Client>();
+            List<Miner> miners = new List<Miner>();
+            List<Thread> clientThreads = new List<Thread>();
+            List<Thread> minerThreads = new List<Thread>();
 
-            Thread c1 = new Thread(client1.Run);
-            Thread c2 = new Thread(client2.Run);
-            Thread m1 = new Thread(miner1.Run);
-            Thread m2 = new Thread(miner2.Run);
-            Thread m3 = new Thread(miner3.Run);
+            for (int i = 0; i < numClients; i++)
+            {
+                Client client = new Client(node);
+                Thread clientThread = new Thread(client.Run);
+                clients.Add(client);
+                clientThreads.Add(clientThread);
+            }
+            for (int i = 0; i < numMiners; i++)
+            {
+                Miner miner = new Miner(node);
+                Thread minerThread = new Thread(miner.Run);
+                miners.Add(miner);
+                minerThreads.Add(minerThread);
+            }
 
-            c1.Start();
-            c2.Start();
-            m1.Start();
-            m2.Start();
-            m3.Start();
+            foreach (Thread clientThread in clientThreads)
+            {
+                clientThread.Start();
+            }
+            foreach (Thread minerThread in minerThreads)
+            {
+                minerThread.Start();
+            }
+
+            foreach (Thread clientThread in clientThreads)
+            {
+                clientThread.Join();
+            }
+            foreach (Thread minerThread in minerThreads)
+            {
+                minerThread.Join();
+            }
         }
     }
 }

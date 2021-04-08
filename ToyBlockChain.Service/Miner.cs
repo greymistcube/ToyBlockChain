@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Security.Cryptography;
 using ToyBlockChain.Core;
 using ToyBlockChain.Crypto;
 
@@ -10,10 +11,21 @@ namespace ToyBlockChain.Service
     {
         public static int NONCE_LENGTH = 16;
         private readonly Node _node;
+        private RSAParameters _rsaParameters;
+        private string _publicKey;
+        private string _address;
 
         public Miner(Node node)
         {
             _node = node;
+
+            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+            _rsaParameters = rsa.ExportParameters(true);
+
+            string modulus = Convert.ToBase64String(_rsaParameters.Modulus);
+            string exponent = Convert.ToBase64String(_rsaParameters.Exponent);
+            _publicKey = $"{modulus}:{exponent}";
+            _address = CryptoUtil.HashString(_publicKey);
         }
 
         public void Run()
@@ -27,7 +39,12 @@ namespace ToyBlockChain.Service
 
             while (true)
             {
-                transactionPool = _node.TransactionPool;
+                // I have no idea why this fixes the issue of getting
+                // a null reference few lines below.
+                lock (_node)
+                {
+                    transactionPool = _node.TransactionPool;
+                }
 
                 if (transactionPool.Count > 0)
                 {
@@ -43,8 +60,6 @@ namespace ToyBlockChain.Service
                         }
                     }
                 }
-
-                Thread.Sleep(1000);
             }
         }
 
@@ -86,6 +101,7 @@ namespace ToyBlockChain.Service
             int index;
             string previousHashString;
             string transactionHashString = transaction.HashString;
+            string miner = Address;
             long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
             string nonce = CryptoUtil.GenerateNonce();
             int difficulty = _node.TargetDifficulty();
@@ -103,7 +119,7 @@ namespace ToyBlockChain.Service
 
             BlockHeader blockHeader = new BlockHeader(
                 index, previousHashString, transaction.HashString,
-                timestamp, nonce, difficulty);
+                miner, timestamp, nonce, difficulty);
 
             if (blockHeader.IsValid())
             {
@@ -112,6 +128,22 @@ namespace ToyBlockChain.Service
             else
             {
                 return null;
+            }
+        }
+
+        public string Address
+        {
+            get
+            {
+                return _address;
+            }
+        }
+
+        public string PublicKey
+        {
+            get
+            {
+                return _publicKey;
             }
         }
     }
