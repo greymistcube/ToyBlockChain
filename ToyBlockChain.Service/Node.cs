@@ -130,8 +130,6 @@ namespace ToyBlockChain.Service
                 throw new ArgumentException(
                     "given transaction already exists in the pool");
             }
-            // TODO: Address verification turned off for debugging.
-            /*
             else if (!HasAddressInBook(transaction.Sender))
             {
                 throw new ArgumentException(
@@ -142,7 +140,6 @@ namespace ToyBlockChain.Service
                 throw new ArgumentException(
                     "recipient address not found in the book");
             }
-            */
             else
             {
                 _transactionPool.Add(transaction.HashString, transaction);

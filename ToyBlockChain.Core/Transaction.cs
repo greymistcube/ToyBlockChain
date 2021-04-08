@@ -124,8 +124,8 @@ namespace ToyBlockChain.Core
                 + "Timestamp: {3}\n"
                 + "Public Key: {4}\n"
                 + "Signature: {5}",
-                Sender, Value, Recipient, Timestamp,
-                PublicKey, Signature);
+                Sender[0..8], Value, Recipient[0..8], Timestamp,
+                PublicKey[0..8], Signature[0..8]);
         }
 
         public string ToSerializedString()
