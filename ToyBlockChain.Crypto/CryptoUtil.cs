@@ -23,7 +23,7 @@ namespace ToyBlockChain.Crypto
 
         public static string HashString(string str)
         {
-            return Convert.ToBase64String(
+            return Convert.ToHexString(
                 _sha256.ComputeHash(Encoding.UTF8.GetBytes(str)));
         }
 
@@ -37,7 +37,7 @@ namespace ToyBlockChain.Crypto
 
             rsa.ImportParameters(rsaParameters);
             byte[] signatureBytes = rsa.SignData(dataBytes, _sha256);
-            return Convert.ToBase64String(signatureBytes);
+            return Convert.ToHexString(signatureBytes);
         }
 
         public static bool Verify(
@@ -46,7 +46,7 @@ namespace ToyBlockChain.Crypto
             RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
 
             byte[] dataBytes = Encoding.UTF8.GetBytes(data);
-            byte[] signatureBytes = Convert.FromBase64String(signature);
+            byte[] signatureBytes = Convert.FromHexString(signature);
 
             rsa.ImportParameters(rsaParameters);
             return rsa.VerifyData(dataBytes, _sha256, signatureBytes);
@@ -57,8 +57,8 @@ namespace ToyBlockChain.Crypto
             RSAParameters parameters = new RSAParameters();
 
             string[] pairString = publicKeyString.Split(":");
-            byte[] modulus = Convert.FromBase64String(pairString[0]);
-            byte[] exponent = Convert.FromBase64String(pairString[1]);
+            byte[] modulus = Convert.FromHexString(pairString[0]);
+            byte[] exponent = Convert.FromHexString(pairString[1]);
 
             parameters.Modulus = modulus;
             parameters.Exponent = exponent;
@@ -70,7 +70,7 @@ namespace ToyBlockChain.Crypto
         {
             byte[] nonce = new byte[NONCE_LENGTH];
             _rng.GetBytes(nonce);
-            return Convert.ToBase64String(nonce);
+            return Convert.ToHexString(nonce);
         }
     }
 }
