@@ -71,6 +71,10 @@ namespace ToyBlockChain.Service
                     Console.ResetColor();
                 }
             }
+            // Transaction must be removed from the pool
+            // before getting added to the blockchain.
+            // Once the blockchain has been updated, adjust
+            // the target difficulty.
             else
             {
                 RemoveTransaction(block.Transaction);
@@ -90,6 +94,20 @@ namespace ToyBlockChain.Service
             return;
         }
 
+        /// <summary>
+        /// Adjusts the target difficulty for the next prospective block.
+        /// Uses a simple moving average of time spend to mine the last
+        /// <c>MOVING_AVERAGE_LENGTH - 1</c> blocks.
+        ///
+        /// If the average is lower than
+        /// <see cref="MINING_INTERVAL_LOWER_LIMIT"/>, then the target
+        /// difficulty is raised. If the average is higher than
+        /// <see cref="MINING_INTERVAL_UPPER_LIMIT"/>, then the target
+        /// difficulty is lowerd.
+        ///
+        /// Note that the terget difficulty is never lowered below
+        /// <see cref="DEFAULT_DIFFICULTY"/>.
+        /// </summary>
         private void AdjustDifficulty()
         {
             // Get the last MOVING_AVERAGE_LENGTH number of blocks.
