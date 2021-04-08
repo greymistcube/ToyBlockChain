@@ -60,9 +60,12 @@ namespace ToyBlockChain.Core
             return false;
         }
 
-        public int TargetDifficulty()
+        public List<Block> Chain
         {
-            return _chain.Count;
+            get
+            {
+                return _chain;
+            }
         }
     }
 }

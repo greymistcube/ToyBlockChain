@@ -6,6 +6,9 @@ namespace ToyBlockChain.Service
 {
     public class Node
     {
+        private const int MOVING_AVERAGE_LENGTH = 5;
+        private const int MINING_INTERVAL_LOWER_LIMIT = 5;
+        private const int MINING_INTERVAL_UPPER_LIMIT = 10;
         private readonly BlockChain _blockChain;
         private readonly HashSet<string> _addressBook;
         private readonly Dictionary<string, Transaction> _transactionPool;
@@ -173,7 +176,7 @@ namespace ToyBlockChain.Service
 
         public int TargetDifficulty()
         {
-            return _blockChain.TargetDifficulty();
+            return _blockChain.Chain.Count;
         }
 
         public List<string> AddressBook
