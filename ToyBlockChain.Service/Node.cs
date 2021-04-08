@@ -28,14 +28,27 @@ namespace ToyBlockChain.Service
         {
             if (HasTransactionInChain(block.Transaction))
             {
-                throw new ArgumentException(
-                    "given transaction already exists in the chain");
+                if (_logging)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine(
+                        $"block {block.HashString[0..8]} contains "
+                        + "a transaction already in the blockchain");
+                    Console.ResetColor();
+                }
+                return;
             }
             // Possibly unnecessarily restricts block validation.
             else if (!HasTransactionInPool(block.Transaction))
             {
-                throw new ArgumentException(
-                    "given transaction is not from the pool");
+                if (_logging)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine(
+                        $"block {block.HashString[0..8]} contains "
+                        + "an unknown transaction");
+                    Console.ResetColor();
+                }
             }
             else
             {
@@ -44,9 +57,9 @@ namespace ToyBlockChain.Service
                 if (_logging)
                 {
                     Console.WriteLine(
-                        $"block {block.HashString} added to the blockchain");
+                        $"block {block.HashString[0..8]} added to the blockchain");
                     Console.WriteLine(
-                        $"transaction {block.Transaction.HashString} processed");
+                        $"transaction {block.Transaction.HashString[0..8]} processed");
                 }
             }
             return;
@@ -75,7 +88,7 @@ namespace ToyBlockChain.Service
                 if (_logging)
                 {
                     Console.WriteLine(
-                        $"address {address} added to the address book");
+                        $"address {address[0..8]} added to the address book");
                 }
             }
         }
@@ -133,7 +146,7 @@ namespace ToyBlockChain.Service
                 if (_logging)
                 {
                     Console.WriteLine(
-                        $"transaction {transaction.HashString} "
+                        $"transaction {transaction.HashString[0..8]} "
                         + "added to the transaction pool");
                 }
             }
