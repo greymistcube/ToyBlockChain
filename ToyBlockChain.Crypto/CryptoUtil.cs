@@ -16,12 +16,12 @@ namespace ToyBlockChain.Crypto
             _sha256 = SHA256.Create();
         }
 
-        public static byte[] HashBytes(byte[] bytes)
+        public static byte[] ComputeHashBytes(byte[] bytes)
         {
             return _sha256.ComputeHash(bytes);
         }
 
-        public static string HashString(string str)
+        public static string ComputeHashString(string str)
         {
             return Convert.ToHexString(
                 _sha256.ComputeHash(Encoding.UTF8.GetBytes(str)));

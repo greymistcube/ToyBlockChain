@@ -25,7 +25,7 @@ namespace ToyBlockChain.Service
             string modulus = Convert.ToHexString(_rsaParameters.Modulus);
             string exponent = Convert.ToHexString(_rsaParameters.Exponent);
             _publicKey = $"{modulus}:{exponent}";
-            _address = CryptoUtil.HashString(_publicKey);
+            _address = CryptoUtil.ComputeHashString(_publicKey);
         }
 
         public void Run()
