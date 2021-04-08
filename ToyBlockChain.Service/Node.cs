@@ -4,6 +4,11 @@ using ToyBlockChain.Core;
 
 namespace ToyBlockChain.Service
 {
+    /// <summary>
+    /// The class representing a node in a blockchain ecosystem.
+    /// Generally handles higher level logic, such as enforcing
+    /// policy / metablockchain level validation.
+    /// </summary>
     public class Node
     {
         private const int DEFAULT_DIFFICULTY = 4;
