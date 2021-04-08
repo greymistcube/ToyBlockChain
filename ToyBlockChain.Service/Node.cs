@@ -6,16 +6,19 @@ namespace ToyBlockChain.Service
 {
     public class Node
     {
-        private const int MOVING_AVERAGE_LENGTH = 5;
-        private const int MINING_INTERVAL_LOWER_LIMIT = 5;
-        private const int MINING_INTERVAL_UPPER_LIMIT = 10;
+        private const int DEFAULT_DIFFICULTY = 4;
+        private const int MOVING_AVERAGE_LENGTH = 4;
+        private const int MINING_INTERVAL_LOWER_LIMIT = 4;
+        private const int MINING_INTERVAL_UPPER_LIMIT = 8;
         private readonly BlockChain _blockChain;
         private readonly HashSet<string> _addressBook;
         private readonly Dictionary<string, Transaction> _transactionPool;
         private readonly bool _logging;
+        private int _difficulty;
 
         public Node(bool logging = false)
         {
+            _difficulty = DEFAULT_DIFFICULTY;
             _blockChain = new BlockChain();
             _addressBook = new HashSet<string>();
             _transactionPool = new Dictionary<string, Transaction>();
@@ -72,6 +75,7 @@ namespace ToyBlockChain.Service
             {
                 RemoveTransaction(block.Transaction);
                 _blockChain.AddBlock(block);
+                AdjustDifficulty();
                 if (_logging)
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
@@ -81,6 +85,32 @@ namespace ToyBlockChain.Service
                         + "added to the blockchain");
                     Console.ResetColor();
                     Console.WriteLine(block);
+                }
+            }
+            return;
+        }
+
+        private void AdjustDifficulty()
+        {
+            // Get the last MOVING_AVERAGE_LENGTH number of blocks.
+            List<Block> chain = _blockChain.Chain;
+            List<Block> subChain = chain.GetRange(
+                Math.Max(0, chain.Count - MOVING_AVERAGE_LENGTH),
+                Math.Min(chain.Count, MOVING_AVERAGE_LENGTH));
+
+            if (subChain.Count > 1)
+            {
+                long start = subChain[0].BlockHeader.Timestamp;
+                long end = subChain[subChain.Count - 1].BlockHeader.Timestamp;
+                double sma = (end - start) / (subChain.Count - 1);
+                if (sma < MINING_INTERVAL_LOWER_LIMIT)
+                {
+                    _difficulty += 1;
+                }
+                else if (sma > MINING_INTERVAL_UPPER_LIMIT)
+                {
+                    // Prevents the difficulty getting too low.
+                    _difficulty = Math.Max(DEFAULT_DIFFICULTY, _difficulty - 1);
                 }
             }
             return;
@@ -191,7 +221,7 @@ namespace ToyBlockChain.Service
 
         public int TargetDifficulty()
         {
-            return _blockChain.Chain.Count;
+            return _difficulty;
         }
 
         public List<string> AddressBook
