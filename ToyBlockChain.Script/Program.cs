@@ -10,14 +10,20 @@ namespace ToyBlockChain.Script
         {
             Node node = new Node(true);
 
-            Client client = new Client(node);
-            Miner miner = new Miner(node);
+            Client client1 = new Client(node);
+            Client client2 = new Client(node);
+            Miner miner1 = new Miner(node);
+            Miner miner2 = new Miner(node);
 
-            Thread t1 = new Thread(client.Run);
-            Thread t2 = new Thread(miner.Run);
+            Thread c1 = new Thread(client1.Run);
+            Thread c2 = new Thread(client2.Run);
+            Thread m1 = new Thread(miner1.Run);
+            Thread m2 = new Thread(miner2.Run);
 
-            t1.Start();
-            t2.Start();
+            c1.Start();
+            c2.Start();
+            m1.Start();
+            m2.Start();
         }
     }
 }
