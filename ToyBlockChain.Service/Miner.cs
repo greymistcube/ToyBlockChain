@@ -39,7 +39,12 @@ namespace ToyBlockChain.Service
 
             while (true)
             {
-                transactionPool = _node.TransactionPool;
+                // I have no idea why this fixes the issue of getting
+                // a null reference few lines below.
+                lock (_node)
+                {
+                    transactionPool = _node.TransactionPool;
+                }
 
                 if (transactionPool.Count > 0)
                 {
