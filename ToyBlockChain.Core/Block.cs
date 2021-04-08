@@ -38,6 +38,14 @@ namespace ToyBlockChain.Core
             }
         }
 
+        public string PreviousHashString
+        {
+            get
+            {
+                return BlockHeader.PreviousHashString;
+            }
+        }
+
         public BlockHeader BlockHeader
         {
             get

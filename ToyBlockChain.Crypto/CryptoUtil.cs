@@ -6,16 +6,14 @@ namespace ToyBlockChain.Crypto
 {
     public static class CryptoUtil
     {
-        public static readonly int NONCE_LENGTH = 8;
+        public static readonly int NONCE_LENGTH = 16;
         private static RandomNumberGenerator _rng;
         private static SHA256 _sha256;
-        private static RSACryptoServiceProvider _rsa;
 
         static CryptoUtil()
         {
             _rng = RandomNumberGenerator.Create();
             _sha256 = SHA256.Create();
-            _rsa = new RSACryptoServiceProvider();
         }
 
         public static byte[] HashBytes(byte[] bytes)
@@ -33,21 +31,25 @@ namespace ToyBlockChain.Crypto
         {
             // TODO: Possible Security hole.
             // Private key information should be funged.
+            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+
             byte[] dataBytes = Encoding.UTF8.GetBytes(data);
 
-            _rsa.ImportParameters(rsaParameters);
-            byte[] signatureBytes = _rsa.SignData(dataBytes, _sha256);
+            rsa.ImportParameters(rsaParameters);
+            byte[] signatureBytes = rsa.SignData(dataBytes, _sha256);
             return Convert.ToBase64String(signatureBytes);
         }
 
         public static bool Verify(
             string data, string signature, RSAParameters rsaParameters)
         {
-            byte[] dataBytes = Convert.FromBase64String(data);
+            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+
+            byte[] dataBytes = Encoding.UTF8.GetBytes(data);
             byte[] signatureBytes = Convert.FromBase64String(signature);
 
-            _rsa.ImportParameters(rsaParameters);
-            return _rsa.VerifyData(dataBytes, _sha256, signatureBytes);
+            rsa.ImportParameters(rsaParameters);
+            return rsa.VerifyData(dataBytes, _sha256, signatureBytes);
         }
 
         public static RSAParameters ExtractRSAParameters(string publicKeyString)
@@ -55,11 +57,12 @@ namespace ToyBlockChain.Crypto
             RSAParameters parameters = new RSAParameters();
 
             string[] pairString = publicKeyString.Split(":");
-            byte[][] pairBytes = {
-                Convert.FromBase64String(pairString[0]),
-                Convert.FromBase64String(pairString[1])};
-            parameters.Modulus = pairBytes[0];
-            parameters.Exponent = pairBytes[1];
+            byte[] modulus = Convert.FromBase64String(pairString[0]);
+            byte[] exponent = Convert.FromBase64String(pairString[1]);
+
+            parameters.Modulus = modulus;
+            parameters.Exponent = exponent;
+
             return parameters;
         }
 

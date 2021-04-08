@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using ToyBlockChain.Service;
 
 namespace ToyBlockChain.Script
@@ -9,11 +10,23 @@ namespace ToyBlockChain.Script
         {
             Node node = new Node(true);
 
-            Client client = new Client(node);
-            Miner miner = new Miner(node);
+            Client client1 = new Client(node);
+            Client client2 = new Client(node);
+            Miner miner1 = new Miner(node);
+            Miner miner2 = new Miner(node);
+            Miner miner3 = new Miner(node);
 
-            client.Run();
-            Console.WriteLine(client);
+            Thread c1 = new Thread(client1.Run);
+            Thread c2 = new Thread(client2.Run);
+            Thread m1 = new Thread(miner1.Run);
+            Thread m2 = new Thread(miner2.Run);
+            Thread m3 = new Thread(miner3.Run);
+
+            c1.Start();
+            c2.Start();
+            m1.Start();
+            m2.Start();
+            m3.Start();
         }
     }
 }

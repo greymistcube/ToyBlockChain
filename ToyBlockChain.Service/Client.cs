@@ -25,18 +25,21 @@ namespace ToyBlockChain.Service
             string exponent = Convert.ToBase64String(_rsaParameters.Exponent);
             _publicKey = $"{modulus}:{exponent}";
             _address = CryptoUtil.HashString(_publicKey);
-
-            _node.RegisterAddress(_address);
         }
 
         public void Run()
         {
             // TODO: Temporary running script.
+            lock (_node)
+            {
+                _node.RegisterAddress(_address);
+            }
+
             Random rnd = new Random();
 
             double value;
             string recipient;
-            Transaction transaction;
+            Transaction transaction = null;
 
             while(true)
             {
@@ -44,10 +47,15 @@ namespace ToyBlockChain.Service
 
                 value = rnd.NextDouble();
                 recipient = addressBook[rnd.Next(addressBook.Count)];
-                transaction = CreateTransaction(value, recipient);
-                _node.RegisterTransaction(transaction);
-
-                Thread.Sleep(1000);
+                if (transaction == null
+                    || !_node.HasTransactionInPool(transaction))
+                {
+                    transaction = CreateTransaction(value, recipient);
+                    lock (_node)
+                    {
+                        _node.RegisterTransaction(transaction);
+                    }
+                }
             }
         }
 
