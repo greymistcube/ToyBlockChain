@@ -25,16 +25,16 @@ namespace ToyBlockChain.Service
             string exponent = Convert.ToBase64String(_rsaParameters.Exponent);
             _publicKey = $"{modulus}:{exponent}";
             _address = CryptoUtil.HashString(_publicKey);
-
-            lock (_node)
-            {
-                _node.RegisterAddress(_address);
-            }
         }
 
         public void Run()
         {
             // TODO: Temporary running script.
+            lock (_node)
+            {
+                _node.RegisterAddress(_address);
+            }
+
             Random rnd = new Random();
 
             double value;

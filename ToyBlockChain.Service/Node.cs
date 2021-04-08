@@ -56,10 +56,14 @@ namespace ToyBlockChain.Service
                 _blockChain.AddBlock(block);
                 if (_logging)
                 {
+                    Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine(
-                        $"block {block.HashString[0..8]} added to the blockchain");
+                        $"block {block.HashString[0..8]} "
+                        + "added to the blockchain");
                     Console.WriteLine(
-                        $"transaction {block.Transaction.HashString[0..8]} processed");
+                        $"transaction {block.Transaction.HashString[0..8]} "
+                        + "processed");
+                    Console.ResetColor();
                 }
             }
             return;
