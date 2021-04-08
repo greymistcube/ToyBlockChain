@@ -21,8 +21,8 @@ namespace ToyBlockChain.Service
             RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
             _rsaParameters = rsa.ExportParameters(true);
 
-            string modulus = Convert.ToBase64String(_rsaParameters.Modulus);
-            string exponent = Convert.ToBase64String(_rsaParameters.Exponent);
+            string modulus = Convert.ToHexString(_rsaParameters.Modulus);
+            string exponent = Convert.ToHexString(_rsaParameters.Exponent);
             _publicKey = $"{modulus}:{exponent}";
             _address = CryptoUtil.HashString(_publicKey);
         }

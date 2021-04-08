@@ -32,7 +32,7 @@ namespace ToyBlockChain.Service
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine(
-                        $"block {block.HashString[0..8]} contains "
+                        $"block {block.HashString[0..16]} contains "
                         + "a transaction already in the blockchain");
                     Console.ResetColor();
                 }
@@ -45,7 +45,7 @@ namespace ToyBlockChain.Service
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine(
-                        $"block {block.HashString[0..8]} contains "
+                        $"block {block.HashString[0..16]} contains "
                         + "an unknown transaction");
                     Console.ResetColor();
                 }
@@ -58,8 +58,8 @@ namespace ToyBlockChain.Service
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine(
-                        $"block {block.HashString[0..8]} with "
-                        + $"transaction {block.Transaction.HashString[0..8]} "
+                        $"block {block.HashString[0..16]} with "
+                        + $"transaction {block.Transaction.HashString[0..16]} "
                         + "added to the blockchain");
                     Console.ResetColor();
                     Console.WriteLine(block);
@@ -91,7 +91,7 @@ namespace ToyBlockChain.Service
                 if (_logging)
                 {
                     Console.WriteLine(
-                        $"address {address[0..8]} added to the address book");
+                        $"address {address[0..16]} added to the address book");
                 }
             }
         }
@@ -147,8 +147,8 @@ namespace ToyBlockChain.Service
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine(
-                        $"transaction {transaction.HashString[0..8]} "
-                        + $"from sender {transaction.Sender[0..8]} "
+                        $"transaction {transaction.HashString[0..16]} "
+                        + $"from sender {transaction.Sender[0..16]} "
                         + "added to the transaction pool");
                     Console.ResetColor();
                 }

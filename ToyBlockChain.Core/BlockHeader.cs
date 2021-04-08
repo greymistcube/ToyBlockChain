@@ -102,7 +102,7 @@ namespace ToyBlockChain.Core
         {
             get
             {
-                return Convert.ToBase64String(HashBytes);
+                return Convert.ToHexString(HashBytes);
             }
         }
 
