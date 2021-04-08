@@ -5,8 +5,6 @@ VisualStudioVersion = 16.6.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToyBlockChain.Service", "ToyBlockChain.Service\ToyBlockChain.Service.csproj", "{CB4E8B1B-48AF-4B6C-87AE-FBC24723534E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToyBlockChain.App", "ToyBlockChain.App\ToyBlockChain.App.csproj", "{19FEEF5F-526B-4D18-BFB9-DB36968CC782}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToyBlockChain.Crypto", "ToyBlockChain.Crypto\ToyBlockChain.Crypto.csproj", "{FD6835E4-4F73-44BB-ACD8-D057CAD3156D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToyBlockChain.Core", "ToyBlockChain.Core\ToyBlockChain.Core.csproj", "{CBA91344-BCDC-4175-A99B-A6061F1C44DF}"
@@ -38,18 +36,6 @@ Global
 		{CB4E8B1B-48AF-4B6C-87AE-FBC24723534E}.Release|x64.Build.0 = Release|Any CPU
 		{CB4E8B1B-48AF-4B6C-87AE-FBC24723534E}.Release|x86.ActiveCfg = Release|Any CPU
 		{CB4E8B1B-48AF-4B6C-87AE-FBC24723534E}.Release|x86.Build.0 = Release|Any CPU
-		{19FEEF5F-526B-4D18-BFB9-DB36968CC782}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{19FEEF5F-526B-4D18-BFB9-DB36968CC782}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{19FEEF5F-526B-4D18-BFB9-DB36968CC782}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{19FEEF5F-526B-4D18-BFB9-DB36968CC782}.Debug|x64.Build.0 = Debug|Any CPU
-		{19FEEF5F-526B-4D18-BFB9-DB36968CC782}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{19FEEF5F-526B-4D18-BFB9-DB36968CC782}.Debug|x86.Build.0 = Debug|Any CPU
-		{19FEEF5F-526B-4D18-BFB9-DB36968CC782}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{19FEEF5F-526B-4D18-BFB9-DB36968CC782}.Release|Any CPU.Build.0 = Release|Any CPU
-		{19FEEF5F-526B-4D18-BFB9-DB36968CC782}.Release|x64.ActiveCfg = Release|Any CPU
-		{19FEEF5F-526B-4D18-BFB9-DB36968CC782}.Release|x64.Build.0 = Release|Any CPU
-		{19FEEF5F-526B-4D18-BFB9-DB36968CC782}.Release|x86.ActiveCfg = Release|Any CPU
-		{19FEEF5F-526B-4D18-BFB9-DB36968CC782}.Release|x86.Build.0 = Release|Any CPU
 		{FD6835E4-4F73-44BB-ACD8-D057CAD3156D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FD6835E4-4F73-44BB-ACD8-D057CAD3156D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD6835E4-4F73-44BB-ACD8-D057CAD3156D}.Debug|x64.ActiveCfg = Debug|Any CPU
