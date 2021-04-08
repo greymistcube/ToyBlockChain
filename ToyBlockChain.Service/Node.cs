@@ -53,6 +53,21 @@ namespace ToyBlockChain.Service
                     Console.ResetColor();
                 }
             }
+            // Ensures block timestamps are in order.
+            else if (
+                _blockChain.LastBlock() != null
+                && !(_blockChain.LastBlock().BlockHeader.Timestamp
+                    <= block.BlockHeader.Timestamp))
+            {
+                if (_logging)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine(
+                        $"block {block.HashString[0..16]} has an "
+                        + "invalid timestamp");
+                    Console.ResetColor();
+                }
+            }
             else
             {
                 RemoveTransaction(block.Transaction);
