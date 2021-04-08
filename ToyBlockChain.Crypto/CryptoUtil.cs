@@ -6,7 +6,7 @@ namespace ToyBlockChain.Crypto
 {
     public static class CryptoUtil
     {
-        public static readonly int NONCE_LENGTH = 8;
+        public static readonly int NONCE_LENGTH = 16;
         private static RandomNumberGenerator _rng;
         private static SHA256 _sha256;
 
