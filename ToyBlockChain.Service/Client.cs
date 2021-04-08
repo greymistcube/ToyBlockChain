@@ -39,7 +39,7 @@ namespace ToyBlockChain.Service
 
             double value;
             string recipient;
-            Transaction transaction;
+            Transaction transaction = null;
 
             while(true)
             {
@@ -47,13 +47,15 @@ namespace ToyBlockChain.Service
 
                 value = rnd.NextDouble();
                 recipient = addressBook[rnd.Next(addressBook.Count)];
-                transaction = CreateTransaction(value, recipient);
-                lock (_node)
+                if (transaction == null
+                    || !_node.HasTransactionInPool(transaction))
                 {
-                    _node.RegisterTransaction(transaction);
+                    transaction = CreateTransaction(value, recipient);
+                    lock (_node)
+                    {
+                        _node.RegisterTransaction(transaction);
+                    }
                 }
-
-                Thread.Sleep(1000);
             }
         }
 

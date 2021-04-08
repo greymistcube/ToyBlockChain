@@ -58,12 +58,11 @@ namespace ToyBlockChain.Service
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine(
-                        $"block {block.HashString[0..8]} "
+                        $"block {block.HashString[0..8]} with "
+                        + $"transaction {block.Transaction.HashString[0..8]} "
                         + "added to the blockchain");
-                    Console.WriteLine(
-                        $"transaction {block.Transaction.HashString[0..8]} "
-                        + "processed");
                     Console.ResetColor();
+                    Console.WriteLine(block);
                 }
             }
             return;
@@ -149,9 +148,12 @@ namespace ToyBlockChain.Service
                 _transactionPool.Add(transaction.HashString, transaction);
                 if (_logging)
                 {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine(
                         $"transaction {transaction.HashString[0..8]} "
+                        + $"from sender {transaction.Sender[0..8]} "
                         + "added to the transaction pool");
+                    Console.ResetColor();
                 }
             }
         }
