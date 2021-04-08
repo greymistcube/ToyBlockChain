@@ -9,13 +9,11 @@ namespace ToyBlockChain.Crypto
         public static readonly int NONCE_LENGTH = 8;
         private static RandomNumberGenerator _rng;
         private static SHA256 _sha256;
-        private static RSACryptoServiceProvider _rsa;
 
         static CryptoUtil()
         {
             _rng = RandomNumberGenerator.Create();
             _sha256 = SHA256.Create();
-            _rsa = new RSACryptoServiceProvider();
         }
 
         public static byte[] HashBytes(byte[] bytes)
@@ -33,21 +31,25 @@ namespace ToyBlockChain.Crypto
         {
             // TODO: Possible Security hole.
             // Private key information should be funged.
+            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+
             byte[] dataBytes = Encoding.UTF8.GetBytes(data);
 
-            _rsa.ImportParameters(rsaParameters);
-            byte[] signatureBytes = _rsa.SignData(dataBytes, _sha256);
+            rsa.ImportParameters(rsaParameters);
+            byte[] signatureBytes = rsa.SignData(dataBytes, _sha256);
             return Convert.ToBase64String(signatureBytes);
         }
 
         public static bool Verify(
             string data, string signature, RSAParameters rsaParameters)
         {
+            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+
             byte[] dataBytes = Encoding.UTF8.GetBytes(data);
             byte[] signatureBytes = Convert.FromBase64String(signature);
 
-            _rsa.ImportParameters(rsaParameters);
-            return _rsa.VerifyData(dataBytes, _sha256, signatureBytes);
+            rsa.ImportParameters(rsaParameters);
+            return rsa.VerifyData(dataBytes, _sha256, signatureBytes);
         }
 
         public static RSAParameters ExtractRSAParameters(string publicKeyString)
