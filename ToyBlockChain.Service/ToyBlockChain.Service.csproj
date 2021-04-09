@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\ToyBlockChain.Core\ToyBlockChain.Core.csproj" />
+    <ProjectReference Include="..\ToyBlockChain.Crypto\ToyBlockChain.Crypto.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+</Project>
