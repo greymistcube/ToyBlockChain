@@ -11,7 +11,7 @@ namespace ToyBlockChain.Script
         public class Options
         {
             [Option('l', "logging",
-                Default = 2, Required = false,
+                Default = 0, Required = false,
                 HelpText = (
                     "Logging level.\n"
                     + "0: None.\n"
@@ -58,7 +58,7 @@ namespace ToyBlockChain.Script
             int numClients = options.NumClients;
             int numMiners = options.NumMiners;
 
-            Node node = new Node(logLevel > 0);
+            Node node = new Node(logLevel);
 
             List<Client> clients = new List<Client>();
             List<Miner> miners = new List<Miner>();

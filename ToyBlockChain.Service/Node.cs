@@ -18,16 +18,16 @@ namespace ToyBlockChain.Service
         private readonly BlockChain _blockChain;
         private readonly HashSet<string> _addressBook;
         private readonly Dictionary<string, Transaction> _transactionPool;
-        private readonly bool _logging;
+        private readonly int _logLevel;
         private int _difficulty;
 
-        public Node(bool logging = false)
+        public Node(int logLevel = 0)
         {
             _difficulty = DEFAULT_DIFFICULTY;
             _blockChain = new BlockChain();
             _addressBook = new HashSet<string>();
             _transactionPool = new Dictionary<string, Transaction>();
-            _logging = logging;
+            _logLevel = logLevel;
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace ToyBlockChain.Service
         {
             if (HasTransactionInChain(block.Transaction))
             {
-                if (_logging)
+                if (_logLevel > 0)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine(
@@ -52,7 +52,7 @@ namespace ToyBlockChain.Service
             // Possibly unnecessarily restricts block validation.
             else if (!HasTransactionInPool(block.Transaction))
             {
-                if (_logging)
+                if (_logLevel > 0)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine(
@@ -67,7 +67,7 @@ namespace ToyBlockChain.Service
                 && !(_blockChain.LastBlock().BlockHeader.Timestamp
                     <= block.BlockHeader.Timestamp))
             {
-                if (_logging)
+                if (_logLevel > 0)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine(
@@ -85,7 +85,7 @@ namespace ToyBlockChain.Service
                 RemoveTransaction(block.Transaction);
                 _blockChain.AddBlock(block);
                 AdjustDifficulty();
-                if (_logging)
+                if (_logLevel > 0)
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine(
@@ -93,6 +93,9 @@ namespace ToyBlockChain.Service
                         + $"transaction {block.Transaction.HashString[0..16]} "
                         + "added to the blockchain");
                     Console.ResetColor();
+                }
+                if (_logLevel > 1)
+                {
                     Console.WriteLine(block);
                 }
             }
@@ -159,7 +162,7 @@ namespace ToyBlockChain.Service
             else
             {
                 _addressBook.Add(address);
-                if (_logging)
+                if (_logLevel > 0)
                 {
                     Console.WriteLine(
                         $"address {address[0..16]} added to the address book");
@@ -214,7 +217,7 @@ namespace ToyBlockChain.Service
             else
             {
                 _transactionPool.Add(transaction.HashString, transaction);
-                if (_logging)
+                if (_logLevel > 0)
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine(
