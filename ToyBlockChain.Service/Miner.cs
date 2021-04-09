@@ -15,6 +15,13 @@ namespace ToyBlockChain.Service
         private string _publicKey;
         private string _address;
 
+        /// <summary>
+        /// The class representing a miner in a blockchain ecosystem.
+        /// Its primary objective is to search and retrieve a
+        /// <see cref="Transaction"/> that hasn't been added to the blockchain
+        /// and "mine" a valid <see cref="Block"/> containing such
+        /// <see cref="Transaction"/>.
+        /// </summary>
         public Miner(Node node)
         {
             _node = node;
@@ -25,7 +32,7 @@ namespace ToyBlockChain.Service
             string modulus = Convert.ToHexString(_rsaParameters.Modulus);
             string exponent = Convert.ToHexString(_rsaParameters.Exponent);
             _publicKey = $"{modulus}:{exponent}";
-            _address = CryptoUtil.HashString(_publicKey);
+            _address = CryptoUtil.ComputeHashString(_publicKey);
         }
 
         public void Run()
@@ -64,7 +71,7 @@ namespace ToyBlockChain.Service
         }
 
         /// <summary>
-        /// Continuously makes multiple attempts to mine a block
+        /// Continuously makes multiple attempts to mine a <see cref="Block"/>
         /// until transaction is added to the blockchain.
         /// </summary>
         private Block Mine(Transaction transaction)
@@ -92,7 +99,7 @@ namespace ToyBlockChain.Service
         }
 
         /// <summary>
-        /// Makes a single attempt to mine a block.
+        /// Makes a single attempt to mine a valid <see cref="Block"/>.
         /// </summary>
         private Block Pick(Transaction transaction)
         {

@@ -107,7 +107,7 @@ namespace ToyBlockChain.Core
         public bool IsValid()
         {
             bool senderValid = (
-                Sender == CryptoUtil.HashString(PublicKey));
+                Sender == CryptoUtil.ComputeHashString(PublicKey));
             bool signatureValid = CryptoUtil.Verify(
                 SignatureInputString(),
                 Signature,

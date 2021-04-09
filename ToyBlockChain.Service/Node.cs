@@ -4,6 +4,11 @@ using ToyBlockChain.Core;
 
 namespace ToyBlockChain.Service
 {
+    /// <summary>
+    /// The class representing a node in a blockchain ecosystem.
+    /// Generally handles higher level logic, such as enforcing
+    /// policy / metablockchain level validation.
+    /// </summary>
     public class Node
     {
         private const int DEFAULT_DIFFICULTY = 4;
@@ -13,16 +18,16 @@ namespace ToyBlockChain.Service
         private readonly BlockChain _blockChain;
         private readonly HashSet<string> _addressBook;
         private readonly Dictionary<string, Transaction> _transactionPool;
-        private readonly bool _logging;
+        private readonly int _logLevel;
         private int _difficulty;
 
-        public Node(bool logging = false)
+        public Node(int logLevel = 0)
         {
             _difficulty = DEFAULT_DIFFICULTY;
             _blockChain = new BlockChain();
             _addressBook = new HashSet<string>();
             _transactionPool = new Dictionary<string, Transaction>();
-            _logging = logging;
+            _logLevel = logLevel;
         }
 
         /// <summary>
@@ -34,7 +39,7 @@ namespace ToyBlockChain.Service
         {
             if (HasTransactionInChain(block.Transaction))
             {
-                if (_logging)
+                if (_logLevel > 0)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine(
@@ -47,7 +52,7 @@ namespace ToyBlockChain.Service
             // Possibly unnecessarily restricts block validation.
             else if (!HasTransactionInPool(block.Transaction))
             {
-                if (_logging)
+                if (_logLevel > 0)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine(
@@ -62,7 +67,7 @@ namespace ToyBlockChain.Service
                 && !(_blockChain.LastBlock().BlockHeader.Timestamp
                     <= block.BlockHeader.Timestamp))
             {
-                if (_logging)
+                if (_logLevel > 0)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine(
@@ -71,12 +76,16 @@ namespace ToyBlockChain.Service
                     Console.ResetColor();
                 }
             }
+            // Transaction must be removed from the pool
+            // before getting added to the blockchain.
+            // Once the blockchain has been updated, adjust
+            // the target difficulty.
             else
             {
                 RemoveTransaction(block.Transaction);
                 _blockChain.AddBlock(block);
                 AdjustDifficulty();
-                if (_logging)
+                if (_logLevel > 0)
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine(
@@ -84,12 +93,29 @@ namespace ToyBlockChain.Service
                         + $"transaction {block.Transaction.HashString[0..16]} "
                         + "added to the blockchain");
                     Console.ResetColor();
+                }
+                if (_logLevel > 1)
+                {
                     Console.WriteLine(block);
                 }
             }
             return;
         }
 
+        /// <summary>
+        /// Adjusts the target difficulty for the next prospective block.
+        /// Uses a simple moving average of time spend to mine the last
+        /// <c>MOVING_AVERAGE_LENGTH - 1</c> blocks.
+        ///
+        /// If the average is lower than
+        /// <see cref="MINING_INTERVAL_LOWER_LIMIT"/>, then the target
+        /// difficulty is raised. If the average is higher than
+        /// <see cref="MINING_INTERVAL_UPPER_LIMIT"/>, then the target
+        /// difficulty is lowerd.
+        ///
+        /// Note that the terget difficulty is never lowered below
+        /// <see cref="DEFAULT_DIFFICULTY"/>.
+        /// </summary>
         private void AdjustDifficulty()
         {
             // Get the last MOVING_AVERAGE_LENGTH number of blocks.
@@ -136,7 +162,7 @@ namespace ToyBlockChain.Service
             else
             {
                 _addressBook.Add(address);
-                if (_logging)
+                if (_logLevel > 0)
                 {
                     Console.WriteLine(
                         $"address {address[0..16]} added to the address book");
@@ -191,7 +217,7 @@ namespace ToyBlockChain.Service
             else
             {
                 _transactionPool.Add(transaction.HashString, transaction);
-                if (_logging)
+                if (_logLevel > 0)
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine(
