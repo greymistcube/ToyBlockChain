@@ -1,18 +1,64 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using CommandLine;
 using ToyBlockChain.Service;
 
 namespace ToyBlockChain.Script
 {
     class Program
     {
+        public class Options
+        {
+            [Option('l', "logging",
+                Default = 2, Required = false,
+                HelpText = (
+                    "Logging level.\n"
+                    + "0: None.\n"
+                    + "1: Minimal.\n"
+                    + "2: Verbose."))]
+            public int LogLevel { get; set; }
+
+            [Option('c', "client",
+                Default = 1, Required = false,
+                HelpText = "Number of clients.")]
+            public int NumClients { get; set; }
+
+            [Option('m', "miner",
+                Default = 1, Required = false,
+                HelpText = "Number of miners.")]
+            public int NumMiners { get; set; }
+        }
+
         static void Main(string[] args)
         {
-            int numClients = 4;
-            int numMiners = 4;
+            Options options = new Options();
+            ParserResult<Options> result = Parser.Default
+                .ParseArguments<Options>(args)
+                .WithParsed<Options>(o => {
+                    options = o;
+                    if (options.NumClients < 1)
+                    {
+                        throw new ArgumentException(
+                            "number of clients must be positive");
+                    }
+                    else if (options.NumMiners < 1)
+                    {
+                        throw new ArgumentException(
+                            "number of miners must be positive");
+                    }
+                });
+            if (result.Tag == ParserResultType.NotParsed)
+            {
+                Console.WriteLine("Not Parsed");
+                return;
+            }
 
-            Node node = new Node(true);
+            int logLevel = options.LogLevel;
+            int numClients = options.NumClients;
+            int numMiners = options.NumMiners;
+
+            Node node = new Node(logLevel > 0);
 
             List<Client> clients = new List<Client>();
             List<Miner> miners = new List<Miner>();
