@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using CommandLine;
 using ToyBlockChain.Service;
 
@@ -6,6 +7,12 @@ namespace ToyBlockChain.App
 {
     public class Program
     {
+        private static bool _seed;
+        private static bool _logging;
+        private static bool _verbose;
+        private static Address _address;
+        private static RoutingTable _routingTable;
+
         public class Options
         {
             [Option('s', "seed",
@@ -38,11 +45,35 @@ namespace ToyBlockChain.App
                 return;
             }
 
-            bool seed = options.Seed;
-            bool logging = options.Logging;
-            bool verbose = options.Verbose;
+            _seed = options.Seed;
+            _logging = options.Logging;
+            _verbose = options.Verbose;
 
-            Node node = new Node(logging, verbose);
+            Node node = new Node(_logging, _verbose);
+
+            if (_seed)
+            {
+                _address = new Address(
+                    Const.IP_ADDRESS, Const.PORT_NUM_SEED);
+                _routingTable = new RoutingTable();
+                _routingTable.AddAddress(_address);
+            }
+            else
+            {
+                Random rnd = new Random();
+                _address = new Address(
+                    Const.IP_ADDRESS,
+                    rnd.Next(Const.PORT_NUM_MIN, Const.PORT_NUM_MAX));
+                _routingTable = new RoutingTable();
+            }
+
+            Listen();
         }
+
+        static void Listen()
+        {}
+
+        static void Announce()
+        {}
     }
 }
