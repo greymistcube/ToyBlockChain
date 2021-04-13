@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace ToyBlockChain.App
@@ -96,7 +97,7 @@ namespace ToyBlockChain.App
 
         public string ToSerializedString()
         {
-            return String.Join(',', _routes);
+            return String.Join(',', _routes.Select(address => address.ToSerializedString()));
         }
 
         public byte[] ToSerializedBytes()

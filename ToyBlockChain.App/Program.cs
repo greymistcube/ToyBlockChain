@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -59,7 +60,9 @@ namespace ToyBlockChain.App
             {
                 if (_logging)
                 {
+                    Console.ForegroundColor = ConsoleColor.Blue;
                     Console.WriteLine("Running as a seed node...");
+                    Console.ResetColor();
                 }
 
                 _address = _seedAddress;
@@ -70,29 +73,92 @@ namespace ToyBlockChain.App
             {
                 if (_logging)
                 {
+                    Console.ForegroundColor = ConsoleColor.Blue;
                     Console.WriteLine("Running as a non-seed node...");
+                    Console.ResetColor();
                 }
+                Payload requestPayload;
+                Payload responsePayload;
 
+                // Generate a new random address.
                 Random rnd = new Random();
                 _address = new Address(
                     Const.IP_ADDRESS,
                     rnd.Next(Const.PORT_NUM_MIN, Const.PORT_NUM_MAX));
 
-                string routingTableString = Request(
-                    _seedAddress, Protocol.REQUEST_ROUTING_TABLE);
-                _routingTable = new RoutingTable(routingTableString);
+                // Request for the routing table from a seed node.
+                requestPayload = new Payload(
+                    Protocol.REQUEST_ROUTING_TABLE, "");
+                responsePayload = Request(_seedAddress, requestPayload);
+
+                // Update the routing table for this node.
+                _routingTable = new RoutingTable(responsePayload.Body);
                 _routingTable.AddAddress(_address);
 
-                Announce(_address.ToSerializedString());
+                // Announce the address for this node to update
+                // the routing table accross the network.
+                requestPayload = new Payload(
+                    Protocol.ANNOUNCE_ADDRESS, _address.ToSerializedString());
+                Announce(requestPayload);
             }
 
-            Listen();
+            Listen(_address);
         }
 
-        static void Listen()
-        {}
+        static void Listen(Address address)
+        {
+            if (_logging)
+            {
+                Console.WriteLine("Starting to listen...");
+            }
 
-        static string Request(Address address, string requestString)
+            TcpListener server = new TcpListener(
+                IPAddress.Parse(address.IpAddress), address.PortNumber);
+            server.Start();
+
+            int numBytesRead = 0;
+            byte[] requestBytes = new byte[Protocol.BUFFER_SIZE];
+            string requestString = null;
+            Payload requestPayload = null;
+
+            while (true)
+            {
+                TcpClient client = server.AcceptTcpClient();
+                NetworkStream stream = client.GetStream();
+
+                numBytesRead = stream.Read(
+                    requestBytes, 0, requestBytes.Length);
+                requestString = Encoding.UTF8.GetString(
+                    requestBytes, 0, numBytesRead);
+                requestPayload = new Payload(requestString);
+                if (_logging)
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine(
+                        $"Received: {requestPayload.ToSerializedString()}");
+                    Console.ResetColor();
+                }
+
+                Payload responsePayload = ProcessRequestPayload(requestPayload);
+                if (responsePayload != null)
+                {
+                    stream.Write(
+                        responsePayload.ToSerializedBytes(), 0,
+                        responsePayload.ToSerializedBytes().Length);
+                    if (_logging)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine(
+                            $"Sent: {responsePayload.ToSerializedString()}");
+                        Console.ResetColor();
+                    }
+                }
+                stream.Close();
+                client.Close();
+            }
+        }
+
+        static Payload Request(Address address, Payload requestPayload)
         {
             // connect and prepare to stream
             TcpClient client = new TcpClient(
@@ -100,40 +166,100 @@ namespace ToyBlockChain.App
             NetworkStream stream = client.GetStream();
 
             // send data
-            byte[] requestBytes = Encoding.UTF8.GetBytes(requestString);
-            stream.Write(requestBytes, 0, requestBytes.Length);
+            stream.Write(
+                requestPayload.ToSerializedBytes(), 0,
+                requestPayload.ToSerializedBytes().Length);
+            if (_logging)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(
+                    $"Sent: {requestPayload.ToSerializedString()}");
+                Console.ResetColor();
+            }
 
-            // recieve data
+            // receive data
             byte[] responseBytes = new byte[Protocol.BUFFER_SIZE];
             string responseString = null;
             int responseLength = stream.Read(
                 responseBytes, 0, responseBytes.Length);
             responseString = Encoding.UTF8.GetString(
                 responseBytes, 0, responseLength);
+            Payload responsePayload = new Payload(responseString);
+            if (_logging)
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine(
+                    $"Received: {responsePayload.ToSerializedString()}");
+                Console.ResetColor();
+            }
+            ProcessResponsePayload(responsePayload);
 
             // cleanup
             stream.Close();
             client.Close();
 
-            return responseString;
+            return responsePayload;
         }
 
-        static void Announce(string announceString)
+        static void Announce(Payload requestPayload)
         {
             foreach (Address address in _routingTable.Routes)
             {
-                // connect and prepare to stream
-                TcpClient client = new TcpClient(
-                    address.IpAddress, address.PortNumber);
-                NetworkStream stream = client.GetStream();
+                if (!_address.Equals(address))
+                {
+                    // connect and prepare to stream
+                    TcpClient client = new TcpClient(
+                        address.IpAddress, address.PortNumber);
+                    NetworkStream stream = client.GetStream();
 
-                // send data
-                byte[] announceBytes = Encoding.UTF8.GetBytes(announceString);
-                stream.Write(announceBytes, 0, announceBytes.Length);
+                    // send data
+                    stream.Write(
+                        requestPayload.ToSerializedBytes(), 0,
+                        requestPayload.ToSerializedBytes().Length);
+                    if (_logging)
+                    {
+                        Console.WriteLine(
+                            $"Sent: {requestPayload.ToSerializedString()}");
+                    }
 
-                // cleanup
-                stream.Close();
-                client.Close();
+                    // cleanup
+                    stream.Close();
+                    client.Close();
+                }
+            }
+        }
+
+        static Payload ProcessRequestPayload(Payload requestPayload)
+        {
+            // TODO: Below is a placeholder.
+            // This should be more fully fledged out.
+
+            if (requestPayload.Header == Protocol.REQUEST_ROUTING_TABLE)
+            {
+                return new Payload(
+                    Protocol.RESPONSE_ROUTING_TABLE,
+                    _routingTable.ToSerializedString());
+            }
+            else if (requestPayload.Header == Protocol.ANNOUNCE_ADDRESS)
+            {
+                _routingTable.AddAddress(
+                    new Address(requestPayload.Body));
+                return null;
+            }
+            return null;
+        }
+
+        static void ProcessResponsePayload(Payload responsePayload)
+        {
+            if (responsePayload.Header == Protocol.RESPONSE_ROUTING_TABLE)
+            {
+                _routingTable = new RoutingTable(responsePayload.Body);
+                if (_logging)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine("Updated: Routing Table");
+                    Console.ResetColor();
+                }
             }
         }
     }
