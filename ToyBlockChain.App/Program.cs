@@ -42,7 +42,7 @@ namespace ToyBlockChain.App
             bool logging = options.Logging;
             bool verbose = options.Verbose;
 
-            Node node = new Node(seed, logging, verbose);
+            Node node = new Node(logging, verbose);
         }
     }
 }

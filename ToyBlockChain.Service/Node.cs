@@ -19,14 +19,12 @@ namespace ToyBlockChain.Service
         private readonly HashSet<string> _addressBook;
         private readonly Dictionary<string, Transaction> _transactionPool;
 
-        private readonly bool _seed;
         private readonly bool _logging;
         private readonly bool _verbose;
         private int _difficulty;
 
-        public Node(bool seed, bool logging, bool verbose)
+        public Node(bool logging, bool verbose)
         {
-            _seed = seed;
             _logging = logging;
             _verbose = verbose;
 
