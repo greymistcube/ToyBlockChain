@@ -7,5 +7,6 @@ namespace ToyBlockChain.App
         public const string ANNOUNCE_BLOCK = "AB";
         public const string REQUEST_ROUTING_TABLE = "RR";
         public const string REQUEST_BLOCKCHAIN = "RB";
+        public const int BUFFER_SIZE = 1024;
     }
 }
