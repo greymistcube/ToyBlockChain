@@ -21,18 +21,23 @@ namespace ToyBlockChain.App
         {
             [Option('s', "seed",
                 Default = false, Required = false,
-                HelpText = "Makes the node run as a seed.")]
+                HelpText = "Make the node run as a seed.")]
             public bool Seed { get; set; }
 
             [Option('l', "logging",
                 Default = false, Required = false,
-                HelpText = "Prints output to a console.")]
+                HelpText = "Print output to a console.")]
             public bool Logging { get; set; }
 
             [Option('v', "verbose",
                 Default = false, Required = false,
-                HelpText = "Makes the output verbose.")]
+                HelpText = "Make the output verbose.")]
             public bool Verbose { get; set; }
+
+            [Option('r', "clear",
+                Default = false, Required = false,
+                HelpText = "Screen clear between outputs.")]
+            public bool Clear { get; set; }
         }
 
         static void Main(string[] args)
@@ -58,12 +63,7 @@ namespace ToyBlockChain.App
 
             if (_seed)
             {
-                if (_logging)
-                {
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    Console.WriteLine("Running as a seed node...");
-                    Console.ResetColor();
-                }
+                Log("Running as a seed node...", ConsoleColor.Blue);
 
                 _address = _seedAddress;
                 _routingTable = new RoutingTable();
@@ -71,12 +71,7 @@ namespace ToyBlockChain.App
             }
             else
             {
-                if (_logging)
-                {
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    Console.WriteLine("Running as a non-seed node...");
-                    Console.ResetColor();
-                }
+                Log("Running as a non-seed node...", ConsoleColor.Blue);
                 Payload requestPayload;
                 Payload responsePayload;
 
@@ -107,10 +102,7 @@ namespace ToyBlockChain.App
 
         static void Listen(Address address)
         {
-            if (_logging)
-            {
-                Console.WriteLine("Starting to listen...");
-            }
+            Log("Starting to listen...");
 
             TcpListener server = new TcpListener(
                 IPAddress.Parse(address.IpAddress), address.PortNumber);
@@ -131,13 +123,8 @@ namespace ToyBlockChain.App
                 requestString = Encoding.UTF8.GetString(
                     requestBytes, 0, numBytesRead);
                 requestPayload = new Payload(requestString);
-                if (_logging)
-                {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine(
-                        $"Received: {requestPayload.ToSerializedString()}");
-                    Console.ResetColor();
-                }
+                Log($"Received: {requestPayload.ToSerializedString()}",
+                    ConsoleColor.Green);
 
                 Payload responsePayload = ProcessRequestPayload(requestPayload);
                 if (responsePayload != null)
@@ -145,13 +132,8 @@ namespace ToyBlockChain.App
                     stream.Write(
                         responsePayload.ToSerializedBytes(), 0,
                         responsePayload.ToSerializedBytes().Length);
-                    if (_logging)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine(
-                            $"Sent: {responsePayload.ToSerializedString()}");
-                        Console.ResetColor();
-                    }
+                    Log($"Sent: {responsePayload.ToSerializedString()}",
+                        ConsoleColor.Red);
                 }
                 stream.Close();
                 client.Close();
@@ -169,13 +151,8 @@ namespace ToyBlockChain.App
             stream.Write(
                 requestPayload.ToSerializedBytes(), 0,
                 requestPayload.ToSerializedBytes().Length);
-            if (_logging)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(
-                    $"Sent: {requestPayload.ToSerializedString()}");
-                Console.ResetColor();
-            }
+            Log($"Sent: {requestPayload.ToSerializedString()}",
+                ConsoleColor.Red);
 
             // receive data
             byte[] responseBytes = new byte[Protocol.BUFFER_SIZE];
@@ -185,13 +162,8 @@ namespace ToyBlockChain.App
             responseString = Encoding.UTF8.GetString(
                 responseBytes, 0, responseLength);
             Payload responsePayload = new Payload(responseString);
-            if (_logging)
-            {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine(
-                    $"Received: {responsePayload.ToSerializedString()}");
-                Console.ResetColor();
-            }
+            Log($"Received: {responsePayload.ToSerializedString()}",
+                ConsoleColor.Green);
             ProcessResponsePayload(responsePayload);
 
             // cleanup
@@ -216,11 +188,8 @@ namespace ToyBlockChain.App
                     stream.Write(
                         requestPayload.ToSerializedBytes(), 0,
                         requestPayload.ToSerializedBytes().Length);
-                    if (_logging)
-                    {
-                        Console.WriteLine(
-                            $"Sent: {requestPayload.ToSerializedString()}");
-                    }
+                    Log($"Sent: {requestPayload.ToSerializedString()}",
+                        ConsoleColor.Red);
 
                     // cleanup
                     stream.Close();
@@ -233,7 +202,6 @@ namespace ToyBlockChain.App
         {
             // TODO: Below is a placeholder.
             // This should be more fully fledged out.
-
             if (requestPayload.Header == Protocol.REQUEST_ROUTING_TABLE)
             {
                 return new Payload(
@@ -244,6 +212,7 @@ namespace ToyBlockChain.App
             {
                 _routingTable.AddAddress(
                     new Address(requestPayload.Body));
+                Log("Updated: Routing Table", ConsoleColor.Yellow);
                 return null;
             }
             return null;
@@ -251,15 +220,24 @@ namespace ToyBlockChain.App
 
         static void ProcessResponsePayload(Payload responsePayload)
         {
+            // TODO: Below is a placeholder.
+            // This should be more fully fledged out.
             if (responsePayload.Header == Protocol.RESPONSE_ROUTING_TABLE)
             {
                 _routingTable = new RoutingTable(responsePayload.Body);
-                if (_logging)
-                {
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine("Updated: Routing Table");
-                    Console.ResetColor();
-                }
+                Log("Updated: Routing Table", ConsoleColor.Yellow);
+            }
+        }
+
+        static void Log(
+            string text,
+            System.ConsoleColor color = ConsoleColor.White)
+        {
+            if (_logging)
+            {
+                Console.ForegroundColor = color;
+                Console.WriteLine(text);
+                Console.ResetColor();
             }
         }
     }
