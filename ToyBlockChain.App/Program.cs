@@ -1,5 +1,6 @@
 ﻿using System;
 using CommandLine;
+using ToyBlockChain.Service;
 
 namespace ToyBlockChain.App
 {
@@ -40,6 +41,8 @@ namespace ToyBlockChain.App
             bool seed = options.Seed;
             bool logging = options.Logging;
             bool verbose = options.Verbose;
+
+            Node node = new Node(seed, logging, verbose);
         }
     }
 }
