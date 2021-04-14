@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using CommandLine;
+using ToyBlockChain.Network;
 using ToyBlockChain.Service;
 
 namespace ToyBlockChain.App

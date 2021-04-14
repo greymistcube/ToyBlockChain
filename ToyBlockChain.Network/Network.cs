@@ -2,7 +2,9 @@
 
 namespace ToyBlockChain.Network
 {
-    public class Class1
+    public class Network
     {
+        public Network()
+        {}
     }
 }
