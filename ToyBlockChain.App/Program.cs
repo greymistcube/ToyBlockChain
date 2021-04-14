@@ -74,7 +74,10 @@ namespace ToyBlockChain.App
 
             // Create a new routing table and sync.
             _routingTable = new RoutingTable();
-            SyncRoutingTable();
+            if (!_seed)
+            {
+                SyncRoutingTable();
+            }
 
             // Set address for this node.
             _address = GetLocalAddress();
@@ -87,9 +90,11 @@ namespace ToyBlockChain.App
             Announce(outboundPayload);
 
             Node node = new Node();
-            // TODO: Implement.
-            // SyncBlockChain();
-            // SyncAccountTable();
+            if (!_seed)
+            {
+                Address address = GetRandomAddress();
+                SyncNode(address);
+            }
 
             Listen(_address);
         }
@@ -103,20 +108,38 @@ namespace ToyBlockChain.App
         /// </summary>
         private static void SyncRoutingTable()
         {
-            if (!_seed)
+            // Basic sanity check.
+            if (_seed)
             {
-                Payload outboundPayload = new Payload(
-                    Protocol.REQUEST_ROUTING_TABLE, "");
-                Request(_SEED_ADDRESS, outboundPayload);
+                throw new ArgumentException(
+                    "seed node cannot sync routing table");
             }
+
+            Payload outboundPayload = new Payload(
+                Protocol.REQUEST_ROUTING_TABLE, "");
+            Request(_SEED_ADDRESS, outboundPayload);
         }
 
-        private static void SyncBlockChain()
+        private static void SyncNode(Address address)
+        {
+            // Basic sanity check.
+            if (_address == address)
+            {
+                throw new ArgumentException(
+                    $"cannot sync to self: {address.ToSerializedString()}");
+            }
+
+            // TODO: Implement
+            // SyncBlockChain(address)
+            // SyncAccountTable(address)
+        }
+
+        private static void SyncBlockChain(Address address)
         {
             throw new NotImplementedException();
         }
 
-        private static void SyncAccountTable()
+        private static void SyncAccountTable(Address address)
         {
             throw new NotImplementedException();
         }
@@ -129,12 +152,49 @@ namespace ToyBlockChain.App
             }
             else
             {
-                // TODO: Handle port collision.
-                // Generate a new random address.
+                // Generate a new random address that is not already in
+                // the routing table.
                 Random rnd = new Random();
-                return new Address(
-                    Const.IP_ADDRESS,
-                    rnd.Next(Const.PORT_NUM_MIN, Const.PORT_NUM_MAX));
+                while (true)
+                {
+                    Address address = new Address(
+                        Const.IP_ADDRESS,
+                        rnd.Next(Const.PORT_NUM_MIN, Const.PORT_NUM_MAX));
+                    if (!_routingTable.Routes.Contains(address))
+                    {
+                        return address;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get a random address from the routing table excluding
+        /// this node's address.
+        /// </summary>
+        private static Address GetRandomAddress()
+        {
+            if (_routingTable.Routes.Count <= 1)
+            {
+                throw new MethodAccessException(
+                    "invalid access; routing table size too small: "
+                    + $"{_routingTable.Routes.Count}");
+            }
+            else
+            {
+                Address address;
+                Random rnd = new Random();
+                int idx;
+
+                idx = rnd.Next(_routingTable.Routes.Count);
+                address = _routingTable.Routes[idx];
+                if (_address.Equals(address))
+                {
+                    idx = (idx + 1) + rnd.Next(_routingTable.Routes.Count - 1);
+                    idx = idx % _routingTable.Routes.Count;
+                    address = _routingTable.Routes[idx];
+                }
+                return address;
             }
         }
 
