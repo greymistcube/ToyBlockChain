@@ -64,7 +64,7 @@ namespace ToyBlockChain.App
 
             _seedAddress = new Address(Const.IP_ADDRESS, Const.PORT_NUM_SEED);
 
-            Node node = new Node(_logging, _verbose);
+            Node node = new Node();
 
             if (_seed)
             {

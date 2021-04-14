@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using ToyBlockChain.Core;
+using ToyBlockChain.Util;
 
 namespace ToyBlockChain.Service
 {
@@ -16,21 +17,16 @@ namespace ToyBlockChain.Service
         private const int MINING_INTERVAL_LOWER_LIMIT = 4;
         private const int MINING_INTERVAL_UPPER_LIMIT = 8;
         private readonly BlockChain _blockChain;
-        private readonly HashSet<string> _addressBook;
+        private readonly HashSet<string> _accounts;
         private readonly Dictionary<string, Transaction> _transactionPool;
 
-        private readonly bool _logging;
-        private readonly bool _verbose;
         private int _difficulty;
 
-        public Node(bool logging, bool verbose)
+        public Node()
         {
-            _logging = logging;
-            _verbose = verbose;
-
             _difficulty = DEFAULT_DIFFICULTY;
             _blockChain = new BlockChain();
-            _addressBook = new HashSet<string>();
+            _accounts = new HashSet<string>();
             _transactionPool = new Dictionary<string, Transaction>();
         }
 
@@ -43,27 +39,18 @@ namespace ToyBlockChain.Service
         {
             if (HasTransactionInChain(block.Transaction))
             {
-                if (_logging)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine(
-                        $"block {block.HashString[0..16]} contains "
-                        + "a transaction already in the blockchain");
-                    Console.ResetColor();
-                }
-                return;
+                Logger.Log(
+                    $"block {block.HashString[0..16]} contains "
+                    + "a transaction already in the blockchain",
+                    ConsoleColor.Red);
             }
             // Possibly unnecessarily restricts block validation.
             else if (!HasTransactionInPool(block.Transaction))
             {
-                if (_logging)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine(
-                        $"block {block.HashString[0..16]} contains "
-                        + "an unknown transaction");
-                    Console.ResetColor();
-                }
+                Logger.Log(
+                    $"block {block.HashString[0..16]} contains "
+                    + "an unknown transaction",
+                    ConsoleColor.Red);
             }
             // Ensures block timestamps are in order.
             else if (
@@ -71,14 +58,10 @@ namespace ToyBlockChain.Service
                 && !(_blockChain.LastBlock().BlockHeader.Timestamp
                     <= block.BlockHeader.Timestamp))
             {
-                if (_logging)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine(
-                        $"block {block.HashString[0..16]} has an "
-                        + "invalid timestamp");
-                    Console.ResetColor();
-                }
+                Logger.Log(
+                    $"block {block.HashString[0..16]} has an "
+                    + "invalid timestamp",
+                    ConsoleColor.Red);
             }
             // Transaction must be removed from the pool
             // before getting added to the blockchain.
@@ -89,20 +72,12 @@ namespace ToyBlockChain.Service
                 RemoveTransaction(block.Transaction);
                 _blockChain.AddBlock(block);
                 AdjustDifficulty();
-                if (_logging)
-                {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine(
-                        $"block {block.HashString[0..16]} with "
-                        + $"transaction {block.Transaction.HashString[0..16]} "
-                        + "added to the blockchain");
-                    Console.ResetColor();
-
-                    if (_verbose)
-                    {
-                        Console.WriteLine(block);
-                    }
-                }
+                Logger.Log(
+                    $"block {block.HashString[0..16]} with "
+                    + $"transaction {block.Transaction.HashString[0..16]} "
+                    + "added to the blockchain",
+                    ConsoleColor.Green);
+                Logger.Log($"{block}");
             }
             return;
         }
@@ -152,7 +127,7 @@ namespace ToyBlockChain.Service
         /// </summary>
         public bool HasAddressInBook(string address)
         {
-            return _addressBook.Contains(address);
+            return _accounts.Contains(address);
         }
 
         /// <summary>
@@ -166,12 +141,9 @@ namespace ToyBlockChain.Service
             }
             else
             {
-                _addressBook.Add(address);
-                if (_logging)
-                {
-                    Console.WriteLine(
-                        $"address {address[0..16]} added to the address book");
-                }
+                _accounts.Add(address);
+                Logger.Log(
+                    $"address {address[0..16]} added to the address book");
             }
         }
 
@@ -222,15 +194,11 @@ namespace ToyBlockChain.Service
             else
             {
                 _transactionPool.Add(transaction.HashString, transaction);
-                if (_logging)
-                {
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine(
-                        $"transaction {transaction.HashString[0..16]} "
-                        + $"from sender {transaction.Sender[0..16]} "
-                        + "added to the transaction pool");
-                    Console.ResetColor();
-                }
+                Logger.Log(
+                    $"transaction {transaction.HashString[0..16]} "
+                    + $"from sender {transaction.Sender[0..16]} "
+                    + "added to the transaction pool",
+                    ConsoleColor.Yellow);
             }
         }
 
@@ -255,11 +223,11 @@ namespace ToyBlockChain.Service
             return _difficulty;
         }
 
-        public List<string> AddressBook
+        public List<string> Accounts
         {
             get
             {
-                return new List<string>(_addressBook);
+                return new List<string>(_accounts);
             }
         }
 
