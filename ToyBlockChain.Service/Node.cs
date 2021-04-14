@@ -42,7 +42,7 @@ namespace ToyBlockChain.Service
                 Logger.Log(
                     $"block {block.HashString[0..16]} contains "
                     + "a transaction already in the blockchain",
-                    ConsoleColor.Red);
+                    1, ConsoleColor.Red);
             }
             // Possibly unnecessarily restricts block validation.
             else if (!HasTransactionInPool(block.Transaction))
@@ -50,7 +50,7 @@ namespace ToyBlockChain.Service
                 Logger.Log(
                     $"block {block.HashString[0..16]} contains "
                     + "an unknown transaction",
-                    ConsoleColor.Red);
+                    1, ConsoleColor.Red);
             }
             // Ensures block timestamps are in order.
             else if (
@@ -61,7 +61,7 @@ namespace ToyBlockChain.Service
                 Logger.Log(
                     $"block {block.HashString[0..16]} has an "
                     + "invalid timestamp",
-                    ConsoleColor.Red);
+                    1, ConsoleColor.Red);
             }
             // Transaction must be removed from the pool
             // before getting added to the blockchain.
@@ -76,8 +76,8 @@ namespace ToyBlockChain.Service
                     $"block {block.HashString[0..16]} with "
                     + $"transaction {block.Transaction.HashString[0..16]} "
                     + "added to the blockchain",
-                    ConsoleColor.Green);
-                Logger.Log($"{block}");
+                    1, ConsoleColor.Green);
+                Logger.Log($"{block}", 2);
             }
             return;
         }
@@ -198,7 +198,7 @@ namespace ToyBlockChain.Service
                     $"transaction {transaction.HashString[0..16]} "
                     + $"from sender {transaction.Sender[0..16]} "
                     + "added to the transaction pool",
-                    ConsoleColor.Yellow);
+                    1, ConsoleColor.Yellow);
             }
         }
 

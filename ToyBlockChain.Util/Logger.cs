@@ -4,33 +4,17 @@ namespace ToyBlockChain.Util
 {
     public static class Logger
     {
-        private static bool? _logging;
+        private static int _logLevel = 0;
 
-        public static bool Logging
+        public static int LogLevel
         {
             get
             {
-                if (_logging.HasValue)
-                {
-                    return (bool)_logging;
-                }
-                else
-                {
-                    throw new MethodAccessException(
-                        $"Logging must be set before accessing its value");
-                }
+                return _logLevel;
             }
             set
             {
-                if (_logging.HasValue)
-                {
-                    throw new MethodAccessException(
-                        $"Logging can be set only once: {(bool)_logging}");
-                }
-                else
-                {
-                    _logging = value;
-                }
+                _logLevel = value;
             }
         }
 
@@ -39,9 +23,10 @@ namespace ToyBlockChain.Util
         /// </summary>
         public static void Log(
             string text,
+            int textLevel = 1,
             System.ConsoleColor color = ConsoleColor.White)
         {
-            if(Logging)
+            if(textLevel <= _logLevel)
             {
                     Console.ForegroundColor = color;
                     Console.WriteLine(text);
