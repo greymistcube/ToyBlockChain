@@ -14,6 +14,12 @@ namespace ToyBlockChain.App
         public const string ANNOUNCE_BLOCK = "AB";
         public const int BUFFER_SIZE = 1024;
         public const int HEADER_SIZE = 2;
+        public static readonly string[] REQUEST = new string[] {
+            REQUEST_ROUTING_TABLE, REQUEST_BLOCKCHAIN };
+        public static readonly string[] RESPONSE = new string[] {
+            RESPONSE_ROUTING_TABLE, RESPONSE_BLOCKCHAIN };
+        public static readonly string[] ANNOUNCE = new string[] {
+            ANNOUNCE_ADDRESS, ANNOUNCE_TRANSACTION, ANNOUNCE_BLOCK };
     }
 
     public class Payload
