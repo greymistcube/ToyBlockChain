@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using CommandLine;
+using ToyBlockChain.Core;
 using ToyBlockChain.Service;
 
 namespace ToyBlockChain.Script

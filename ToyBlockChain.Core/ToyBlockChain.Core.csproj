@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ToyBlockChain.Crypto\ToyBlockChain.Crypto.csproj" />
+    <ProjectReference Include="..\ToyBlockChain.Util\ToyBlockChain.Util.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using ToyBlockChain.Core;
 using ToyBlockChain.Util;
 
-namespace ToyBlockChain.Service
+namespace ToyBlockChain.Core
 {
     /// <summary>
     /// The class representing a node in a blockchain ecosystem.
