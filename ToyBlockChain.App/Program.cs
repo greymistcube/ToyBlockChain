@@ -61,7 +61,9 @@ namespace ToyBlockChain.App
 
             if (_seed)
             {
-                Logger.Log("Running as a seed node...", 1, ConsoleColor.Blue);
+                Logger.Log(
+                    "Running as a seed node...",
+                    Logger.INFO, ConsoleColor.Blue);
 
                 _address = _seedAddress;
                 _routingTable = new RoutingTable();
@@ -70,7 +72,8 @@ namespace ToyBlockChain.App
             else
             {
                 Logger.Log(
-                    "Running as a non-seed node...", 1, ConsoleColor.Blue);
+                    "Running as a non-seed node...",
+                    Logger.INFO, ConsoleColor.Blue);
                 Payload outboundPayload;
                 Payload inboundPayload;
 
@@ -100,7 +103,9 @@ namespace ToyBlockChain.App
 
         static void Listen(Address address)
         {
-            Logger.Log("Starting to listen...");
+            Logger.Log(
+                "Starting to listen...",
+                Logger.INFO, ConsoleColor.White);
 
             TcpListener server = new TcpListener(
                 IPAddress.Parse(address.IpAddress), address.PortNumber);
@@ -231,7 +236,7 @@ namespace ToyBlockChain.App
                     new Address(inboundPayload.Body));
                 Logger.Log(
                     "Updated: Address added to routing table",
-                    1, ConsoleColor.Yellow);
+                    Logger.INFO, ConsoleColor.Yellow);
             }
             else if (header == Protocol.ANNOUNCE_TRANSACTION)
             {
@@ -262,7 +267,8 @@ namespace ToyBlockChain.App
             {
                 _routingTable = new RoutingTable(inboundPayload.Body);
                 Logger.Log(
-                    "Updated: Routing table synced", 1, ConsoleColor.Yellow);
+                    "Updated: Routing table synced",
+                    Logger.INFO, ConsoleColor.Yellow);
             }
             else if (header == Protocol.RESPONSE_BLOCKCHAIN)
             {

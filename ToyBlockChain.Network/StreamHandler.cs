@@ -21,7 +21,7 @@ namespace ToyBlockChain.Network
             Payload inboundPayload = new Payload(inboundString);
             Logger.Log(
                 $"Received: {inboundPayload.ToSerializedString()}",
-                1, ConsoleColor.Green);
+                Logger.INFO, ConsoleColor.Green);
             return inboundPayload;
         }
 
@@ -36,7 +36,7 @@ namespace ToyBlockChain.Network
                 outboundPayload.ToSerializedBytes().Length);
             Logger.Log(
                 $"Sent: {outboundPayload.ToSerializedString()}",
-                1, ConsoleColor.Red);
+                Logger.INFO, ConsoleColor.Red);
         }
     }
 }

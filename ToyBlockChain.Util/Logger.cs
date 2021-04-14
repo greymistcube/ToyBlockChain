@@ -4,6 +4,8 @@ namespace ToyBlockChain.Util
 {
     public static class Logger
     {
+        public const int INFO = 1;
+        public const int DEBUG = 2;
         private static int _logLevel = 0;
 
         public static int LogLevel
