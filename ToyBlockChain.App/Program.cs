@@ -57,8 +57,11 @@ namespace ToyBlockChain.App
 
             _seedAddress = new Address(Const.IP_ADDRESS, Const.PORT_NUM_SEED);
 
+            Payload outboundPayload;
+
             Node node = new Node();
 
+            // Get address for this node and sync routing table if necessary.
             if (_seed)
             {
                 Logger.Log(
@@ -67,16 +70,14 @@ namespace ToyBlockChain.App
 
                 _address = _seedAddress;
                 _routingTable = new RoutingTable();
-                _routingTable.AddAddress(_address);
             }
             else
             {
                 Logger.Log(
                     "Running as a non-seed node...",
                     Logger.INFO, ConsoleColor.Blue);
-                Payload outboundPayload;
-                Payload inboundPayload;
 
+                // TODO: Handle port collision.
                 // Generate a new random address.
                 Random rnd = new Random();
                 _address = new Address(
@@ -87,16 +88,14 @@ namespace ToyBlockChain.App
                 outboundPayload = new Payload(
                     Protocol.REQUEST_ROUTING_TABLE, "");
                 Request(_seedAddress, outboundPayload);
-
-                // Update the routing table for this node.
-
-                // Add the address for this node and announce the address
-                // to update the routing tables accross the network.
-                _routingTable.AddAddress(_address);
-                inboundPayload = new Payload(
-                    Protocol.ANNOUNCE_ADDRESS, _address.ToSerializedString());
-                Announce(inboundPayload);
             }
+
+            // Add the address for this node and announce the address
+            // to update the routing tables accross the network.
+            _routingTable.AddAddress(_address);
+            outboundPayload = new Payload(
+                Protocol.ANNOUNCE_ADDRESS, _address.ToSerializedString());
+            Announce(outboundPayload);
 
             Listen(_address);
         }
