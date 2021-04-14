@@ -16,9 +16,8 @@ namespace ToyBlockChain.Network
 
         public Payload(string serializedString)
         {
-            string[] strings = serializedString.Split(',', 2);
-            _header = strings[0];
-            _body = strings[1];
+            _header = serializedString[..Protocol.HEADER_SIZE];
+            _body = serializedString[Protocol.HEADER_SIZE..];
         }
 
         public string Header
@@ -39,7 +38,7 @@ namespace ToyBlockChain.Network
 
         public string ToSerializedString()
         {
-            return $"{_header},{_body}";
+            return $"{_header}{_body}";
         }
 
         public byte[] ToSerializedBytes()
