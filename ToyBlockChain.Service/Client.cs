@@ -43,10 +43,10 @@ namespace ToyBlockChain.Service
 
             while(true)
             {
-                List<string> addressBook = _node.AddressBook;
+                List<string> accounts = _node.Accounts;
 
                 value = rnd.NextDouble();
-                recipient = addressBook[rnd.Next(addressBook.Count)];
+                recipient = accounts[rnd.Next(accounts.Count)];
                 if (transaction == null
                     || !_node.HasTransactionInPool(transaction))
                 {
