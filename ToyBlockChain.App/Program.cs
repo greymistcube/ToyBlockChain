@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -72,8 +73,8 @@ namespace ToyBlockChain.App
             else
             {
                 Log("Running as a non-seed node...", ConsoleColor.Blue);
-                Payload requestPayload;
-                Payload responsePayload;
+                Payload outboundPayload;
+                Payload inboundPayload;
 
                 // Generate a new random address.
                 Random rnd = new Random();
@@ -82,19 +83,18 @@ namespace ToyBlockChain.App
                     rnd.Next(Const.PORT_NUM_MIN, Const.PORT_NUM_MAX));
 
                 // Request for the routing table from a seed node.
-                requestPayload = new Payload(
+                outboundPayload = new Payload(
                     Protocol.REQUEST_ROUTING_TABLE, "");
-                responsePayload = Request(_seedAddress, requestPayload);
+                Request(_seedAddress, outboundPayload);
 
                 // Update the routing table for this node.
-                _routingTable = new RoutingTable(responsePayload.Body);
-                _routingTable.AddAddress(_address);
 
-                // Announce the address for this node to update
-                // the routing table accross the network.
-                requestPayload = new Payload(
+                // Add the address for this node and announce the address
+                // to update the routing tables accross the network.
+                _routingTable.AddAddress(_address);
+                inboundPayload = new Payload(
                     Protocol.ANNOUNCE_ADDRESS, _address.ToSerializedString());
-                Announce(requestPayload);
+                Announce(inboundPayload);
             }
 
             Listen(_address);
@@ -108,39 +108,23 @@ namespace ToyBlockChain.App
                 IPAddress.Parse(address.IpAddress), address.PortNumber);
             server.Start();
 
-            int numBytesRead = 0;
-            byte[] requestBytes = new byte[Protocol.BUFFER_SIZE];
-            string requestString = null;
-            Payload requestPayload = null;
-
             while (true)
             {
                 TcpClient client = server.AcceptTcpClient();
                 NetworkStream stream = client.GetStream();
 
-                numBytesRead = stream.Read(
-                    requestBytes, 0, requestBytes.Length);
-                requestString = Encoding.UTF8.GetString(
-                    requestBytes, 0, numBytesRead);
-                requestPayload = new Payload(requestString);
-                Log($"Received: {requestPayload.ToSerializedString()}",
-                    ConsoleColor.Green);
+                Payload inboundPayload = ReadPayload(stream);
+                ProcessInboundPayload(stream, inboundPayload);
 
-                Payload responsePayload = ProcessRequestPayload(requestPayload);
-                if (responsePayload != null)
-                {
-                    stream.Write(
-                        responsePayload.ToSerializedBytes(), 0,
-                        responsePayload.ToSerializedBytes().Length);
-                    Log($"Sent: {responsePayload.ToSerializedString()}",
-                        ConsoleColor.Red);
-                }
                 stream.Close();
                 client.Close();
             }
         }
 
-        static Payload Request(Address address, Payload requestPayload)
+        /// <summary>
+        /// Makes a data request to given address.
+        /// </summary>
+        static void Request(Address address, Payload outboundPayload)
         {
             // connect and prepare to stream
             TcpClient client = new TcpClient(
@@ -148,32 +132,21 @@ namespace ToyBlockChain.App
             NetworkStream stream = client.GetStream();
 
             // send data
-            stream.Write(
-                requestPayload.ToSerializedBytes(), 0,
-                requestPayload.ToSerializedBytes().Length);
-            Log($"Sent: {requestPayload.ToSerializedString()}",
-                ConsoleColor.Red);
+            WritePayload(stream, outboundPayload);
 
-            // receive data
-            byte[] responseBytes = new byte[Protocol.BUFFER_SIZE];
-            string responseString = null;
-            int responseLength = stream.Read(
-                responseBytes, 0, responseBytes.Length);
-            responseString = Encoding.UTF8.GetString(
-                responseBytes, 0, responseLength);
-            Payload responsePayload = new Payload(responseString);
-            Log($"Received: {responsePayload.ToSerializedString()}",
-                ConsoleColor.Green);
-            ProcessResponsePayload(responsePayload);
+            // receive data and process
+            Payload inboundPayload = ReadPayload(stream);
+            ProcessInboundPayload(null, inboundPayload);
 
             // cleanup
             stream.Close();
             client.Close();
-
-            return responsePayload;
         }
 
-        static void Announce(Payload requestPayload)
+        /// <summary>
+        /// Announce to all addresses except this node's address.
+        /// </summary>
+        static void Announce(Payload outboundPayload)
         {
             foreach (Address address in _routingTable.Routes)
             {
@@ -185,11 +158,7 @@ namespace ToyBlockChain.App
                     NetworkStream stream = client.GetStream();
 
                     // send data
-                    stream.Write(
-                        requestPayload.ToSerializedBytes(), 0,
-                        requestPayload.ToSerializedBytes().Length);
-                    Log($"Sent: {requestPayload.ToSerializedString()}",
-                        ConsoleColor.Red);
+                    WritePayload(stream, outboundPayload);
 
                     // cleanup
                     stream.Close();
@@ -198,37 +167,148 @@ namespace ToyBlockChain.App
             }
         }
 
-        static Payload ProcessRequestPayload(Payload requestPayload)
+        /// <summary>
+        /// Read payload from given network stream.
+        /// </summary>
+        public static Payload ReadPayload(NetworkStream stream)
+        {
+            byte[] inboundBytes = new byte[Protocol.BUFFER_SIZE];
+            string inboundString = null;
+            int numBytesRead = stream.Read(
+                inboundBytes, 0, inboundBytes.Length);
+            inboundString = Encoding.UTF8.GetString(
+                inboundBytes, 0, numBytesRead);
+            Payload inboundPayload = new Payload(inboundString);
+            Log($"Received: {inboundPayload.ToSerializedString()}",
+                ConsoleColor.Green);
+            return inboundPayload;
+        }
+
+        /// <summary>
+        /// Write payload to given network stream.
+        /// </summary>
+        private static void WritePayload(
+            NetworkStream stream, Payload outboundPayload)
+        {
+            stream.Write(
+                outboundPayload.ToSerializedBytes(), 0,
+                outboundPayload.ToSerializedBytes().Length);
+            Log($"Sent: {outboundPayload.ToSerializedString()}",
+                ConsoleColor.Red);
+        }
+
+        /// <summary>
+        /// Processes an incoming payload.
+        /// </summary>
+        private static void ProcessInboundPayload(
+            NetworkStream stream, Payload inboundPayload)
+        {
+            string header = inboundPayload.Header;
+            if (Protocol.REQUEST.Contains(header))
+            {
+                ProcessRequestPayload(stream, inboundPayload);
+            }
+            else if (Protocol.ANNOUNCE.Contains(header))
+            {
+                ProcessAnnouncePayload(inboundPayload);
+            }
+            else if (Protocol.RESPONSE.Contains(header))
+            {
+                ProcessResponsePayload(inboundPayload);
+            }
+            else
+            {
+                throw new ArgumentException(
+                    $"invalid protocol header: {header}");
+            }
+        }
+
+        /// <summary>
+        /// Processes an incoming payload with a request header.
+        /// </summary>
+        private static void ProcessRequestPayload(
+            NetworkStream stream, Payload inboundPayload)
         {
             // TODO: Below is a placeholder.
             // This should be more fully fledged out.
-            if (requestPayload.Header == Protocol.REQUEST_ROUTING_TABLE)
+            string header = inboundPayload.Header;
+            if (header == Protocol.REQUEST_ROUTING_TABLE)
             {
-                return new Payload(
+                Payload outboundPayload = new Payload(
                     Protocol.RESPONSE_ROUTING_TABLE,
                     _routingTable.ToSerializedString());
+                WritePayload(stream, outboundPayload);
             }
-            else if (requestPayload.Header == Protocol.ANNOUNCE_ADDRESS)
+            else if (header == Protocol.REQUEST_BLOCKCHAIN)
             {
-                _routingTable.AddAddress(
-                    new Address(requestPayload.Body));
-                Log("Updated: Routing Table", ConsoleColor.Yellow);
-                return null;
+                throw new NotImplementedException(
+                    $"invalid protocol header: {header}");
             }
-            return null;
+            else
+            {
+                throw new ArgumentException(
+                    $"invalid protocol header: {header}");
+            }
         }
 
-        static void ProcessResponsePayload(Payload responsePayload)
+        /// <summary>
+        /// Processes an incoming payload with an announce header.
+        /// </summary>
+        private static void ProcessAnnouncePayload(Payload inboundPayload)
+        {
+            string header = inboundPayload.Header;
+            if (header == Protocol.ANNOUNCE_ADDRESS)
+            {
+                _routingTable.AddAddress(
+                    new Address(inboundPayload.Body));
+                Log("Updated: Address added to routing table",
+                    ConsoleColor.Yellow);
+            }
+            else if (header == Protocol.ANNOUNCE_TRANSACTION)
+            {
+                throw new NotImplementedException(
+                    $"invalid protocol header: {header}");
+            }
+            else if (header == Protocol.ANNOUNCE_BLOCK)
+            {
+                throw new NotImplementedException(
+                    $"invalid protocol header: {header}");
+            }
+            else
+            {
+                throw new ArgumentException(
+                    $"invalid protocol header: {header}");
+            }
+        }
+
+        /// <summary>
+        /// Processes an incoming payload with a response header.
+        /// </summary>
+        private static void ProcessResponsePayload(Payload inboundPayload)
         {
             // TODO: Below is a placeholder.
             // This should be more fully fledged out.
-            if (responsePayload.Header == Protocol.RESPONSE_ROUTING_TABLE)
+            string header = inboundPayload.Header;
+            if (header == Protocol.RESPONSE_ROUTING_TABLE)
             {
-                _routingTable = new RoutingTable(responsePayload.Body);
-                Log("Updated: Routing Table", ConsoleColor.Yellow);
+                _routingTable = new RoutingTable(inboundPayload.Body);
+                Log("Updated: Routing table synced", ConsoleColor.Yellow);
+            }
+            else if (header == Protocol.RESPONSE_BLOCKCHAIN)
+            {
+                throw new NotImplementedException(
+                    $"invalid protocol header: {header}");
+            }
+            else
+            {
+                throw new ArgumentException(
+                    $"invalid protocol header: {header}");
             }
         }
 
+        /// <summary>
+        /// Simple helper method to log output.
+        /// </summary>
         static void Log(
             string text,
             System.ConsoleColor color = ConsoleColor.White)
