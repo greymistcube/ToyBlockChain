@@ -15,7 +15,8 @@ namespace ToyBlockChain.App
     {
         private static bool _seed;
         private static int _logLevel;
-        private static Address _seedAddress;
+        private static Address _SEED_ADDRESS = new Address(
+            Const.IP_ADDRESS, Const.PORT_NUM_SEED);
         private static Address _address;
         private static RoutingTable _routingTable;
 
@@ -55,53 +56,149 @@ namespace ToyBlockChain.App
             _logLevel = options.LogLevel;
             Logger.LogLevel = _logLevel;
 
-            _seedAddress = new Address(Const.IP_ADDRESS, Const.PORT_NUM_SEED);
+            Payload outboundPayload;
 
-            Node node = new Node();
-
+            // Get address for this node and sync routing table if necessary.
             if (_seed)
             {
                 Logger.Log(
                     "Running as a seed node...",
                     Logger.INFO, ConsoleColor.Blue);
-
-                _address = _seedAddress;
-                _routingTable = new RoutingTable();
-                _routingTable.AddAddress(_address);
             }
             else
             {
                 Logger.Log(
                     "Running as a non-seed node...",
                     Logger.INFO, ConsoleColor.Blue);
-                Payload outboundPayload;
-                Payload inboundPayload;
+            }
 
-                // Generate a new random address.
-                Random rnd = new Random();
-                _address = new Address(
-                    Const.IP_ADDRESS,
-                    rnd.Next(Const.PORT_NUM_MIN, Const.PORT_NUM_MAX));
+            // Create a new routing table and sync.
+            _routingTable = new RoutingTable();
+            if (!_seed)
+            {
+                SyncRoutingTable();
+            }
 
-                // Request for the routing table from a seed node.
-                outboundPayload = new Payload(
-                    Protocol.REQUEST_ROUTING_TABLE, "");
-                Request(_seedAddress, outboundPayload);
+            // Set address for this node.
+            _address = GetLocalAddress();
 
-                // Update the routing table for this node.
+            // Add the address for this node and announce the address
+            // to update the routing tables accross the network.
+            _routingTable.AddAddress(_address);
+            outboundPayload = new Payload(
+                Protocol.ANNOUNCE_ADDRESS, _address.ToSerializedString());
+            Announce(outboundPayload);
 
-                // Add the address for this node and announce the address
-                // to update the routing tables accross the network.
-                _routingTable.AddAddress(_address);
-                inboundPayload = new Payload(
-                    Protocol.ANNOUNCE_ADDRESS, _address.ToSerializedString());
-                Announce(inboundPayload);
+            Node node = new Node();
+            if (!_seed)
+            {
+                Address address = GetRandomAddress();
+                SyncNode(address);
             }
 
             Listen(_address);
         }
 
-        static void Listen(Address address)
+        /// <summary>
+        /// Syncs the routing table to the one kept by a seed node.
+        /// This method makes a request to a seed node to retrieve
+        /// the routing table and the local routing table is updated.
+        /// Actual update is done when processing the payload received
+        /// as a result of making the request.
+        /// </summary>
+        private static void SyncRoutingTable()
+        {
+            // Basic sanity check.
+            if (_seed)
+            {
+                throw new ArgumentException(
+                    "seed node cannot sync routing table");
+            }
+
+            Payload outboundPayload = new Payload(
+                Protocol.REQUEST_ROUTING_TABLE, "");
+            Request(_SEED_ADDRESS, outboundPayload);
+        }
+
+        private static void SyncNode(Address address)
+        {
+            // Basic sanity check.
+            if (_address == address)
+            {
+                throw new ArgumentException(
+                    $"cannot sync to self: {address.ToSerializedString()}");
+            }
+
+            // TODO: Implement
+            // SyncBlockChain(address)
+            // SyncAccountTable(address)
+        }
+
+        private static void SyncBlockChain(Address address)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static void SyncAccountTable(Address address)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static Address GetLocalAddress()
+        {
+            if (_seed)
+            {
+                return _SEED_ADDRESS;
+            }
+            else
+            {
+                // Generate a new random address that is not already in
+                // the routing table.
+                Random rnd = new Random();
+                while (true)
+                {
+                    Address address = new Address(
+                        Const.IP_ADDRESS,
+                        rnd.Next(Const.PORT_NUM_MIN, Const.PORT_NUM_MAX));
+                    if (!_routingTable.Routes.Contains(address))
+                    {
+                        return address;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get a random address from the routing table excluding
+        /// this node's address.
+        /// </summary>
+        private static Address GetRandomAddress()
+        {
+            if (_routingTable.Routes.Count <= 1)
+            {
+                throw new MethodAccessException(
+                    "invalid access; routing table size too small: "
+                    + $"{_routingTable.Routes.Count}");
+            }
+            else
+            {
+                Address address;
+                Random rnd = new Random();
+                int idx;
+
+                idx = rnd.Next(_routingTable.Routes.Count);
+                address = _routingTable.Routes[idx];
+                if (_address.Equals(address))
+                {
+                    idx = (idx + 1) + rnd.Next(_routingTable.Routes.Count - 1);
+                    idx = idx % _routingTable.Routes.Count;
+                    address = _routingTable.Routes[idx];
+                }
+                return address;
+            }
+        }
+
+        private static void Listen(Address address)
         {
             Logger.Log(
                 "Starting to listen...",
@@ -127,7 +224,7 @@ namespace ToyBlockChain.App
         /// <summary>
         /// Makes a data request to given address.
         /// </summary>
-        static void Request(Address address, Payload outboundPayload)
+        private static void Request(Address address, Payload outboundPayload)
         {
             // connect and prepare to stream
             TcpClient client = new TcpClient(
@@ -147,9 +244,9 @@ namespace ToyBlockChain.App
         }
 
         /// <summary>
-        /// Announce to all addresses except this node's address.
+        /// Announces to all addresses except this node's address.
         /// </summary>
-        static void Announce(Payload outboundPayload)
+        private static void Announce(Payload outboundPayload)
         {
             foreach (Address address in _routingTable.Routes)
             {
@@ -265,7 +362,7 @@ namespace ToyBlockChain.App
             string header = inboundPayload.Header;
             if (header == Protocol.RESPONSE_ROUTING_TABLE)
             {
-                _routingTable = new RoutingTable(inboundPayload.Body);
+                _routingTable.Sync(inboundPayload.Body);
                 Logger.Log(
                     "Updated: Routing table synced",
                     Logger.INFO, ConsoleColor.Yellow);

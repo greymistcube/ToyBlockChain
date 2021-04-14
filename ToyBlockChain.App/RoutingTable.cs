@@ -72,14 +72,14 @@ namespace ToyBlockChain.App
 
     public class RoutingTable
     {
-        private readonly List<Address> _routes;
+        private List<Address> _routes;
 
         public RoutingTable()
         {
             _routes = new List<Address>();
         }
 
-        public RoutingTable(string serializedString)
+        public void Sync(string serializedString)
         {
             _routes = new List<Address>();
             string[] addressStrings = serializedString.Split(',');
