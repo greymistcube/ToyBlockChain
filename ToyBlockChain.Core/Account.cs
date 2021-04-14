@@ -5,6 +5,7 @@ namespace ToyBlockChain.Core
 {
     public class Account
     {
+        public const string SEPARATOR = "<A>";
         private string _address;
         private int _balance;
 
@@ -16,7 +17,7 @@ namespace ToyBlockChain.Core
 
         public Account(string serializedString)
         {
-            string[] strings = serializedString.Split(',');
+            string[] strings = serializedString.Split(SEPARATOR);
             _address = strings[0];
             _balance = Int32.Parse(strings[1]);
         }
@@ -39,7 +40,7 @@ namespace ToyBlockChain.Core
 
         public string ToSerializedString()
         {
-            return $"{_address},{_balance}";
+            return $"{_address}{SEPARATOR}{_balance}";
         }
 
         public byte[] ToSerializedBytes()

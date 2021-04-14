@@ -21,14 +21,14 @@ namespace ToyBlockChain.App
             string[] addressStrings = serializedString.Split(SEPARATOR);
             foreach (string addressString in addressStrings)
             {
-                _routes.Add(new Address(addressString));
+                Address address = new Address(addressString);
+                _routes.Add(address);
             }
         }
 
         public void AddAddress(Address address)
         {
             _routes.Add(address);
-            return;
         }
 
         public string ToSerializedString()
