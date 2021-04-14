@@ -7,6 +7,7 @@ namespace ToyBlockChain.App
 {
     public class RoutingTable
     {
+        public const string SEPARATOR = "<RT>";
         private List<Address> _routes;
 
         public RoutingTable()
@@ -17,7 +18,7 @@ namespace ToyBlockChain.App
         public void Sync(string serializedString)
         {
             _routes = new List<Address>();
-            string[] addressStrings = serializedString.Split(',');
+            string[] addressStrings = serializedString.Split(SEPARATOR);
             foreach (string addressString in addressStrings)
             {
                 _routes.Add(new Address(addressString));
@@ -32,7 +33,9 @@ namespace ToyBlockChain.App
 
         public string ToSerializedString()
         {
-            return String.Join(',', _routes.Select(address => address.ToSerializedString()));
+            return String.Join(
+                SEPARATOR,
+                _routes.Select(address => address.ToSerializedString()));
         }
 
         public byte[] ToSerializedBytes()

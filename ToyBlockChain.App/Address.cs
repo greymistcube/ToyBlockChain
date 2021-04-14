@@ -5,6 +5,7 @@ namespace ToyBlockChain.App
 {
     public class Address
     {
+        public const string SEPARATOR = "<A>";
         private readonly string _ipAddress;
         private readonly int _portNumber;
 
@@ -16,7 +17,7 @@ namespace ToyBlockChain.App
 
         public Address(string serializedString)
         {
-            string[] strings = serializedString.Split(':');
+            string[] strings = serializedString.Split(SEPARATOR);
             _ipAddress = strings[0];
             _portNumber = Int32.Parse(strings[1]);
         }
@@ -39,7 +40,7 @@ namespace ToyBlockChain.App
 
         public string ToSerializedString()
         {
-            return $"{_ipAddress}:{_portNumber}";
+            return $"{_ipAddress}{SEPARATOR}{_portNumber}";
         }
 
         public byte[] ToSerializedBytes()
