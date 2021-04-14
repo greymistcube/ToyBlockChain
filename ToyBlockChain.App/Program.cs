@@ -15,7 +15,8 @@ namespace ToyBlockChain.App
     {
         private static bool _seed;
         private static int _logLevel;
-        private static Address _seedAddress;
+        private static Address _SEED_ADDRESS = new Address(
+            Const.IP_ADDRESS, Const.PORT_NUM_SEED);
         private static Address _address;
         private static RoutingTable _routingTable;
 
@@ -55,8 +56,6 @@ namespace ToyBlockChain.App
             _logLevel = options.LogLevel;
             Logger.LogLevel = _logLevel;
 
-            _seedAddress = new Address(Const.IP_ADDRESS, Const.PORT_NUM_SEED);
-
             Payload outboundPayload;
 
             Node node = new Node();
@@ -67,8 +66,6 @@ namespace ToyBlockChain.App
                 Logger.Log(
                     "Running as a seed node...",
                     Logger.INFO, ConsoleColor.Blue);
-
-                _address = _seedAddress;
                 _routingTable = new RoutingTable();
             }
             else
@@ -77,17 +74,25 @@ namespace ToyBlockChain.App
                     "Running as a non-seed node...",
                     Logger.INFO, ConsoleColor.Blue);
 
+                // Request for the routing table from a seed node.
+                outboundPayload = new Payload(
+                    Protocol.REQUEST_ROUTING_TABLE, "");
+                Request(_SEED_ADDRESS, outboundPayload);
+            }
+
+            // Set address for this node.
+            if (_seed)
+            {
+                _address = _SEED_ADDRESS;
+            }
+            else
+            {
                 // TODO: Handle port collision.
                 // Generate a new random address.
                 Random rnd = new Random();
                 _address = new Address(
                     Const.IP_ADDRESS,
                     rnd.Next(Const.PORT_NUM_MIN, Const.PORT_NUM_MAX));
-
-                // Request for the routing table from a seed node.
-                outboundPayload = new Payload(
-                    Protocol.REQUEST_ROUTING_TABLE, "");
-                Request(_seedAddress, outboundPayload);
             }
 
             // Add the address for this node and announce the address
@@ -100,7 +105,7 @@ namespace ToyBlockChain.App
             Listen(_address);
         }
 
-        static void Listen(Address address)
+        private static void Listen(Address address)
         {
             Logger.Log(
                 "Starting to listen...",
@@ -126,7 +131,7 @@ namespace ToyBlockChain.App
         /// <summary>
         /// Makes a data request to given address.
         /// </summary>
-        static void Request(Address address, Payload outboundPayload)
+        private static void Request(Address address, Payload outboundPayload)
         {
             // connect and prepare to stream
             TcpClient client = new TcpClient(
@@ -148,7 +153,7 @@ namespace ToyBlockChain.App
         /// <summary>
         /// Announce to all addresses except this node's address.
         /// </summary>
-        static void Announce(Payload outboundPayload)
+        private static void Announce(Payload outboundPayload)
         {
             foreach (Address address in _routingTable.Routes)
             {
