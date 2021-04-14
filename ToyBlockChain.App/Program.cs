@@ -58,42 +58,26 @@ namespace ToyBlockChain.App
 
             Payload outboundPayload;
 
-            Node node = new Node();
-
             // Get address for this node and sync routing table if necessary.
             if (_seed)
             {
                 Logger.Log(
                     "Running as a seed node...",
                     Logger.INFO, ConsoleColor.Blue);
-                _routingTable = new RoutingTable();
             }
             else
             {
                 Logger.Log(
                     "Running as a non-seed node...",
                     Logger.INFO, ConsoleColor.Blue);
-
-                // Request for the routing table from a seed node.
-                outboundPayload = new Payload(
-                    Protocol.REQUEST_ROUTING_TABLE, "");
-                Request(_SEED_ADDRESS, outboundPayload);
             }
+
+            // Create a new routing table and sync.
+            _routingTable = new RoutingTable();
+            SyncRoutingTable();
 
             // Set address for this node.
-            if (_seed)
-            {
-                _address = _SEED_ADDRESS;
-            }
-            else
-            {
-                // TODO: Handle port collision.
-                // Generate a new random address.
-                Random rnd = new Random();
-                _address = new Address(
-                    Const.IP_ADDRESS,
-                    rnd.Next(Const.PORT_NUM_MIN, Const.PORT_NUM_MAX));
-            }
+            _address = GetLocalAddress();
 
             // Add the address for this node and announce the address
             // to update the routing tables accross the network.
@@ -102,7 +86,56 @@ namespace ToyBlockChain.App
                 Protocol.ANNOUNCE_ADDRESS, _address.ToSerializedString());
             Announce(outboundPayload);
 
+            Node node = new Node();
+            // TODO: Implement.
+            // SyncBlockChain();
+            // SyncAccountTable();
+
             Listen(_address);
+        }
+
+        /// <summary>
+        /// Syncs the routing table to the one kept by a seed node.
+        /// This method makes a request to a seed node to retrieve
+        /// the routing table and the local routing table is updated.
+        /// Actual update is done when processing the payload received
+        /// as a result of making the request.
+        /// </summary>
+        private static void SyncRoutingTable()
+        {
+            if (!_seed)
+            {
+                Payload outboundPayload = new Payload(
+                    Protocol.REQUEST_ROUTING_TABLE, "");
+                Request(_SEED_ADDRESS, outboundPayload);
+            }
+        }
+
+        private static void SyncBlockChain()
+        {
+            throw new NotImplementedException();
+        }
+
+        private static void SyncAccountTable()
+        {
+            throw new NotImplementedException();
+        }
+
+        private static Address GetLocalAddress()
+        {
+            if (_seed)
+            {
+                return _SEED_ADDRESS;
+            }
+            else
+            {
+                // TODO: Handle port collision.
+                // Generate a new random address.
+                Random rnd = new Random();
+                return new Address(
+                    Const.IP_ADDRESS,
+                    rnd.Next(Const.PORT_NUM_MIN, Const.PORT_NUM_MAX));
+            }
         }
 
         private static void Listen(Address address)
@@ -151,7 +184,7 @@ namespace ToyBlockChain.App
         }
 
         /// <summary>
-        /// Announce to all addresses except this node's address.
+        /// Announces to all addresses except this node's address.
         /// </summary>
         private static void Announce(Payload outboundPayload)
         {
@@ -269,7 +302,7 @@ namespace ToyBlockChain.App
             string header = inboundPayload.Header;
             if (header == Protocol.RESPONSE_ROUTING_TABLE)
             {
-                _routingTable = new RoutingTable(inboundPayload.Body);
+                _routingTable.Sync(inboundPayload.Body);
                 Logger.Log(
                     "Updated: Routing table synced",
                     Logger.INFO, ConsoleColor.Yellow);
