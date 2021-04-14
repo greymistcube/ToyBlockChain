@@ -114,11 +114,8 @@ namespace ToyBlockChain.App
                 NetworkStream stream = client.GetStream();
 
                 Payload inboundPayload = ReadPayload(stream);
-                Payload outboundPayload = ProcessInboundPayload(inboundPayload);
-                if (outboundPayload != null)
-                {
-                    WritePayload(stream, outboundPayload);
-                }
+                ProcessInboundPayload(stream, inboundPayload);
+
                 stream.Close();
                 client.Close();
             }
@@ -139,7 +136,7 @@ namespace ToyBlockChain.App
 
             // receive data and process
             Payload inboundPayload = ReadPayload(stream);
-            ProcessInboundPayload(inboundPayload);
+            ProcessInboundPayload(null, inboundPayload);
 
             // cleanup
             stream.Close();
@@ -170,6 +167,9 @@ namespace ToyBlockChain.App
             }
         }
 
+        /// <summary>
+        /// Read payload from given network stream.
+        /// </summary>
         public static Payload ReadPayload(NetworkStream stream)
         {
             byte[] inboundBytes = new byte[Protocol.BUFFER_SIZE];
@@ -184,7 +184,10 @@ namespace ToyBlockChain.App
             return inboundPayload;
         }
 
-        public static void WritePayload(
+        /// <summary>
+        /// Write payload to given network stream.
+        /// </summary>
+        private static void WritePayload(
             NetworkStream stream, Payload outboundPayload)
         {
             stream.Write(
@@ -197,22 +200,21 @@ namespace ToyBlockChain.App
         /// <summary>
         /// Processes an incoming payload.
         /// </summary>
-        public static Payload ProcessInboundPayload(Payload payload)
+        private static void ProcessInboundPayload(
+            NetworkStream stream, Payload inboundPayload)
         {
-            string header = payload.Header;
+            string header = inboundPayload.Header;
             if (Protocol.REQUEST.Contains(header))
             {
-                return ProcessRequestPayload(payload);
+                ProcessRequestPayload(stream, inboundPayload);
             }
             else if (Protocol.ANNOUNCE.Contains(header))
             {
-                ProcessAnnouncePayload(payload);
-                return null;
+                ProcessAnnouncePayload(inboundPayload);
             }
             else if (Protocol.RESPONSE.Contains(header))
             {
-                ProcessResponsePayload(payload);
-                return null;
+                ProcessResponsePayload(inboundPayload);
             }
             else
             {
@@ -224,16 +226,18 @@ namespace ToyBlockChain.App
         /// <summary>
         /// Processes an incoming payload with a request header.
         /// </summary>
-        private static Payload ProcessRequestPayload(Payload requestPayload)
+        private static void ProcessRequestPayload(
+            NetworkStream stream, Payload inboundPayload)
         {
             // TODO: Below is a placeholder.
             // This should be more fully fledged out.
-            string header = requestPayload.Header;
+            string header = inboundPayload.Header;
             if (header == Protocol.REQUEST_ROUTING_TABLE)
             {
-                return new Payload(
+                Payload outboundPayload = new Payload(
                     Protocol.RESPONSE_ROUTING_TABLE,
                     _routingTable.ToSerializedString());
+                WritePayload(stream, outboundPayload);
             }
             else if (header == Protocol.REQUEST_BLOCKCHAIN)
             {
@@ -250,13 +254,13 @@ namespace ToyBlockChain.App
         /// <summary>
         /// Processes an incoming payload with an announce header.
         /// </summary>
-        private static void ProcessAnnouncePayload(Payload announcePayload)
+        private static void ProcessAnnouncePayload(Payload inboundPayload)
         {
-            string header = announcePayload.Header;
+            string header = inboundPayload.Header;
             if (header == Protocol.ANNOUNCE_ADDRESS)
             {
                 _routingTable.AddAddress(
-                    new Address(announcePayload.Body));
+                    new Address(inboundPayload.Body));
                 Log("Updated: Address added to routing table",
                     ConsoleColor.Yellow);
             }
@@ -280,14 +284,14 @@ namespace ToyBlockChain.App
         /// <summary>
         /// Processes an incoming payload with a response header.
         /// </summary>
-        private static void ProcessResponsePayload(Payload responsePayload)
+        private static void ProcessResponsePayload(Payload inboundPayload)
         {
             // TODO: Below is a placeholder.
             // This should be more fully fledged out.
-            string header = responsePayload.Header;
+            string header = inboundPayload.Header;
             if (header == Protocol.RESPONSE_ROUTING_TABLE)
             {
-                _routingTable = new RoutingTable(responsePayload.Body);
+                _routingTable = new RoutingTable(inboundPayload.Body);
                 Log("Updated: Routing table synced", ConsoleColor.Yellow);
             }
             else if (header == Protocol.RESPONSE_BLOCKCHAIN)
