@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToyBlockChain.App", "ToyBlo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToyBlockChain.Network", "ToyBlockChain.Network\ToyBlockChain.Network.csproj", "{1B058A53-E01F-4DC8-879D-3E9FC064C9CF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToyBlockChain.Util", "ToyBlockChain.Util\ToyBlockChain.Util.csproj", "{FFEE73CB-2CE5-4CB5-9A41-422A8DB42B20}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -100,5 +102,17 @@ Global
 		{1B058A53-E01F-4DC8-879D-3E9FC064C9CF}.Release|x64.Build.0 = Release|Any CPU
 		{1B058A53-E01F-4DC8-879D-3E9FC064C9CF}.Release|x86.ActiveCfg = Release|Any CPU
 		{1B058A53-E01F-4DC8-879D-3E9FC064C9CF}.Release|x86.Build.0 = Release|Any CPU
+		{FFEE73CB-2CE5-4CB5-9A41-422A8DB42B20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFEE73CB-2CE5-4CB5-9A41-422A8DB42B20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFEE73CB-2CE5-4CB5-9A41-422A8DB42B20}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FFEE73CB-2CE5-4CB5-9A41-422A8DB42B20}.Debug|x64.Build.0 = Debug|Any CPU
+		{FFEE73CB-2CE5-4CB5-9A41-422A8DB42B20}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FFEE73CB-2CE5-4CB5-9A41-422A8DB42B20}.Debug|x86.Build.0 = Debug|Any CPU
+		{FFEE73CB-2CE5-4CB5-9A41-422A8DB42B20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFEE73CB-2CE5-4CB5-9A41-422A8DB42B20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FFEE73CB-2CE5-4CB5-9A41-422A8DB42B20}.Release|x64.ActiveCfg = Release|Any CPU
+		{FFEE73CB-2CE5-4CB5-9A41-422A8DB42B20}.Release|x64.Build.0 = Release|Any CPU
+		{FFEE73CB-2CE5-4CB5-9A41-422A8DB42B20}.Release|x86.ActiveCfg = Release|Any CPU
+		{FFEE73CB-2CE5-4CB5-9A41-422A8DB42B20}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
