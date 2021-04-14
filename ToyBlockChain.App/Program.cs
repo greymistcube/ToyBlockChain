@@ -108,32 +108,16 @@ namespace ToyBlockChain.App
                 IPAddress.Parse(address.IpAddress), address.PortNumber);
             server.Start();
 
-            int numBytesRead = 0;
-            byte[] inboundBytes = new byte[Protocol.BUFFER_SIZE];
-            string inboundString = null;
-            Payload inboundPayload = null;
-
             while (true)
             {
                 TcpClient client = server.AcceptTcpClient();
                 NetworkStream stream = client.GetStream();
 
-                numBytesRead = stream.Read(
-                    inboundBytes, 0, inboundBytes.Length);
-                inboundString = Encoding.UTF8.GetString(
-                    inboundBytes, 0, numBytesRead);
-                inboundPayload = new Payload(inboundString);
-                Log($"Received: {inboundPayload.ToSerializedString()}",
-                    ConsoleColor.Green);
-
+                Payload inboundPayload = ReadPayload(stream);
                 Payload outboundPayload = ProcessInboundPayload(inboundPayload);
                 if (outboundPayload != null)
                 {
-                    stream.Write(
-                        outboundPayload.ToSerializedBytes(), 0,
-                        outboundPayload.ToSerializedBytes().Length);
-                    Log($"Sent: {outboundPayload.ToSerializedString()}",
-                        ConsoleColor.Red);
+                    WritePayload(stream, outboundPayload);
                 }
                 stream.Close();
                 client.Close();
@@ -151,22 +135,10 @@ namespace ToyBlockChain.App
             NetworkStream stream = client.GetStream();
 
             // send data
-            stream.Write(
-                outboundPayload.ToSerializedBytes(), 0,
-                outboundPayload.ToSerializedBytes().Length);
-            Log($"Sent: {outboundPayload.ToSerializedString()}",
-                ConsoleColor.Red);
+            WritePayload(stream, outboundPayload);
 
-            // receive data
-            byte[] inboundBytes = new byte[Protocol.BUFFER_SIZE];
-            string inboundString = null;
-            int numBytesRead = stream.Read(
-                inboundBytes, 0, inboundBytes.Length);
-            inboundString = Encoding.UTF8.GetString(
-                inboundBytes, 0, numBytesRead);
-            Payload inboundPayload = new Payload(inboundString);
-            Log($"Received: {inboundPayload.ToSerializedString()}",
-                ConsoleColor.Green);
+            // receive data and process
+            Payload inboundPayload = ReadPayload(stream);
             ProcessInboundPayload(inboundPayload);
 
             // cleanup
@@ -177,7 +149,7 @@ namespace ToyBlockChain.App
         /// <summary>
         /// Announce to all addresses except this node's address.
         /// </summary>
-        static void Announce(Payload requestPayload)
+        static void Announce(Payload outboundPayload)
         {
             foreach (Address address in _routingTable.Routes)
             {
@@ -189,17 +161,37 @@ namespace ToyBlockChain.App
                     NetworkStream stream = client.GetStream();
 
                     // send data
-                    stream.Write(
-                        requestPayload.ToSerializedBytes(), 0,
-                        requestPayload.ToSerializedBytes().Length);
-                    Log($"Sent: {requestPayload.ToSerializedString()}",
-                        ConsoleColor.Red);
+                    WritePayload(stream, outboundPayload);
 
                     // cleanup
                     stream.Close();
                     client.Close();
                 }
             }
+        }
+
+        public static Payload ReadPayload(NetworkStream stream)
+        {
+            byte[] inboundBytes = new byte[Protocol.BUFFER_SIZE];
+            string inboundString = null;
+            int numBytesRead = stream.Read(
+                inboundBytes, 0, inboundBytes.Length);
+            inboundString = Encoding.UTF8.GetString(
+                inboundBytes, 0, numBytesRead);
+            Payload inboundPayload = new Payload(inboundString);
+            Log($"Received: {inboundPayload.ToSerializedString()}",
+                ConsoleColor.Green);
+            return inboundPayload;
+        }
+
+        public static void WritePayload(
+            NetworkStream stream, Payload outboundPayload)
+        {
+            stream.Write(
+                outboundPayload.ToSerializedBytes(), 0,
+                outboundPayload.ToSerializedBytes().Length);
+            Log($"Sent: {outboundPayload.ToSerializedString()}",
+                ConsoleColor.Red);
         }
 
         /// <summary>
