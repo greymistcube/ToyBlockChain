@@ -58,7 +58,7 @@ namespace ToyBlockChain.Script
             int numClients = options.NumClients;
             int numMiners = options.NumMiners;
 
-            Node node = new Node(logLevel);
+            Node node = new Node();
 
             List<Client> clients = new List<Client>();
             List<Miner> miners = new List<Miner>();

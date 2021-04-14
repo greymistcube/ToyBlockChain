@@ -14,8 +14,7 @@ namespace ToyBlockChain.App
     public class Program
     {
         private static bool _seed;
-        private static bool _logging;
-        private static bool _verbose;
+        private static int _logLevel;
         private static Address _seedAddress;
         private static Address _address;
         private static RoutingTable _routingTable;
@@ -27,15 +26,10 @@ namespace ToyBlockChain.App
                 HelpText = "Make the node run as a seed.")]
             public bool Seed { get; set; }
 
-            [Option('l', "logging",
-                Default = false, Required = false,
-                HelpText = "Print output to a console.")]
-            public bool Logging { get; set; }
-
-            [Option('v', "verbose",
-                Default = false, Required = false,
-                HelpText = "Make the output verbose.")]
-            public bool Verbose { get; set; }
+            [Option('l', "loglevel",
+                Default = 0, Required = false,
+                HelpText = "Logging level.")]
+            public int LogLevel { get; set; }
 
             [Option('r', "clear",
                 Default = false, Required = false,
@@ -58,9 +52,8 @@ namespace ToyBlockChain.App
             }
 
             _seed = options.Seed;
-            _logging = options.Logging;
-            _verbose = options.Verbose;
-            Logger.Logging = _logging;
+            _logLevel = options.LogLevel;
+            Logger.LogLevel = _logLevel;
 
             _seedAddress = new Address(Const.IP_ADDRESS, Const.PORT_NUM_SEED);
 
@@ -68,7 +61,9 @@ namespace ToyBlockChain.App
 
             if (_seed)
             {
-                Logger.Log("Running as a seed node...", ConsoleColor.Blue);
+                Logger.Log(
+                    "Running as a seed node...",
+                    Logger.INFO, ConsoleColor.Blue);
 
                 _address = _seedAddress;
                 _routingTable = new RoutingTable();
@@ -76,7 +71,9 @@ namespace ToyBlockChain.App
             }
             else
             {
-                Logger.Log("Running as a non-seed node...", ConsoleColor.Blue);
+                Logger.Log(
+                    "Running as a non-seed node...",
+                    Logger.INFO, ConsoleColor.Blue);
                 Payload outboundPayload;
                 Payload inboundPayload;
 
@@ -106,7 +103,9 @@ namespace ToyBlockChain.App
 
         static void Listen(Address address)
         {
-            Logger.Log("Starting to listen...");
+            Logger.Log(
+                "Starting to listen...",
+                Logger.INFO, ConsoleColor.White);
 
             TcpListener server = new TcpListener(
                 IPAddress.Parse(address.IpAddress), address.PortNumber);
@@ -117,7 +116,7 @@ namespace ToyBlockChain.App
                 TcpClient client = server.AcceptTcpClient();
                 NetworkStream stream = client.GetStream();
 
-                Payload inboundPayload = ReadPayload(stream);
+                Payload inboundPayload = StreamHandler.ReadPayload(stream);
                 ProcessInboundPayload(stream, inboundPayload);
 
                 stream.Close();
@@ -136,10 +135,10 @@ namespace ToyBlockChain.App
             NetworkStream stream = client.GetStream();
 
             // send data
-            WritePayload(stream, outboundPayload);
+            StreamHandler.WritePayload(stream, outboundPayload);
 
             // receive data and process
-            Payload inboundPayload = ReadPayload(stream);
+            Payload inboundPayload = StreamHandler.ReadPayload(stream);
             ProcessInboundPayload(null, inboundPayload);
 
             // cleanup
@@ -162,43 +161,13 @@ namespace ToyBlockChain.App
                     NetworkStream stream = client.GetStream();
 
                     // send data
-                    WritePayload(stream, outboundPayload);
+                    StreamHandler.WritePayload(stream, outboundPayload);
 
                     // cleanup
                     stream.Close();
                     client.Close();
                 }
             }
-        }
-
-        /// <summary>
-        /// Read payload from given network stream.
-        /// </summary>
-        public static Payload ReadPayload(NetworkStream stream)
-        {
-            byte[] inboundBytes = new byte[Protocol.BUFFER_SIZE];
-            string inboundString = null;
-            int numBytesRead = stream.Read(
-                inboundBytes, 0, inboundBytes.Length);
-            inboundString = Encoding.UTF8.GetString(
-                inboundBytes, 0, numBytesRead);
-            Payload inboundPayload = new Payload(inboundString);
-            Logger.Log($"Received: {inboundPayload.ToSerializedString()}",
-                ConsoleColor.Green);
-            return inboundPayload;
-        }
-
-        /// <summary>
-        /// Write payload to given network stream.
-        /// </summary>
-        private static void WritePayload(
-            NetworkStream stream, Payload outboundPayload)
-        {
-            stream.Write(
-                outboundPayload.ToSerializedBytes(), 0,
-                outboundPayload.ToSerializedBytes().Length);
-            Logger.Log($"Sent: {outboundPayload.ToSerializedString()}",
-                ConsoleColor.Red);
         }
 
         /// <summary>
@@ -241,7 +210,7 @@ namespace ToyBlockChain.App
                 Payload outboundPayload = new Payload(
                     Protocol.RESPONSE_ROUTING_TABLE,
                     _routingTable.ToSerializedString());
-                WritePayload(stream, outboundPayload);
+                StreamHandler.WritePayload(stream, outboundPayload);
             }
             else if (header == Protocol.REQUEST_BLOCKCHAIN)
             {
@@ -265,8 +234,9 @@ namespace ToyBlockChain.App
             {
                 _routingTable.AddAddress(
                     new Address(inboundPayload.Body));
-                Logger.Log("Updated: Address added to routing table",
-                    ConsoleColor.Yellow);
+                Logger.Log(
+                    "Updated: Address added to routing table",
+                    Logger.INFO, ConsoleColor.Yellow);
             }
             else if (header == Protocol.ANNOUNCE_TRANSACTION)
             {
@@ -297,7 +267,8 @@ namespace ToyBlockChain.App
             {
                 _routingTable = new RoutingTable(inboundPayload.Body);
                 Logger.Log(
-                    "Updated: Routing table synced", ConsoleColor.Yellow);
+                    "Updated: Routing table synced",
+                    Logger.INFO, ConsoleColor.Yellow);
             }
             else if (header == Protocol.RESPONSE_BLOCKCHAIN)
             {
