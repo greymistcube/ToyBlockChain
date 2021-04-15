@@ -59,11 +59,19 @@ namespace ToyBlockChain.Core
             return Encoding.UTF8.GetBytes(ToSerializedString());
         }
 
-        public Dictionary<string, Account> Table
+        public Dictionary<string, Account> Catalogue
         {
             get
             {
                 return _catalogue;
+            }
+        }
+
+        public List<string> Addresses
+        {
+            get
+            {
+                return new List<string>(_catalogue.Keys.ToList());
             }
         }
     }
