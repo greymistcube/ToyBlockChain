@@ -185,6 +185,7 @@ namespace ToyBlockChain.App
             // TODO: Implement
             // SyncBlockChain(address)
             // SyncAccountTable(address)
+            // SyncTransactionPool(address)
         }
 
         private static void SyncBlockChain(Address address)
@@ -193,6 +194,11 @@ namespace ToyBlockChain.App
         }
 
         private static void SyncAccountTable(Address address)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static void SyncTransactionPool(Address address)
         {
             throw new NotImplementedException();
         }
@@ -396,10 +402,22 @@ namespace ToyBlockChain.App
             }
             else if (header == Protocol.ANNOUNCE_TRANSACTION)
             {
-                _node.RegisterTransaction(new Transaction(inboundPayload.Body));
-                Logger.Log(
-                    "Updated: Transaction added to transaction pool",
-                    Logger.INFO, ConsoleColor.Yellow);
+                try
+                {
+                    Transaction transaction = new Transaction(inboundPayload.Body);
+                    _node.RegisterTransaction(transaction);
+                    Logger.Log(
+                        $"Updated: Transaction {transaction.HashString[0..16]} "
+                        + "added to transaction pool",
+                        Logger.INFO, ConsoleColor.Yellow);
+                    Announce(inboundPayload);
+                }
+                catch (TransactionInPoolException)
+                {
+                    Logger.Log(
+                        "Info: Transaction already in transaction pool",
+                        Logger.INFO, ConsoleColor.Red);
+                }
             }
             else if (header == Protocol.ANNOUNCE_BLOCK)
             {
