@@ -161,7 +161,7 @@ namespace ToyBlockChain.App
                     Address address = new Address(
                         Const.IP_ADDRESS,
                         rnd.Next(Const.PORT_NUM_MIN, Const.PORT_NUM_MAX));
-                    if (!_routingTable.Routes.Contains(address))
+                    if (!_routingTable.Table.Contains(address))
                     {
                         return address;
                     }
@@ -175,11 +175,11 @@ namespace ToyBlockChain.App
         /// </summary>
         private static Address GetRandomAddress()
         {
-            if (_routingTable.Routes.Count <= 1)
+            if (_routingTable.Table.Count <= 1)
             {
                 throw new MethodAccessException(
                     "invalid access; routing table size too small: "
-                    + $"{_routingTable.Routes.Count}");
+                    + $"{_routingTable.Table.Count}");
             }
             else
             {
@@ -187,13 +187,13 @@ namespace ToyBlockChain.App
                 Random rnd = new Random();
                 int idx;
 
-                idx = rnd.Next(_routingTable.Routes.Count);
-                address = _routingTable.Routes[idx];
+                idx = rnd.Next(_routingTable.Table.Count);
+                address = _routingTable.Table[idx];
                 if (_address.Equals(address))
                 {
-                    idx = (idx + 1) + rnd.Next(_routingTable.Routes.Count - 1);
-                    idx = idx % _routingTable.Routes.Count;
-                    address = _routingTable.Routes[idx];
+                    idx = (idx + 1) + rnd.Next(_routingTable.Table.Count - 1);
+                    idx = idx % _routingTable.Table.Count;
+                    address = _routingTable.Table[idx];
                 }
                 return address;
             }
@@ -249,7 +249,7 @@ namespace ToyBlockChain.App
         /// </summary>
         private static void Announce(Payload outboundPayload)
         {
-            foreach (Address address in _routingTable.Routes)
+            foreach (Address address in _routingTable.Table)
             {
                 if (!_address.Equals(address))
                 {

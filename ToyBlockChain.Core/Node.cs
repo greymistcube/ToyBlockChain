@@ -16,7 +16,7 @@ namespace ToyBlockChain.Core
         private const int MINING_INTERVAL_LOWER_LIMIT = 4;
         private const int MINING_INTERVAL_UPPER_LIMIT = 8;
         private readonly BlockChain _blockChain;
-        private readonly HashSet<string> _accounts;
+        private readonly AccountCatalogue _accountCatalogue;
         private readonly Dictionary<string, Transaction> _transactionPool;
 
         private int _difficulty;
@@ -25,7 +25,7 @@ namespace ToyBlockChain.Core
         {
             _difficulty = DEFAULT_DIFFICULTY;
             _blockChain = new BlockChain();
-            _accounts = new HashSet<string>();
+            _accountCatalogue = new AccountCatalogue();
             _transactionPool = new Dictionary<string, Transaction>();
         }
 
@@ -107,12 +107,13 @@ namespace ToyBlockChain.Core
             {
                 long start = subChain[0].BlockHeader.Timestamp;
                 long end = subChain[subChain.Count - 1].BlockHeader.Timestamp;
-                double sma = (end - start) / (subChain.Count - 1);
-                if (sma < MINING_INTERVAL_LOWER_LIMIT)
+                double simpleMovingAverage = (
+                    (end - start) / (subChain.Count - 1));
+                if (simpleMovingAverage < MINING_INTERVAL_LOWER_LIMIT)
                 {
                     _difficulty += 1;
                 }
-                else if (sma > MINING_INTERVAL_UPPER_LIMIT)
+                else if (simpleMovingAverage > MINING_INTERVAL_UPPER_LIMIT)
                 {
                     // Prevents the difficulty getting too low.
                     _difficulty = Math.Max(DEFAULT_DIFFICULTY, _difficulty - 1);
@@ -122,27 +123,20 @@ namespace ToyBlockChain.Core
         }
 
         /// <summary>
-        /// Checks if given address is in the address book.
+        /// Registers an account to the account catalogue.
         /// </summary>
-        public bool HasAddressInBook(string address)
+        public void RegisterAddress(Account account)
         {
-            return _accounts.Contains(address);
-        }
-
-        /// <summary>
-        /// Registers an address to the address book.
-        /// </summary>
-        public void RegisterAddress(string address)
-        {
-            if (HasAddressInBook(address))
+            if (_accountCatalogue.HasAccount(account))
             {
                 throw new ArgumentException("given address already exists");
             }
             else
             {
-                _accounts.Add(address);
+                _accountCatalogue.AddAccount(account);
                 Logger.Log(
-                    $"address {address[0..16]} added to the address book",
+                    $"address {account.Address[0..16]} "
+                    + "added to the address book",
                     Logger.INFO, ConsoleColor.White);
             }
         }
@@ -181,12 +175,12 @@ namespace ToyBlockChain.Core
                 throw new ArgumentException(
                     "given transaction already exists in the pool");
             }
-            else if (!HasAddressInBook(transaction.Sender))
+            else if (!_accountCatalogue.HasAccount(transaction.Sender))
             {
                 throw new ArgumentException(
                     "sender address not found in the book");
             }
-            else if (!HasAddressInBook(transaction.Recipient))
+            else if (!_accountCatalogue.HasAccount(transaction.Recipient))
             {
                 throw new ArgumentException(
                     "recipient address not found in the book");
@@ -223,11 +217,11 @@ namespace ToyBlockChain.Core
             return _difficulty;
         }
 
-        public List<string> Accounts
+        public AccountCatalogue AccountCatalogue
         {
             get
             {
-                return new List<string>(_accounts);
+                return _accountCatalogue;
             }
         }
 
