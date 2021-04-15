@@ -10,21 +10,12 @@ namespace ToyBlockChain.Service
     public class Client
     {
         private Node _node;
-        private RSAParameters _rsaParameters;
-        private string _publicKey;
-        private string _address;
+        private Identity _identity;
 
-        public Client(Node node)
+        public Client(Node node, Identity identity)
         {
             _node = node;
-
-            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-            _rsaParameters = rsa.ExportParameters(true);
-
-            string modulus = Convert.ToHexString(_rsaParameters.Modulus);
-            string exponent = Convert.ToHexString(_rsaParameters.Exponent);
-            _publicKey = $"{modulus}:{exponent}";
-            _address = CryptoUtil.ComputeHashString(_publicKey);
+            _identity = identity;
         }
 
         public void Run()

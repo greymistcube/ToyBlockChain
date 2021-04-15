@@ -90,6 +90,5 @@ namespace ToyBlockChain.Core
         {
             return Encoding.UTF8.GetBytes(ToSerializedString());
         }
-
     }
 }
