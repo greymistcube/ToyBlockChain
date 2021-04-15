@@ -185,6 +185,7 @@ namespace ToyBlockChain.App
             // TODO: Implement
             // SyncBlockChain(address)
             // SyncAccountTable(address)
+            // SyncTransactionPool(address)
         }
 
         private static void SyncBlockChain(Address address)
@@ -193,6 +194,11 @@ namespace ToyBlockChain.App
         }
 
         private static void SyncAccountTable(Address address)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static void SyncTransactionPool(Address address)
         {
             throw new NotImplementedException();
         }

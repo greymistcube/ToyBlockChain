@@ -183,11 +183,6 @@ namespace ToyBlockChain.Core
             else
             {
                 _transactionPool.Add(transaction.HashString, transaction);
-                Logger.Log(
-                    $"transaction {transaction.HashString[0..16]} "
-                    + $"from sender {transaction.Sender[0..16]} "
-                    + "added to the transaction pool",
-                    Logger.INFO, ConsoleColor.Yellow);
             }
         }
 
