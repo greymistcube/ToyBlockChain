@@ -20,8 +20,9 @@ namespace ToyBlockChain.Core
         public Account(string serializedString)
         {
             string[] strings = serializedString.Split(SEPARATOR);
-            _address = strings[0];
-            _balance = Int32.Parse(strings[1]);
+            _nonce = Int32.Parse(strings[0]);
+            _address = strings[1];
+            _balance = Int32.Parse(strings[2]);
         }
 
         public void ProcessTransaction(Transaction transaction)

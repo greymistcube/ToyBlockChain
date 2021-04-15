@@ -11,9 +11,7 @@ namespace ToyBlockChain.Service
     {
         public static int NONCE_LENGTH = 16;
         private readonly Node _node;
-        private RSAParameters _rsaParameters;
-        private string _publicKey;
-        private string _address;
+        private Identity _identity;
 
         /// <summary>
         /// The class representing a miner in a blockchain ecosystem.
@@ -22,17 +20,10 @@ namespace ToyBlockChain.Service
         /// and "mine" a valid <see cref="Block"/> containing such
         /// <see cref="Transaction"/>.
         /// </summary>
-        public Miner(Node node)
+        public Miner(Node node, Identity identity)
         {
             _node = node;
-
-            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-            _rsaParameters = rsa.ExportParameters(true);
-
-            string modulus = Convert.ToHexString(_rsaParameters.Modulus);
-            string exponent = Convert.ToHexString(_rsaParameters.Exponent);
-            _publicKey = $"{modulus}:{exponent}";
-            _address = CryptoUtil.ComputeHashString(_publicKey);
+            _identity = identity;
         }
 
         public void Run()
@@ -108,7 +99,7 @@ namespace ToyBlockChain.Service
             int index;
             string previousHashString;
             string transactionHashString = transaction.HashString;
-            string miner = Address;
+            string miner = _identity.Address;
             long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
             string nonce = CryptoUtil.GenerateNonce();
             int difficulty = _node.TargetDifficulty();
@@ -135,22 +126,6 @@ namespace ToyBlockChain.Service
             else
             {
                 return null;
-            }
-        }
-
-        public string Address
-        {
-            get
-            {
-                return _address;
-            }
-        }
-
-        public string PublicKey
-        {
-            get
-            {
-                return _publicKey;
             }
         }
     }

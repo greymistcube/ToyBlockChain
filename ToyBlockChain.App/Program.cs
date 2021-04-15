@@ -25,6 +25,8 @@ namespace ToyBlockChain.App
         private static Node _node;
         private static Identity _identity;
         private static Account _account;
+        private static Miner _miner;
+        private static Client _client;
 
         public class Options
         {
@@ -116,6 +118,10 @@ namespace ToyBlockChain.App
                 SyncNode(address);
             }
 
+            Thread clientThread = null;
+            Thread minerThread = null;
+            Thread listenThread = null;
+
             // If this node acts as an active node, create an identity.
             if (_minerFlag || _clientFlag)
             {
@@ -123,10 +129,27 @@ namespace ToyBlockChain.App
                 _account = new Account(_identity.Address, 0);
 
                 _node.AddAccount(_account);
+                outboundPayload = new Payload(
+                    Protocol.ANNOUNCE_ACCOUNT, _account.ToSerializedString());
+                Announce(outboundPayload);
 
+                if (_minerFlag)
+                {
+                    // TODO: Implement.
+                    _miner = new Miner(_node, _identity);
+                    minerThread = new Thread(_miner.Run);
+                    // minerThread.Start();
+                }
+                if (_clientFlag)
+                {
+                    _client = new Client(_node, _identity);
+                    clientThread = new Thread(_client.Run);
+                    clientThread.Start();
+                }
             }
 
-            Listen(_address);
+            listenThread = new Thread(() => Listen(_address));
+            listenThread.Start();
         }
 
         /// <summary>
@@ -359,10 +382,16 @@ namespace ToyBlockChain.App
             string header = inboundPayload.Header;
             if (header == Protocol.ANNOUNCE_ADDRESS)
             {
-                _routingTable.AddAddress(
-                    new Address(inboundPayload.Body));
+                _routingTable.AddAddress(new Address(inboundPayload.Body));
                 Logger.Log(
                     "Updated: Address added to routing table",
+                    Logger.INFO, ConsoleColor.Yellow);
+            }
+            else if (header == Protocol.ANNOUNCE_ACCOUNT)
+            {
+                _node.AddAccount(new Account(inboundPayload.Body));
+                Logger.Log(
+                    "Updated: Account added to account catalogue",
                     Logger.INFO, ConsoleColor.Yellow);
             }
             else if (header == Protocol.ANNOUNCE_TRANSACTION)
