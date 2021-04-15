@@ -39,6 +39,14 @@ namespace ToyBlockChain.Service
             }
         }
 
+        public RSAParameters RSAParameters
+        {
+            get
+            {
+                return _rsaParameters;
+            }
+        }
+
         public string ToSerializedString()
         {
             return $"{_address}{SEPARATOR}{_publicKey}";

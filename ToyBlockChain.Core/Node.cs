@@ -81,6 +81,11 @@ namespace ToyBlockChain.Core
             return;
         }
 
+        public void AddAccount(Account account)
+        {
+            _accountCatalogue.AddAccount(account);
+        }
+
         /// <summary>
         /// Adjusts the target difficulty for the next prospective block.
         /// Uses a simple moving average of time spend to mine the last

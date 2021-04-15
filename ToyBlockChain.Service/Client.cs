@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
 using ToyBlockChain.Core;
@@ -20,24 +21,22 @@ namespace ToyBlockChain.Service
 
         public void Run()
         {
-            // TODO: Temporary running script.
-            lock (_node)
-            {
-                _node.RegisterAddress(_address);
-            }
-
             Random rnd = new Random();
 
             double value;
             string recipient;
             Transaction transaction = null;
+            List<string> addresses;
 
             while(true)
             {
-                List<string> accounts = _node.Accounts;
+                lock (_node)
+                {
+                    addresses = _node.AccountCatalogue.Addresses;
+                }
 
                 value = rnd.NextDouble();
-                recipient = accounts[rnd.Next(accounts.Count)];
+                recipient = addresses[rnd.Next(addresses.Count)];
                 if (transaction == null
                     || !_node.HasTransactionInPool(transaction))
                 {
@@ -55,38 +54,15 @@ namespace ToyBlockChain.Service
             // Create an unsigned, invalid transaction.
             long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
             Transaction transaction = new Transaction(
-                _address, value, recipient, timestamp, PublicKey);
+                _identity.Address, value, recipient, timestamp,
+                _identity.PublicKey);
 
             // Create a valid signature and sign the transaction.
             string signature = CryptoUtil.Sign(
-                transaction.SignatureInputString(), _rsaParameters);
+                transaction.SignatureInputString(), _identity.RSAParameters);
             transaction.Sign(signature);
 
             return transaction;
-        }
-
-        public string Address
-        {
-            get
-            {
-                return _address;
-            }
-        }
-
-        public string PublicKey
-        {
-            get
-            {
-                return _publicKey;
-            }
-        }
-
-        public override string ToString()
-        {
-            return String.Format(
-                "Address: {0}\n"
-                + "Public Key: {1}",
-                Address, PublicKey);
         }
     }
 }
