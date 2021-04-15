@@ -5,17 +5,6 @@ using ToyBlockChain.Crypto;
 
 namespace ToyBlockChain.Core
 {
-    public class TransactionInPoolException : Exception
-    {
-        public TransactionInPoolException()
-        {
-        }
-
-        public TransactionInPoolException(string message) : base(message)
-        {
-        }
-    }
-
     public class Transaction
     {
         public const string SEPARATOR = "<T>";
