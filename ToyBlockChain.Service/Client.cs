@@ -58,10 +58,11 @@ namespace ToyBlockChain.Service
 
         public Transaction CreateTransaction(string value, string recipient)
         {
+            // TODO: remove dummy nonce.
             // Create an unsigned, invalid transaction.
             long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
             Transaction transaction = new Transaction(
-                _identity.Address, value, recipient, timestamp,
+                _identity.Address, 0, value, recipient, timestamp,
                 _identity.PublicKey);
 
             // Create a valid signature and sign the transaction.

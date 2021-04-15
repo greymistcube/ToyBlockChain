@@ -124,16 +124,9 @@ namespace ToyBlockChain.Core
         /// <summary>
         /// Registers an account to the account catalogue.
         /// </summary>
-        public void RegisterAddress(Account account)
+        public void RegisterAccount(Account account)
         {
-            if (_accountCatalogue.HasAccount(account))
-            {
-                throw new ArgumentException("given address already exists");
-            }
-            else
-            {
-                _accountCatalogue.AddAccount(account);
-            }
+            _accountCatalogue.AddAccount(account);
         }
 
         /// <summary>

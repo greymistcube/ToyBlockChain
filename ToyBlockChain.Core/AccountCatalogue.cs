@@ -5,6 +5,17 @@ using System.Linq;
 
 namespace ToyBlockChain.Core
 {
+    public class AccountInCatalogueException : Exception
+    {
+        public AccountInCatalogueException()
+        {
+        }
+
+        public AccountInCatalogueException(string message): base (message)
+        {
+        }
+    }
+
     public class AccountCatalogue
     {
         public const string SEPARATOR = "<AT>";
@@ -30,8 +41,8 @@ namespace ToyBlockChain.Core
         {
             if (_catalogue.ContainsKey(account.Address))
             {
-                throw new ArgumentException(
-                    $"account already exists: {account.Address}");
+                throw new AccountInCatalogueException(
+                    $"account already exists in catalogue: {account.Address}");
             }
             _catalogue.Add(account.Address, account);
         }

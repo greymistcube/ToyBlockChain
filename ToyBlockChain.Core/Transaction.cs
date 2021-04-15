@@ -8,15 +8,17 @@ namespace ToyBlockChain.Core
     public class Transaction
     {
         public const string SEPARATOR = "<T>";
-        private readonly long _timestamp;
         private readonly string _sender;
-        private readonly string _publicKey;
+        private readonly int _nonce;
         private readonly string _value;
         private readonly string _recipient;
+        private readonly long _timestamp;
+        private readonly string _publicKey;
         private string _signature;
 
         public Transaction(
             string sender,
+            int nonce,
             string value,
             string recipient,
             long timestamp,
@@ -24,6 +26,7 @@ namespace ToyBlockChain.Core
             string signature = null)
         {
             _sender = sender;
+            _nonce = nonce;
             _value = value;
             _recipient = recipient;
             _timestamp = timestamp;
@@ -35,11 +38,12 @@ namespace ToyBlockChain.Core
         {
             string[] substrings = serializedString.Split(SEPARATOR);
             _sender = substrings[0];
-            _value = substrings[1];
-            _recipient = substrings[2];
-            _timestamp = Int64.Parse(substrings[3]);
-            _publicKey = substrings[4];
-            _signature = substrings[5];
+            _nonce = Int32.Parse(substrings[1]);
+            _value = substrings[2];
+            _recipient = substrings[3];
+            _timestamp = Int64.Parse(substrings[4]);
+            _publicKey = substrings[5];
+            _signature = substrings[6];
         }
 
         /// <summary>
@@ -66,12 +70,13 @@ namespace ToyBlockChain.Core
         {
             return String.Format(
                 "Sender: {0}\n"
-                + "Value: {1}\n"
-                + "Recipient: {2}\n"
-                + "Timestamp: {3}\n"
-                + "Public Key: {4}\n"
-                + "Signature: {5}",
-                Sender, Value, Recipient, Timestamp,
+                + "Nonce: {1}\n"
+                + "Value: {2}\n"
+                + "Recipient: {3}\n"
+                + "Timestamp: {4}\n"
+                + "Public Key: {5}\n"
+                + "Signature: {6}",
+                Sender, Nonce, Value, Recipient, Timestamp,
                 PublicKey, Signature);
         }
 
@@ -80,8 +85,8 @@ namespace ToyBlockChain.Core
             return String.Join(
                 SEPARATOR,
                 new string[] {
-                    Sender, Value, Recipient, Timestamp.ToString(),
-                    PublicKey, Signature });
+                    Sender, Nonce.ToString(), Value, Recipient,
+                    Timestamp.ToString(), PublicKey, Signature });
         }
 
         public byte[] ToSerializedBytes()
@@ -94,8 +99,8 @@ namespace ToyBlockChain.Core
             return String.Join(
                 SEPARATOR,
                 new string[] {
-                    Sender, Value, Recipient, Timestamp.ToString(),
-                    PublicKey });
+                    Sender, Nonce.ToString(), Value, Recipient,
+                    Timestamp.ToString(), PublicKey });
         }
 
         public byte[] HashBytes
@@ -120,6 +125,14 @@ namespace ToyBlockChain.Core
             get
             {
                 return _sender;
+            }
+        }
+
+        public int Nonce
+        {
+            get
+            {
+                return _nonce;
             }
         }
 

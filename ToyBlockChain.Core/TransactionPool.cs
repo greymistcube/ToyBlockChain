@@ -53,7 +53,7 @@ namespace ToyBlockChain.Core
             if (_pool.ContainsKey(transaction.HashString))
             {
                 throw new TransactionInPoolException(
-                    "transaction is already in the pool: "
+                    "transaction already exists in pool: "
                     + $"{transaction.HashString}");
             }
             _pool.Add(transaction.HashString, transaction);
@@ -64,7 +64,7 @@ namespace ToyBlockChain.Core
             if (!_pool.ContainsKey(transaction.HashString))
             {
                 throw new TransactionNotInPoolException(
-                    "transaction not found in the pool: "
+                    "transaction not found in pool: "
                     + $"{transaction.HashString}");
             }
             _pool.Remove(transaction.HashString);
