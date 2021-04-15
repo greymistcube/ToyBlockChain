@@ -11,6 +11,7 @@ namespace ToyBlockChain.Network
         public const string RESPONSE_BLOCKCHAIN = "<RB>";
         public const string RESPONSE_ACCOUNT_TABLE = "<RA>";
         public const string ANNOUNCE_ADDRESS = "<AA>";
+        public const string ANNOUNCE_ACCOUNT = "<AC>";
         public const string ANNOUNCE_TRANSACTION = "<AT>";
         public const string ANNOUNCE_BLOCK = "<AB>";
         public const int BUFFER_SIZE = 1024;
@@ -21,6 +22,7 @@ namespace ToyBlockChain.Network
             RESPONSE_ROUTING_TABLE,
             RESPONSE_BLOCKCHAIN, RESPONSE_ACCOUNT_TABLE };
         public static readonly string[] ANNOUNCE = new string[] {
-            ANNOUNCE_ADDRESS, ANNOUNCE_TRANSACTION, ANNOUNCE_BLOCK };
+            ANNOUNCE_ADDRESS, ANNOUNCE_ACCOUNT,
+            ANNOUNCE_TRANSACTION, ANNOUNCE_BLOCK };
     }
 }
