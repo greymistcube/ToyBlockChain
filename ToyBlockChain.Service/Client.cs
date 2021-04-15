@@ -23,7 +23,7 @@ namespace ToyBlockChain.Service
         {
             Random rnd = new Random();
 
-            double value;
+            string value;
             string recipient;
             Transaction transaction = null;
             List<string> addresses;
@@ -35,7 +35,7 @@ namespace ToyBlockChain.Service
                     addresses = _node.AccountCatalogue.Addresses;
                 }
 
-                value = rnd.NextDouble();
+                value = rnd.Next().ToString();
                 recipient = addresses[rnd.Next(addresses.Count)];
                 if (transaction == null
                     || !_node.HasTransactionInPool(transaction))
@@ -49,7 +49,7 @@ namespace ToyBlockChain.Service
             }
         }
 
-        public Transaction CreateTransaction(double value, string recipient)
+        public Transaction CreateTransaction(string value, string recipient)
         {
             // Create an unsigned, invalid transaction.
             long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
