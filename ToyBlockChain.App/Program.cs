@@ -14,29 +14,44 @@ namespace ToyBlockChain.App
 {
     public class Program
     {
-        private static bool _seed;
+        private static bool _seedFlag;
         private static int _logLevel;
+        private static bool _minerFlag;
+        private static bool _clientFlag;
         private static Address _SEED_ADDRESS = new Address(
             Const.IP_ADDRESS, Const.PORT_NUM_SEED);
         private static Address _address;
         private static RoutingTable _routingTable;
+        private static Node _node;
+        private static Identity _identity;
+        private static Account _account;
 
         public class Options
         {
             [Option('s', "seed",
                 Default = false, Required = false,
                 HelpText = "Make the node run as a seed.")]
-            public bool Seed { get; set; }
+            public bool SeedFlag { get; set; }
 
             [Option('l', "loglevel",
                 Default = 0, Required = false,
                 HelpText = "Logging level.")]
             public int LogLevel { get; set; }
 
+            [Option('m', "miner",
+                Default = false, Required = false,
+                HelpText = "Run as a miner.")]
+            public bool MinerFlag { get; set; }
+
+            [Option('c', "client",
+                Default = false, Required = false,
+                HelpText = "Run as a client.")]
+            public bool ClientFlag { get; set; }
+
             [Option('r', "clear",
                 Default = false, Required = false,
                 HelpText = "Screen clear between outputs.")]
-            public bool Clear { get; set; }
+            public bool ClearFlag { get; set; }
         }
 
         static void Main(string[] args)
@@ -53,14 +68,18 @@ namespace ToyBlockChain.App
                 return;
             }
 
-            _seed = options.Seed;
+            _seedFlag = options.SeedFlag;
             _logLevel = options.LogLevel;
+            _minerFlag = options.MinerFlag;
+            _clientFlag = options.ClientFlag;
+
+            // Set logging level.
             Logger.LogLevel = _logLevel;
 
             Payload outboundPayload;
 
             // Get address for this node and sync routing table if necessary.
-            if (_seed)
+            if (_seedFlag)
             {
                 Logger.Log(
                     "Running as a seed node...",
@@ -75,7 +94,7 @@ namespace ToyBlockChain.App
 
             // Create a new routing table and sync.
             _routingTable = new RoutingTable();
-            if (!_seed)
+            if (!_seedFlag)
             {
                 SyncRoutingTable();
             }
@@ -90,11 +109,21 @@ namespace ToyBlockChain.App
                 Protocol.ANNOUNCE_ADDRESS, _address.ToSerializedString());
             Announce(outboundPayload);
 
-            Node node = new Node();
-            if (!_seed)
+            _node = new Node();
+            if (!_seedFlag)
             {
                 Address address = GetRandomAddress();
                 SyncNode(address);
+            }
+
+            // If this node acts as an active node, create an identity.
+            if (_minerFlag || _clientFlag)
+            {
+                _identity = new Identity();
+                _account = new Account(_identity.Address, 0);
+
+                _node.AddAccount(_account);
+
             }
 
             Listen(_address);
@@ -110,7 +139,7 @@ namespace ToyBlockChain.App
         private static void SyncRoutingTable()
         {
             // Basic sanity check.
-            if (_seed)
+            if (_seedFlag)
             {
                 throw new ArgumentException(
                     "seed node cannot sync routing table");
@@ -147,7 +176,7 @@ namespace ToyBlockChain.App
 
         private static Address GetLocalAddress()
         {
-            if (_seed)
+            if (_seedFlag)
             {
                 return _SEED_ADDRESS;
             }
