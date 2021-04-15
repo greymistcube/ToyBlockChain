@@ -7,6 +7,7 @@ namespace ToyBlockChain.Core
 {
     public class Transaction
     {
+        public const string SEPARATOR = "<T>";
         private readonly long _timestamp;
         private readonly string _sender;
         private readonly string _publicKey;
@@ -28,6 +29,17 @@ namespace ToyBlockChain.Core
             _timestamp = timestamp;
             _publicKey = publicKey;
             _signature = signature;
+        }
+
+        public Transaction(string serializedString)
+        {
+            string[] strings = serializedString.Split(SEPARATOR);
+            _sender = strings[0];
+            _value = strings[1];
+            _recipient = strings[2];
+            _timestamp = Int64.Parse(strings[3]);
+            _publicKey = strings[4];
+            _signature = strings[5];
         }
 
         public string Sender
@@ -130,9 +142,11 @@ namespace ToyBlockChain.Core
 
         public string ToSerializedString()
         {
-            return String.Format(
-                "{0},{1},{2},{3},{4},{5}",
-                Sender, Value, Recipient, Timestamp, PublicKey, Signature);
+            return String.Join(
+                SEPARATOR,
+                new string[] {
+                    Sender, Value, Recipient, Timestamp.ToString(),
+                    PublicKey, Signature });
         }
 
         public byte[] ToSerializedBytes()
@@ -142,9 +156,11 @@ namespace ToyBlockChain.Core
 
         public string SignatureInputString()
         {
-            return String.Format(
-                "{0},{1},{2},{3},{4}",
-                Sender, Value, Recipient, Timestamp, PublicKey);
+            return String.Join(
+                SEPARATOR,
+                new string[] {
+                    Sender, Value, Recipient, Timestamp.ToString(),
+                    PublicKey });
         }
     }
 }
