@@ -25,6 +25,8 @@ namespace ToyBlockChain.App
         private static Node _node;
         private static Identity _identity;
         private static Account _account;
+        private static Miner _miner;
+        private static Client _client;
 
         public class Options
         {
@@ -116,6 +118,10 @@ namespace ToyBlockChain.App
                 SyncNode(address);
             }
 
+            Thread clientThread = null;
+            Thread minerThread = null;
+            Thread listenThread = null;
+
             // If this node acts as an active node, create an identity.
             if (_minerFlag || _clientFlag)
             {
@@ -124,9 +130,23 @@ namespace ToyBlockChain.App
 
                 _node.AddAccount(_account);
 
+                if (_minerFlag)
+                {
+                    // TODO: Implement.
+                    _miner = new Miner(_node, _identity);
+                    minerThread = new Thread(_miner.Run);
+                    // minerThread.Start();
+                }
+                if (_clientFlag)
+                {
+                    _client = new Client(_node, _identity);
+                    clientThread = new Thread(_client.Run);
+                    clientThread.Start();
+                }
             }
 
-            Listen(_address);
+            listenThread = new Thread(() => Listen(_address));
+            listenThread.Start();
         }
 
         /// <summary>
