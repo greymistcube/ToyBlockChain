@@ -142,7 +142,7 @@ namespace ToyBlockChain.App
                 }
                 if (_clientFlag)
                 {
-                    _client = new Client(_node, _identity);
+                    _client = new Client(_node, _identity, Announce);
                     clientThread = new Thread(_client.Run);
                     clientThread.Start();
                 }
@@ -396,8 +396,10 @@ namespace ToyBlockChain.App
             }
             else if (header == Protocol.ANNOUNCE_TRANSACTION)
             {
-                throw new NotImplementedException(
-                    $"invalid protocol header: {header}");
+                _node.RegisterTransaction(new Transaction(inboundPayload.Body));
+                Logger.Log(
+                    "Updated: Transaction added to transaction pool",
+                    Logger.INFO, ConsoleColor.Yellow);
             }
             else if (header == Protocol.ANNOUNCE_BLOCK)
             {
