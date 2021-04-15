@@ -33,78 +33,13 @@ namespace ToyBlockChain.Core
 
         public Transaction(string serializedString)
         {
-            string[] strings = serializedString.Split(SEPARATOR);
-            _sender = strings[0];
-            _value = strings[1];
-            _recipient = strings[2];
-            _timestamp = Int64.Parse(strings[3]);
-            _publicKey = strings[4];
-            _signature = strings[5];
-        }
-
-        public string Sender
-        {
-            get
-            {
-                return _sender;
-            }
-        }
-
-        public string Value
-        {
-            get
-            {
-                return _value;
-            }
-        }
-
-        public string Recipient
-        {
-            get
-            {
-                return _recipient;
-            }
-        }
-
-        public long Timestamp
-        {
-            get
-            {
-                return _timestamp;
-            }
-        }
-
-        public string PublicKey
-        {
-            get
-            {
-                return _publicKey;
-            }
-        }
-
-        public string Signature
-        {
-            get
-            {
-                return _signature;
-            }
-        }
-
-        public byte[] HashBytes
-        {
-            get
-            {
-                SHA256 sha256 = SHA256.Create();
-                return sha256.ComputeHash(ToSerializedBytes());
-            }
-        }
-
-        public string HashString
-        {
-            get
-            {
-                return Convert.ToHexString(HashBytes);
-            }
+            string[] substrings = serializedString.Split(SEPARATOR);
+            _sender = substrings[0];
+            _value = substrings[1];
+            _recipient = substrings[2];
+            _timestamp = Int64.Parse(substrings[3]);
+            _publicKey = substrings[4];
+            _signature = substrings[5];
         }
 
         /// <summary>
@@ -161,6 +96,71 @@ namespace ToyBlockChain.Core
                 new string[] {
                     Sender, Value, Recipient, Timestamp.ToString(),
                     PublicKey });
+        }
+
+        public byte[] HashBytes
+        {
+            get
+            {
+                SHA256 sha256 = SHA256.Create();
+                return sha256.ComputeHash(ToSerializedBytes());
+            }
+        }
+
+        public string HashString
+        {
+            get
+            {
+                return Convert.ToHexString(HashBytes);
+            }
+        }
+
+        public string Sender
+        {
+            get
+            {
+                return _sender;
+            }
+        }
+
+        public string Value
+        {
+            get
+            {
+                return _value;
+            }
+        }
+
+        public string Recipient
+        {
+            get
+            {
+                return _recipient;
+            }
+        }
+
+        public long Timestamp
+        {
+            get
+            {
+                return _timestamp;
+            }
+        }
+
+        public string PublicKey
+        {
+            get
+            {
+                return _publicKey;
+            }
+        }
+
+        public string Signature
+        {
+            get
+            {
+                return _signature;
+            }
         }
     }
 }
