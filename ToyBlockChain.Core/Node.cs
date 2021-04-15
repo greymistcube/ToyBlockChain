@@ -71,12 +71,6 @@ namespace ToyBlockChain.Core
                 RemoveTransaction(block.Transaction);
                 _blockChain.AddBlock(block);
                 AdjustDifficulty();
-                Logger.Log(
-                    $"block {block.HashString[0..16]} with "
-                    + $"transaction {block.Transaction.HashString[0..16]} "
-                    + "added to the blockchain",
-                    Logger.INFO, ConsoleColor.Green);
-                Logger.Log($"{block}", Logger.DEBUG, ConsoleColor.White);
             }
             return;
         }
@@ -139,10 +133,6 @@ namespace ToyBlockChain.Core
             else
             {
                 _accountCatalogue.AddAccount(account);
-                Logger.Log(
-                    $"address {account.Address[0..16]} "
-                    + "added to the address book",
-                    Logger.INFO, ConsoleColor.White);
             }
         }
 
@@ -177,7 +167,7 @@ namespace ToyBlockChain.Core
             }
             else if (HasTransactionInPool(transaction))
             {
-                throw new ArgumentException(
+                throw new TransactionInPoolException(
                     "given transaction already exists in the pool");
             }
             else if (!_accountCatalogue.HasAccount(transaction.Sender))
