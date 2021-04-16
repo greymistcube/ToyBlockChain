@@ -9,7 +9,7 @@ namespace ToyBlockChain.Core
     /// Generally handles higher level logic, such as enforcing
     /// policy / metablockchain level validation.
     /// </summary>
-    public class Node
+    public partial class Node
     {
         private const int DEFAULT_DIFFICULTY = 4;
         private const int MOVING_AVERAGE_LENGTH = 4;
@@ -90,14 +90,6 @@ namespace ToyBlockChain.Core
         public List<Transaction> GetTransactionsInPool()
         {
             return _transactionPool.GetTransactions();
-        }
-
-        /// <summary>
-        /// Adds given transaction to the pool.
-        /// </summary>
-        public void AddTransactionToPool(Transaction transaction)
-        {
-            _transactionPool.AddTransaction(transaction);
         }
 
         /// <summary>
