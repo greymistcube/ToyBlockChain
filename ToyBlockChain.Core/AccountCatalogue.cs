@@ -11,7 +11,18 @@ namespace ToyBlockChain.Core
         {
         }
 
-        public AccountInCatalogueException(string message): base (message)
+        public AccountInCatalogueException(string message) : base(message)
+        {
+        }
+    }
+
+    public class AccountNotInCatalogueException : Exception
+    {
+        public AccountNotInCatalogueException()
+        {
+        }
+
+        public AccountNotInCatalogueException(string message) : base(message)
         {
         }
     }
