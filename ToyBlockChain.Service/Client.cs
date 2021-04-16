@@ -11,13 +11,13 @@ namespace ToyBlockChain.Service
 {
     public class Client
     {
-        private Node _node;
+        private INodeClient _node;
         private Identity _identity;
 
         public delegate void AnnounceDelegate(Payload payload);
         private AnnounceDelegate Announce;
 
-        public Client(Node node, Identity identity, AnnounceDelegate Func)
+        public Client(INodeClient node, Identity identity, AnnounceDelegate Func)
         {
             _node = node;
             _identity = identity;
@@ -31,24 +31,25 @@ namespace ToyBlockChain.Service
             string value;
             string recipient;
             Transaction transaction = null;
-            List<string> addresses;
+            Dictionary<string, Account> addressCatalogue;
 
             while(true)
             {
                 lock (_node)
                 {
-                    addresses = _node.AccountCatalogue.Addresses;
+                    addressCatalogue = _node.GetAccountCatalogue();
                 }
 
                 value = rnd.Next().ToString();
-                recipient = addresses[rnd.Next(addresses.Count)];
+                recipient = addressCatalogue.Keys.ToList()[
+                    rnd.Next(addressCatalogue.Count)];
                 if (transaction == null
                     || !_node.HasTransactionInPool(transaction))
                 {
                     transaction = CreateTransaction(value, recipient);
                     lock (_node)
                     {
-                        _node.RegisterTransaction(transaction);
+                        _node.AddTransactionToPool(transaction);
                     }
                     Announce(new Payload(
                         Protocol.ANNOUNCE_TRANSACTION, transaction.ToSerializedString()));
@@ -58,10 +59,11 @@ namespace ToyBlockChain.Service
 
         public Transaction CreateTransaction(string value, string recipient)
         {
+            // TODO: remove dummy nonce.
             // Create an unsigned, invalid transaction.
             long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
             Transaction transaction = new Transaction(
-                _identity.Address, value, recipient, timestamp,
+                _identity.Address, 0, value, recipient, timestamp,
                 _identity.PublicKey);
 
             // Create a valid signature and sign the transaction.

@@ -5,29 +5,20 @@ using ToyBlockChain.Crypto;
 
 namespace ToyBlockChain.Core
 {
-    public class TransactionInPoolException : Exception
-    {
-        public TransactionInPoolException()
-        {
-        }
-
-        public TransactionInPoolException(string message) : base(message)
-        {
-        }
-    }
-
     public class Transaction
     {
         public const string SEPARATOR = "<T>";
-        private readonly long _timestamp;
         private readonly string _sender;
-        private readonly string _publicKey;
+        private readonly int _nonce;
         private readonly string _value;
         private readonly string _recipient;
+        private readonly long _timestamp;
+        private readonly string _publicKey;
         private string _signature;
 
         public Transaction(
             string sender,
+            int nonce,
             string value,
             string recipient,
             long timestamp,
@@ -35,6 +26,7 @@ namespace ToyBlockChain.Core
             string signature = null)
         {
             _sender = sender;
+            _nonce = nonce;
             _value = value;
             _recipient = recipient;
             _timestamp = timestamp;
@@ -44,13 +36,88 @@ namespace ToyBlockChain.Core
 
         public Transaction(string serializedString)
         {
-            string[] strings = serializedString.Split(SEPARATOR);
-            _sender = strings[0];
-            _value = strings[1];
-            _recipient = strings[2];
-            _timestamp = Int64.Parse(strings[3]);
-            _publicKey = strings[4];
-            _signature = strings[5];
+            string[] substrings = serializedString.Split(SEPARATOR);
+            _sender = substrings[0];
+            _nonce = Int32.Parse(substrings[1]);
+            _value = substrings[2];
+            _recipient = substrings[3];
+            _timestamp = Int64.Parse(substrings[4]);
+            _publicKey = substrings[5];
+            _signature = substrings[6];
+        }
+
+        /// <summary>
+        /// Signs this transaction with given signature.
+        /// Simply overwrites the previous signature.
+        /// </summary>
+        public void Sign(string signature)
+        {
+            _signature = signature;
+        }
+
+        public bool IsValid()
+        {
+            bool senderValid = (
+                Sender == CryptoUtil.ComputeHashString(PublicKey));
+            bool signatureValid = CryptoUtil.Verify(
+                SignatureInputString(),
+                Signature,
+                CryptoUtil.ExtractRSAParameters(PublicKey));
+            return senderValid && signatureValid;
+        }
+
+        public override string ToString()
+        {
+            return String.Format(
+                "Sender: {0}\n"
+                + "Nonce: {1}\n"
+                + "Value: {2}\n"
+                + "Recipient: {3}\n"
+                + "Timestamp: {4}\n"
+                + "Public Key: {5}\n"
+                + "Signature: {6}",
+                Sender, Nonce, Value, Recipient, Timestamp,
+                PublicKey, Signature);
+        }
+
+        public string ToSerializedString()
+        {
+            return String.Join(
+                SEPARATOR,
+                new string[] {
+                    Sender, Nonce.ToString(), Value, Recipient,
+                    Timestamp.ToString(), PublicKey, Signature });
+        }
+
+        public byte[] ToSerializedBytes()
+        {
+            return Encoding.UTF8.GetBytes(ToSerializedString());
+        }
+
+        public string SignatureInputString()
+        {
+            return String.Join(
+                SEPARATOR,
+                new string[] {
+                    Sender, Nonce.ToString(), Value, Recipient,
+                    Timestamp.ToString(), PublicKey });
+        }
+
+        public byte[] HashBytes
+        {
+            get
+            {
+                SHA256 sha256 = SHA256.Create();
+                return sha256.ComputeHash(ToSerializedBytes());
+            }
+        }
+
+        public string HashString
+        {
+            get
+            {
+                return Convert.ToHexString(HashBytes);
+            }
         }
 
         public string Sender
@@ -58,6 +125,14 @@ namespace ToyBlockChain.Core
             get
             {
                 return _sender;
+            }
+        }
+
+        public int Nonce
+        {
+            get
+            {
+                return _nonce;
             }
         }
 
@@ -99,79 +174,6 @@ namespace ToyBlockChain.Core
             {
                 return _signature;
             }
-        }
-
-        public byte[] HashBytes
-        {
-            get
-            {
-                SHA256 sha256 = SHA256.Create();
-                return sha256.ComputeHash(ToSerializedBytes());
-            }
-        }
-
-        public string HashString
-        {
-            get
-            {
-                return Convert.ToHexString(HashBytes);
-            }
-        }
-
-        /// <summary>
-        /// Signs this transaction with given signature.
-        /// Simply overwrites the previous signature.
-        /// </summary>
-        public void Sign(string signature)
-        {
-            _signature = signature;
-        }
-
-        public bool IsValid()
-        {
-            bool senderValid = (
-                Sender == CryptoUtil.ComputeHashString(PublicKey));
-            bool signatureValid = CryptoUtil.Verify(
-                SignatureInputString(),
-                Signature,
-                CryptoUtil.ExtractRSAParameters(PublicKey));
-            return senderValid && signatureValid;
-        }
-
-        public override string ToString()
-        {
-            return String.Format(
-                "Sender: {0}\n"
-                + "Value: {1}\n"
-                + "Recipient: {2}\n"
-                + "Timestamp: {3}\n"
-                + "Public Key: {4}\n"
-                + "Signature: {5}",
-                Sender, Value, Recipient, Timestamp,
-                PublicKey, Signature);
-        }
-
-        public string ToSerializedString()
-        {
-            return String.Join(
-                SEPARATOR,
-                new string[] {
-                    Sender, Value, Recipient, Timestamp.ToString(),
-                    PublicKey, Signature });
-        }
-
-        public byte[] ToSerializedBytes()
-        {
-            return Encoding.UTF8.GetBytes(ToSerializedString());
-        }
-
-        public string SignatureInputString()
-        {
-            return String.Join(
-                SEPARATOR,
-                new string[] {
-                    Sender, Value, Recipient, Timestamp.ToString(),
-                    PublicKey });
         }
     }
 }

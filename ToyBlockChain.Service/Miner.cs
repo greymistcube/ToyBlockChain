@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Security.Cryptography;
 using ToyBlockChain.Core;
@@ -7,6 +8,29 @@ using ToyBlockChain.Crypto;
 
 namespace ToyBlockChain.Service
 {
+    public class TransactionSelectionFailException : Exception
+    {
+        public TransactionSelectionFailException()
+        {
+        }
+
+        public TransactionSelectionFailException(string message) : base(message)
+        {
+        }
+    }
+
+    public class TransactionRemovedFromPoolException : Exception
+    {
+        public TransactionRemovedFromPoolException()
+        {
+        }
+
+        public TransactionRemovedFromPoolException(string message)
+            : base(message)
+        {
+        }
+    }
+
     public class Miner
     {
         public static int NONCE_LENGTH = 16;
@@ -28,35 +52,52 @@ namespace ToyBlockChain.Service
 
         public void Run()
         {
-            // TODO: Temporary running script.
             Random rnd = new Random();
 
-            List<Transaction> transactionPool;
-            Transaction transaction;
-            Block block;
+            Block block = null;
 
             while (true)
             {
-                // I have no idea why this fixes the issue of getting
-                // a null reference few lines below.
-                lock (_node)
+                try
                 {
-                    transactionPool = _node.TransactionPool;
-                }
-
-                if (transactionPool.Count > 0)
-                {
-                    transaction = transactionPool[
-                        rnd.Next(transactionPool.Count)];
-
+                    Transaction transaction = GetTransactionToMine();
                     block = Mine(transaction);
-                    if (block != null)
+                }
+                catch (TransactionSelectionFailException)
+                {
+                    Thread.Sleep(1000);
+                }
+                catch (TransactionRemovedFromPoolException)
+                {
+                    Thread.Sleep(1000);
+                }
+                if (block != null)
+                {
+                    lock (_node)
                     {
-                        lock (_node)
-                        {
-                            _node.AddBlock(block);
-                        }
+                        _node.AddBlock(block);
                     }
+                }
+            }
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        private Transaction GetTransactionToMine()
+        {
+            lock(_node)
+            {
+                List<Transaction> transactions = _node.GetTransactionsInPool();
+                if (!(transactions.Count > 0))
+                {
+                    throw new TransactionSelectionFailException(
+                        "transaction pool is empty");
+                }
+                else
+                {
+                    Random rnd = new Random();
+                    return transactions[rnd.Next(transactions.Count)];
                 }
             }
         }
@@ -84,7 +125,9 @@ namespace ToyBlockChain.Service
                 }
                 else
                 {
-                    return null;
+                    throw new TransactionRemovedFromPoolException(
+                        "transaction can no longer be found in the pool: "
+                        + $"{transaction.HashString}");
                 }
             }
         }
