@@ -152,38 +152,6 @@ namespace ToyBlockChain.Core
         }
 
         /// <summary>
-        /// Registers a transaction to the transaction pool.
-        /// Only metablockchain level validations are performed.
-        /// </summary>
-        public void RegisterTransaction(Transaction transaction)
-        {
-            if (HasTransactionInChain(transaction))
-            {
-                throw new ArgumentException(
-                    "given transaction already exists in the chain");
-            }
-            else if (HasTransactionInPool(transaction))
-            {
-                throw new TransactionInPoolException(
-                    "given transaction already exists in the pool");
-            }
-            else if (!_accountCatalogue.HasAccount(transaction.Sender))
-            {
-                throw new ArgumentException(
-                    "sender address not found in the book");
-            }
-            else if (!_accountCatalogue.HasAccount(transaction.Recipient))
-            {
-                throw new ArgumentException(
-                    "recipient address not found in the book");
-            }
-            else
-            {
-                _transactionPool.AddTransaction(transaction);
-            }
-        }
-
-        /// <summary>
         /// Removes a transaction from the transaction pool.
         /// Made private so that this can be called only when moving
         /// a transaction to a block in the blockchain.
