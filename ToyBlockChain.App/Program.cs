@@ -374,6 +374,16 @@ namespace ToyBlockChain.App
                 throw new NotImplementedException(
                     $"invalid protocol header: {header}");
             }
+            else if (header == Protocol.REQUEST_ACCOUNT_CATALOGUE)
+            {
+                throw new NotImplementedException(
+                    $"invalid protocol header: {header}");
+            }
+            else if (header == Protocol.REQUEST_TRANSACTION_POOL)
+            {
+                throw new NotImplementedException(
+                    $"invalid protocol header: {header}");
+            }
             else
             {
                 throw new ArgumentException(
