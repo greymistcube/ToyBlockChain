@@ -84,9 +84,18 @@ namespace ToyBlockChain.Core
         }
 
         /// <summary>
+        /// Returns a shallow copy of the transaction pool as
+        /// a list of <see cref="Transaction"/>s.
+        /// </summary>
+        public List<Transaction> GetTransactionsInPool()
+        {
+            return _transactionPool.GetTransactions();
+        }
+
+        /// <summary>
         /// Adds given transaction to the pool.
         /// </summary>
-        public void AddTransaction(Transaction transaction)
+        public void AddTransactionToPool(Transaction transaction)
         {
             _transactionPool.AddTransaction(transaction);
         }

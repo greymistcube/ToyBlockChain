@@ -48,6 +48,15 @@ namespace ToyBlockChain.Core
 
         }
 
+        /// <summary>
+        /// Returns a shallow copy of the transaction pool as
+        /// a list of <see cref="Transaction"/>s.
+        /// </summary>
+        public List<Transaction> GetTransactions()
+        {
+            return _pool.Values.ToList();
+        }
+
         public void AddTransaction(Transaction transaction)
         {
             if (_pool.ContainsKey(transaction.HashString))
@@ -75,11 +84,11 @@ namespace ToyBlockChain.Core
             return _pool.ContainsKey(transaction.HashString);
         }
 
-        public Dictionary<string, Transaction> Pool
+        public int Count
         {
             get
             {
-                return _pool;
+                return _pool.Count;
             }
         }
 
