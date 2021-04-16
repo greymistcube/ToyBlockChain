@@ -70,6 +70,11 @@ namespace ToyBlockChain.Core
             _pool.Remove(transaction.HashString);
         }
 
+        public bool HasTransaction(Transaction transaction)
+        {
+            return _pool.ContainsKey(transaction.HashString);
+        }
+
         public Dictionary<string, Transaction> Pool
         {
             get

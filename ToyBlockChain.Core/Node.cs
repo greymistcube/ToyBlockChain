@@ -17,7 +17,7 @@ namespace ToyBlockChain.Core
         private const int MINING_INTERVAL_UPPER_LIMIT = 8;
         private readonly BlockChain _blockChain;
         private readonly AccountCatalogue _accountCatalogue;
-        private readonly Dictionary<string, Transaction> _transactionPool;
+        private readonly TransactionPool _transactionPool;
 
         private int _difficulty;
 
@@ -26,7 +26,7 @@ namespace ToyBlockChain.Core
             _difficulty = DEFAULT_DIFFICULTY;
             _blockChain = new BlockChain();
             _accountCatalogue = new AccountCatalogue();
-            _transactionPool = new Dictionary<string, Transaction>();
+            _transactionPool = new TransactionPool();
         }
 
         /// <summary>
@@ -75,9 +75,20 @@ namespace ToyBlockChain.Core
             return;
         }
 
+        /// <summary>
+        /// Adds given account to the catalogue.
+        /// </summary>
         public void AddAccount(Account account)
         {
             _accountCatalogue.AddAccount(account);
+        }
+
+        /// <summary>
+        /// Adds given transaction to the pool.
+        /// </summary>
+        public void AddTransaction(Transaction transaction)
+        {
+            _transactionPool.AddTransaction(transaction);
         }
 
         /// <summary>
@@ -122,14 +133,6 @@ namespace ToyBlockChain.Core
         }
 
         /// <summary>
-        /// Registers an account to the account catalogue.
-        /// </summary>
-        public void RegisterAccount(Account account)
-        {
-            _accountCatalogue.AddAccount(account);
-        }
-
-        /// <summary>
         /// Checks if given transaction is in the blockchain.
         /// Mainly used to prevent the same transaction getting
         /// added to the chain more than once.
@@ -144,7 +147,7 @@ namespace ToyBlockChain.Core
         /// </summary>
         public bool HasTransactionInPool(Transaction transaction)
         {
-            return _transactionPool.ContainsKey(transaction.HashString);
+            return _transactionPool.HasTransaction(transaction);
         }
 
         /// <summary>
@@ -175,7 +178,7 @@ namespace ToyBlockChain.Core
             }
             else
             {
-                _transactionPool.Add(transaction.HashString, transaction);
+                _transactionPool.AddTransaction(transaction);
             }
         }
 
@@ -187,7 +190,7 @@ namespace ToyBlockChain.Core
         /// </summary>
         private void RemoveTransaction(Transaction transaction)
         {
-            _transactionPool.Remove(transaction.HashString);
+            _transactionPool.RemoveTransaction(transaction);
         }
 
         public Block LastBlock()
@@ -208,11 +211,11 @@ namespace ToyBlockChain.Core
             }
         }
 
-        public List<Transaction> TransactionPool
+        public TransactionPool TransactionPool
         {
             get
             {
-                return new List<Transaction>(_transactionPool.Values);
+                return _transactionPool;
             }
         }
     }

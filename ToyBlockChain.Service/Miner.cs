@@ -31,7 +31,7 @@ namespace ToyBlockChain.Service
             // TODO: Temporary running script.
             Random rnd = new Random();
 
-            List<Transaction> transactionPool;
+            TransactionPool transactionPool;
             Transaction transaction;
             Block block;
 
