@@ -128,7 +128,7 @@ namespace ToyBlockChain.App
                 _identity = new Identity();
                 _account = new Account(_identity.Address, 0);
 
-                _node.AddAccount(_account);
+                _node.AddAccountToCatalogue(_account);
                 outboundPayload = new Payload(
                     Protocol.ANNOUNCE_ACCOUNT, _account.ToSerializedString());
                 Announce(outboundPayload);
@@ -395,7 +395,7 @@ namespace ToyBlockChain.App
             }
             else if (header == Protocol.ANNOUNCE_ACCOUNT)
             {
-                _node.AddAccount(new Account(inboundPayload.Body));
+                _node.AddAccountToCatalogue(new Account(inboundPayload.Body));
                 Logger.Log(
                     "Updated: Account added to account catalogue",
                     Logger.INFO, ConsoleColor.Yellow);
@@ -405,7 +405,7 @@ namespace ToyBlockChain.App
                 try
                 {
                     Transaction transaction = new Transaction(inboundPayload.Body);
-                    _node.RegisterTransaction(transaction);
+                    _node.AddTransactionToPool(transaction);
                     Logger.Log(
                         $"Updated: Transaction {transaction.HashString[0..16]} "
                         + "added to transaction pool",

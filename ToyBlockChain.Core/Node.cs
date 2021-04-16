@@ -78,18 +78,17 @@ namespace ToyBlockChain.Core
         /// <summary>
         /// Adds given account to the catalogue.
         /// </summary>
-        public void AddAccount(Account account)
+        public void AddAccountToCatalogue(Account account)
         {
             _accountCatalogue.AddAccount(account);
         }
 
         /// <summary>
-        /// Returns a shallow copy of the transaction pool as
-        /// a list of <see cref="Transaction"/>s.
+        /// Adds given transaction to the pool.
         /// </summary>
-        public List<Transaction> GetTransactionsInPool()
+        public void AddTransactionToPool(Transaction transaction)
         {
-            return _transactionPool.GetTransactions();
+            _transactionPool.AddTransaction(transaction);
         }
 
         /// <summary>

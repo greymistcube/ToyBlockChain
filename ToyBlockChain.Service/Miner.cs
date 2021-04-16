@@ -34,7 +34,7 @@ namespace ToyBlockChain.Service
     public class Miner
     {
         public static int NONCE_LENGTH = 16;
-        private readonly Node _node;
+        private readonly INodeMiner _node;
         private Identity _identity;
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace ToyBlockChain.Service
         /// and "mine" a valid <see cref="Block"/> containing such
         /// <see cref="Transaction"/>.
         /// </summary>
-        public Miner(Node node, Identity identity)
+        public Miner(INodeMiner node, Identity identity)
         {
             _node = node;
             _identity = identity;
@@ -75,30 +75,32 @@ namespace ToyBlockChain.Service
                 {
                     lock (_node)
                     {
-                        _node.AddBlock(block);
+                        _node.AddBlockToBlockChain(block);
                     }
                 }
             }
         }
 
-        /// <summary>
-        ///
-        /// </summary>
         private Transaction GetTransactionToMine()
         {
-            lock(_node)
+            Dictionary<string, Transaction> transactionPool;
+            lock (_node)
             {
-                List<Transaction> transactions = _node.GetTransactionsInPool();
-                if (!(transactions.Count > 0))
-                {
-                    throw new TransactionSelectionFailException(
-                        "transaction pool is empty");
-                }
-                else
-                {
-                    Random rnd = new Random();
-                    return transactions[rnd.Next(transactions.Count)];
-                }
+                transactionPool = _node.GetTransactionPool();
+            }
+
+            if (!(transactionPool.Keys.Count > 0))
+            {
+                throw new TransactionSelectionFailException(
+                    "transaction pool is empty");
+            }
+            else
+            {
+                Random rnd = new Random();
+                string key =
+                    transactionPool.Keys.ToList()[
+                        rnd.Next(transactionPool.Keys.Count)];
+                return transactionPool[key];
             }
         }
 
@@ -137,7 +139,7 @@ namespace ToyBlockChain.Service
         /// </summary>
         private Block Pick(Transaction transaction)
         {
-            Block lastBlock = _node.LastBlock();
+            Block lastBlock = _node.GetLastBlock();
 
             int index;
             string previousHashString;
@@ -145,7 +147,7 @@ namespace ToyBlockChain.Service
             string miner = _identity.Address;
             long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
             string nonce = CryptoUtil.GenerateNonce();
-            int difficulty = _node.TargetDifficulty();
+            int difficulty = _node.GetTargetDifficulty();
 
             if (lastBlock == null)
             {
