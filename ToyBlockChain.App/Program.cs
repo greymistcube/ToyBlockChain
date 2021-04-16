@@ -405,16 +405,20 @@ namespace ToyBlockChain.App
             string header = inboundPayload.Header;
             if (header == Protocol.ANNOUNCE_ADDRESS)
             {
-                _routingTable.AddAddress(new Address(inboundPayload.Body));
+                Address address = new Address(inboundPayload.Body);
+                _routingTable.AddAddress(address);
                 Logger.Log(
-                    "Updated: Address added to routing table",
+                    $"Updated: Address {address.PortNumber} "
+                    + "added to routing table",
                     Logger.INFO, ConsoleColor.Yellow);
             }
             else if (header == Protocol.ANNOUNCE_ACCOUNT)
             {
-                _node.AddAccountToCatalogue(new Account(inboundPayload.Body));
+                Account account = new Account(inboundPayload.Body);
+                _node.AddAccountToCatalogue(account);
                 Logger.Log(
-                    "Updated: Account added to account catalogue",
+                    $"Updated: Account {account.Address[..16]} "
+                    + "added to account catalogue",
                     Logger.INFO, ConsoleColor.Yellow);
             }
             else if (header == Protocol.ANNOUNCE_TRANSACTION)
