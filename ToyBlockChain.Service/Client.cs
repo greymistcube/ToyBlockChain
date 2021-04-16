@@ -27,15 +27,15 @@ namespace ToyBlockChain.Service
 
         public void Run()
         {
+            Random rnd = new Random();
+
+            string value;
+            string recipient;
+            Dictionary<string, Account> addressCatalogue;
+            Transaction transaction = null;
+
             while(true)
             {
-                Random rnd = new Random();
-
-                string value;
-                string recipient;
-                Dictionary<string, Account> addressCatalogue;
-                Transaction transaction = null;
-
                 lock (_node)
                 {
                     addressCatalogue = _node.GetAccountCatalogue();
