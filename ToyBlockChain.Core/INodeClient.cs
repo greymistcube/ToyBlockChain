@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace ToyBlockChain.Core
 {
+    /// <summary>
+    /// Interface used by a client to access a node.
+    /// </summary>
     public interface INodeClient
     {
         /// <summary>
@@ -16,7 +19,8 @@ namespace ToyBlockChain.Core
         void AddTransactionToPool(Transaction transaction);
 
         /// <summary>
-        /// Get a shallow copy of the account catalogue as a dictionary.
+        /// Get a shallow copy of the account catalogue as a
+        /// <see cref="Dictionary{TKey, TValue}"/>.
         /// </summary>
         Dictionary<string, Account> GetAccountCatalogue();
     }
