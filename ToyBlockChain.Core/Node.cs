@@ -76,22 +76,6 @@ namespace ToyBlockChain.Core
         }
 
         /// <summary>
-        /// Adds given account to the catalogue.
-        /// </summary>
-        public void AddAccountToCatalogue(Account account)
-        {
-            _accountCatalogue.AddAccount(account);
-        }
-
-        /// <summary>
-        /// Adds given transaction to the pool.
-        /// </summary>
-        public void AddTransactionToPool(Transaction transaction)
-        {
-            _transactionPool.AddTransaction(transaction);
-        }
-
-        /// <summary>
         /// Adjusts the target difficulty for the next prospective block.
         /// Uses a simple moving average of time spend to mine the last
         /// <c>MOVING_AVERAGE_LENGTH - 1</c> blocks.

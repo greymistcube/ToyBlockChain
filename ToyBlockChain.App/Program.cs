@@ -22,7 +22,7 @@ namespace ToyBlockChain.App
             Const.IP_ADDRESS, Const.PORT_NUM_SEED);
         private static Address _address;
         private static RoutingTable _routingTable;
-        private static Node _node;
+        private static INodeApp _node;
         private static Identity _identity;
         private static Account _account;
         private static Miner _miner;
@@ -136,13 +136,14 @@ namespace ToyBlockChain.App
                 if (_minerFlag)
                 {
                     // TODO: Implement.
-                    _miner = new Miner(_node, _identity);
+                    _miner = new Miner((INodeMiner)_node, _identity);
                     minerThread = new Thread(_miner.Run);
                     // minerThread.Start();
                 }
                 if (_clientFlag)
                 {
-                    _client = new Client(_node, _identity, Announce);
+                    _client = new Client(
+                        (INodeClient)_node, _identity, Announce);
                     clientThread = new Thread(_client.Run);
                     clientThread.Start();
                 }

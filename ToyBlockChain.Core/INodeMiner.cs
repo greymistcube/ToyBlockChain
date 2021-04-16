@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace ToyBlockChain.Core
 {
     /// <summary>
-    /// Interface used by a miner to access a node.
+    /// Interface used by a miner to access the node.
     /// </summary>
     public interface INodeMiner
     {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace ToyBlockChain.Core
 {
     /// <summary>
-    /// Interface used by a client to access a node.
+    /// Interface used by a client to access the node.
     /// </summary>
     public interface INodeClient
     {
@@ -38,11 +38,6 @@ namespace ToyBlockChain.Core
             {
                 throw new ArgumentException(
                     "given transaction already exists in the chain");
-            }
-            else if (HasTransactionInPool(transaction))
-            {
-                throw new TransactionInPoolException(
-                    "given transaction already exists in the pool");
             }
             else if (!_accountCatalogue.HasAccount(transaction.Sender))
             {
