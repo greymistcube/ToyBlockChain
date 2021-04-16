@@ -29,7 +29,7 @@ namespace ToyBlockChain.Core
 
     public class AccountCatalogue
     {
-        public const string SEPARATOR = "<AT>";
+        public const string SEPARATOR = "<AC>";
         private Dictionary<string, Account> _catalogue;
 
         public AccountCatalogue()
@@ -41,10 +41,14 @@ namespace ToyBlockChain.Core
         {
             _catalogue = new Dictionary<string, Account>();
             string[] accountStrings = serializedString.Split(SEPARATOR);
-            foreach (string accountString in accountStrings)
+            // only sync if there is data
+            if (accountStrings.Length > 0 && accountStrings[0].Length > 0)
             {
-                Account account = new Account(accountString);
-                _catalogue.Add(account.Address, account);
+                foreach (string accountString in accountStrings)
+                {
+                    Account account = new Account(accountString);
+                    _catalogue.Add(account.Address, account);
+                }
             }
         }
 

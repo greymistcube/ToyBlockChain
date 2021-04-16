@@ -184,9 +184,9 @@ namespace ToyBlockChain.App
             }
 
             // TODO: Implement
-            // SyncBlockChain(address)
-            // SyncAccountTable(address)
-            // SyncTransactionPool(address)
+            // SyncBlockChain(address);
+            SyncAccountCatalogue(address);
+            // SyncTransactionPool(address);
         }
 
         private static void SyncBlockChain(Address address)
@@ -194,9 +194,10 @@ namespace ToyBlockChain.App
             throw new NotImplementedException();
         }
 
-        private static void SyncAccountTable(Address address)
+        private static void SyncAccountCatalogue(Address address)
         {
-            throw new NotImplementedException();
+            Request(
+                address, new Payload(Protocol.REQUEST_ACCOUNT_CATALOGUE, ""));
         }
 
         private static void SyncTransactionPool(Address address)
@@ -376,8 +377,13 @@ namespace ToyBlockChain.App
             }
             else if (header == Protocol.REQUEST_ACCOUNT_CATALOGUE)
             {
-                throw new NotImplementedException(
-                    $"invalid protocol header: {header}");
+                lock (_node)
+                {
+                    Payload outboundPayload = new Payload(
+                        Protocol.RESPONSE_ACCOUNT_CATALOGUE,
+                        _node.GetAccountCatalogueSerializedString());
+                    StreamHandler.WritePayload(stream, outboundPayload);
+                }
             }
             else if (header == Protocol.REQUEST_TRANSACTION_POOL)
             {
@@ -454,10 +460,25 @@ namespace ToyBlockChain.App
             {
                 _routingTable.Sync(inboundPayload.Body);
                 Logger.Log(
-                    "Updated: Routing table synced",
+                    "Updated: Routing table synced.",
                     Logger.INFO, ConsoleColor.Yellow);
             }
             else if (header == Protocol.RESPONSE_BLOCKCHAIN)
+            {
+                throw new NotImplementedException(
+                    $"invalid protocol header: {header}");
+            }
+            else if (header == Protocol.RESPONSE_ACCOUNT_CATALOGUE)
+            {
+                lock (_node)
+                {
+                    _node.SyncAccountCatalogue(inboundPayload.Body);
+                }
+                Logger.Log(
+                    "Updated: Account catalogue synced.",
+                    Logger.INFO, ConsoleColor.Yellow);
+            }
+            else if (header == Protocol.RESPONSE_TRANSACTION_POOL)
             {
                 throw new NotImplementedException(
                     $"invalid protocol header: {header}");
