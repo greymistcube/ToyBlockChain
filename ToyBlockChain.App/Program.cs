@@ -22,7 +22,7 @@ namespace ToyBlockChain.App
             Const.IP_ADDRESS, Const.PORT_NUM_SEED);
         private static Address _address;
         private static RoutingTable _routingTable;
-        private static Node _node;
+        private static INodeApp _node;
         private static Identity _identity;
         private static Account _account;
         private static Miner _miner;
@@ -128,7 +128,7 @@ namespace ToyBlockChain.App
                 _identity = new Identity();
                 _account = new Account(_identity.Address, 0);
 
-                _node.AddAccount(_account);
+                _node.AddAccountToCatalogue(_account);
                 outboundPayload = new Payload(
                     Protocol.ANNOUNCE_ACCOUNT, _account.ToSerializedString());
                 Announce(outboundPayload);
@@ -136,13 +136,14 @@ namespace ToyBlockChain.App
                 if (_minerFlag)
                 {
                     // TODO: Implement.
-                    _miner = new Miner(_node, _identity);
+                    _miner = new Miner((INodeMiner)_node, _identity);
                     minerThread = new Thread(_miner.Run);
                     // minerThread.Start();
                 }
                 if (_clientFlag)
                 {
-                    _client = new Client(_node, _identity, Announce);
+                    _client = new Client(
+                        (INodeClient)_node, _identity, Announce);
                     clientThread = new Thread(_client.Run);
                     clientThread.Start();
                 }
@@ -395,7 +396,7 @@ namespace ToyBlockChain.App
             }
             else if (header == Protocol.ANNOUNCE_ACCOUNT)
             {
-                _node.AddAccount(new Account(inboundPayload.Body));
+                _node.AddAccountToCatalogue(new Account(inboundPayload.Body));
                 Logger.Log(
                     "Updated: Account added to account catalogue",
                     Logger.INFO, ConsoleColor.Yellow);
@@ -405,7 +406,7 @@ namespace ToyBlockChain.App
                 try
                 {
                     Transaction transaction = new Transaction(inboundPayload.Body);
-                    _node.RegisterTransaction(transaction);
+                    _node.AddTransactionToPool(transaction);
                     Logger.Log(
                         $"Updated: Transaction {transaction.HashString[0..16]} "
                         + "added to transaction pool",

@@ -17,7 +17,8 @@ namespace ToyBlockChain.Service
         public delegate void AnnounceDelegate(Payload payload);
         private AnnounceDelegate Announce;
 
-        public Client(INodeClient node, Identity identity, AnnounceDelegate Func)
+        public Client(
+            INodeClient node, Identity identity, AnnounceDelegate Func)
         {
             _node = node;
             _identity = identity;
@@ -30,8 +31,8 @@ namespace ToyBlockChain.Service
 
             string value;
             string recipient;
-            Transaction transaction = null;
             Dictionary<string, Account> addressCatalogue;
+            Transaction transaction = null;
 
             while(true)
             {
@@ -52,12 +53,13 @@ namespace ToyBlockChain.Service
                         _node.AddTransactionToPool(transaction);
                     }
                     Announce(new Payload(
-                        Protocol.ANNOUNCE_TRANSACTION, transaction.ToSerializedString()));
+                        Protocol.ANNOUNCE_TRANSACTION,
+                        transaction.ToSerializedString()));
                 }
             }
         }
 
-        public Transaction CreateTransaction(string value, string recipient)
+        private Transaction CreateTransaction(string value, string recipient)
         {
             // TODO: remove dummy nonce.
             // Create an unsigned, invalid transaction.

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace ToyBlockChain.Core
 {
+    /// <summary>
+    /// Interface used by a client to access the node.
+    /// </summary>
     public interface INodeClient
     {
         /// <summary>
@@ -16,7 +19,8 @@ namespace ToyBlockChain.Core
         void AddTransactionToPool(Transaction transaction);
 
         /// <summary>
-        /// Get a shallow copy of the account catalogue as a dictionary.
+        /// Get a shallow copy of the account catalogue as a
+        /// <see cref="Dictionary{TKey, TValue}"/>.
         /// </summary>
         Dictionary<string, Account> GetAccountCatalogue();
     }
@@ -34,11 +38,6 @@ namespace ToyBlockChain.Core
             {
                 throw new ArgumentException(
                     "given transaction already exists in the chain");
-            }
-            else if (HasTransactionInPool(transaction))
-            {
-                throw new TransactionInPoolException(
-                    "given transaction already exists in the pool");
             }
             else if (!_accountCatalogue.HasAccount(transaction.Sender))
             {

@@ -76,23 +76,6 @@ namespace ToyBlockChain.Core
         }
 
         /// <summary>
-        /// Adds given account to the catalogue.
-        /// </summary>
-        public void AddAccount(Account account)
-        {
-            _accountCatalogue.AddAccount(account);
-        }
-
-        /// <summary>
-        /// Returns a shallow copy of the transaction pool as
-        /// a list of <see cref="Transaction"/>s.
-        /// </summary>
-        public List<Transaction> GetTransactionsInPool()
-        {
-            return _transactionPool.GetTransactions();
-        }
-
-        /// <summary>
         /// Adjusts the target difficulty for the next prospective block.
         /// Uses a simple moving average of time spend to mine the last
         /// <c>MOVING_AVERAGE_LENGTH - 1</c> blocks.
@@ -149,38 +132,6 @@ namespace ToyBlockChain.Core
         public bool HasTransactionInPool(Transaction transaction)
         {
             return _transactionPool.HasTransaction(transaction);
-        }
-
-        /// <summary>
-        /// Registers a transaction to the transaction pool.
-        /// Only metablockchain level validations are performed.
-        /// </summary>
-        public void RegisterTransaction(Transaction transaction)
-        {
-            if (HasTransactionInChain(transaction))
-            {
-                throw new ArgumentException(
-                    "given transaction already exists in the chain");
-            }
-            else if (HasTransactionInPool(transaction))
-            {
-                throw new TransactionInPoolException(
-                    "given transaction already exists in the pool");
-            }
-            else if (!_accountCatalogue.HasAccount(transaction.Sender))
-            {
-                throw new ArgumentException(
-                    "sender address not found in the book");
-            }
-            else if (!_accountCatalogue.HasAccount(transaction.Recipient))
-            {
-                throw new ArgumentException(
-                    "recipient address not found in the book");
-            }
-            else
-            {
-                _transactionPool.AddTransaction(transaction);
-            }
         }
 
         /// <summary>

@@ -84,6 +84,14 @@ namespace ToyBlockChain.Core
             return _pool.ContainsKey(transaction.HashString);
         }
 
+        internal Dictionary<string, Transaction> Pool
+        {
+            get
+            {
+                return _pool;
+            }
+        }
+
         public int Count
         {
             get
