@@ -186,7 +186,7 @@ namespace ToyBlockChain.App
             // TODO: Implement
             // SyncBlockChain(address);
             SyncAccountCatalogue(address);
-            // SyncTransactionPool(address);
+            SyncTransactionPool(address);
         }
 
         private static void SyncBlockChain(Address address)
@@ -202,7 +202,8 @@ namespace ToyBlockChain.App
 
         private static void SyncTransactionPool(Address address)
         {
-            throw new NotImplementedException();
+            Request(
+                address, new Payload(Protocol.REQUEST_TRANSACTION_POOL, ""));
         }
 
         private static Address GetLocalAddress()
@@ -387,8 +388,13 @@ namespace ToyBlockChain.App
             }
             else if (header == Protocol.REQUEST_TRANSACTION_POOL)
             {
-                throw new NotImplementedException(
-                    $"invalid protocol header: {header}");
+                lock (_node)
+                {
+                    Payload outboundPayload = new Payload(
+                        Protocol.RESPONSE_TRANSACTION_POOL,
+                        _node.GetTransactionPoolSerializedString());
+                    StreamHandler.WritePayload(stream, outboundPayload);
+                }
             }
             else
             {
@@ -484,8 +490,13 @@ namespace ToyBlockChain.App
             }
             else if (header == Protocol.RESPONSE_TRANSACTION_POOL)
             {
-                throw new NotImplementedException(
-                    $"invalid protocol header: {header}");
+                lock (_node)
+                {
+                    _node.SyncTransactionPool(inboundPayload.Body);
+                }
+                Logger.Log(
+                    "Updated: Transaction pool synced.",
+                    Logger.INFO, ConsoleColor.Yellow);
             }
             else
             {

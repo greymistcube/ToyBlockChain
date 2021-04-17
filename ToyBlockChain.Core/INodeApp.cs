@@ -10,9 +10,10 @@ namespace ToyBlockChain.Core
     {
         void SyncBlockChain();
         void SyncAccountCatalogue(string serializedString);
-        void SyncTransactionPool();
+        void SyncTransactionPool(string serializedString);
 
         string GetAccountCatalogueSerializedString();
+        string GetTransactionPoolSerializedString();
         void AddAccountToCatalogue(Account account);
         void AddTransactionToPool(Transaction transaction);
     }
@@ -28,13 +29,19 @@ namespace ToyBlockChain.Core
             _accountCatalogue.Sync(serializedString);
         }
 
-        void INodeApp.SyncTransactionPool()
+        void INodeApp.SyncTransactionPool(string serializedString)
         {
+            _transactionPool.Sync(serializedString);
         }
 
         string INodeApp.GetAccountCatalogueSerializedString()
         {
             return _accountCatalogue.ToSerializedString();
+        }
+
+        string INodeApp.GetTransactionPoolSerializedString()
+        {
+            return _transactionPool.ToSerializedString();
         }
 
         /// <summary>

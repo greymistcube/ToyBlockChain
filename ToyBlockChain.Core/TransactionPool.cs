@@ -40,12 +40,15 @@ namespace ToyBlockChain.Core
         {
             _pool = new Dictionary<string, Transaction>();
             string[] transactionStrings = serializedString.Split(SEPARATOR);
-            foreach (string transactionString in transactionStrings)
+            if (transactionStrings.Length > 0
+                && transactionStrings[0].Length > 0)
             {
-                Transaction transaction = new Transaction(transactionString);
-                _pool.Add(transaction.HashString, transaction);
+                foreach (string transactionString in transactionStrings)
+                {
+                    Transaction transaction = new Transaction(transactionString);
+                    _pool.Add(transaction.HashString, transaction);
+                }
             }
-
         }
 
         /// <summary>
