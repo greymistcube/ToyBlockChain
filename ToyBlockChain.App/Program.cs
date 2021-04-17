@@ -136,7 +136,7 @@ namespace ToyBlockChain.App
                 if (_minerFlag)
                 {
                     // TODO: Implement.
-                    _miner = new Miner((INodeMiner)_node, _identity);
+                    _miner = new Miner((INodeMiner)_node, _identity, Announce);
                     minerThread = new Thread(_miner.Run);
                     // minerThread.Start();
                 }
