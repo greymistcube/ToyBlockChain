@@ -24,7 +24,7 @@ namespace ToyBlockChain.Network
             REQUEST_ACCOUNT_CATALOGUE, REQUEST_TRANSACTION_POOL };
         public static readonly string[] RESPONSE = new string[] {
             RESPONSE_ROUTING_TABLE, RESPONSE_BLOCKCHAIN,
-            RESPONSE_ACCOUNT_CATALOGUE, REQUEST_TRANSACTION_POOL };
+            RESPONSE_ACCOUNT_CATALOGUE, RESPONSE_TRANSACTION_POOL };
         public static readonly string[] ANNOUNCE = new string[] {
             ANNOUNCE_ADDRESS, ANNOUNCE_ACCOUNT,
             ANNOUNCE_TRANSACTION, ANNOUNCE_BLOCK };

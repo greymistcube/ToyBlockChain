@@ -38,14 +38,17 @@ namespace ToyBlockChain.Core
 
         public void Sync(string serializedString)
         {
-            _pool = new Dictionary<string, Transaction>();
-            string[] transactionStrings = serializedString.Split(SEPARATOR);
-            foreach (string transactionString in transactionStrings)
+            if (serializedString != null && serializedString.Length > 0)
             {
-                Transaction transaction = new Transaction(transactionString);
-                _pool.Add(transaction.HashString, transaction);
+                _pool = new Dictionary<string, Transaction>();
+                string[] transactionStrings = serializedString.Split(SEPARATOR);
+                foreach (string transactionString in transactionStrings)
+                {
+                    Transaction transaction = new Transaction(
+                        transactionString);
+                    _pool.Add(transaction.HashString, transaction);
+                }
             }
-
         }
 
         /// <summary>
