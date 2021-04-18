@@ -82,6 +82,9 @@ namespace ToyBlockChain.Service
                     {
                         _node.AddBlockToBlockChain(block);
                     }
+                    Announce(new Payload(
+                        Protocol.ANNOUNCE_BLOCK,
+                        block.ToSerializedString()));
                 }
             }
         }
