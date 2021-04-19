@@ -5,6 +5,7 @@ using System.Threading;
 using System.Security.Cryptography;
 using ToyBlockChain.Core;
 using ToyBlockChain.Crypto;
+using ToyBlockChain.Network;
 
 namespace ToyBlockChain.Service
 {
@@ -37,6 +38,9 @@ namespace ToyBlockChain.Service
         private readonly INodeMiner _node;
         private Identity _identity;
 
+        public delegate void AnnounceDelegate(Payload payload);
+        private AnnounceDelegate Announce;
+
         /// <summary>
         /// The class representing a miner in a blockchain ecosystem.
         /// Its primary objective is to search and retrieve a
@@ -44,10 +48,11 @@ namespace ToyBlockChain.Service
         /// and "mine" a valid <see cref="Block"/> containing such
         /// <see cref="Transaction"/>.
         /// </summary>
-        public Miner(INodeMiner node, Identity identity)
+        public Miner(INodeMiner node, Identity identity, AnnounceDelegate Func)
         {
             _node = node;
             _identity = identity;
+            Announce = Func;
         }
 
         public void Run()
@@ -77,6 +82,9 @@ namespace ToyBlockChain.Service
                     {
                         _node.AddBlockToBlockChain(block);
                     }
+                    Announce(new Payload(
+                        Protocol.ANNOUNCE_BLOCK,
+                        block.ToSerializedString()));
                 }
             }
         }
