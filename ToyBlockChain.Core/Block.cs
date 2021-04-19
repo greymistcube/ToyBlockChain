@@ -5,6 +5,7 @@ namespace ToyBlockChain.Core
 {
     public class Block
     {
+        public const string SEPARATOR = "<B>";
         private readonly Transaction _transaction;
         private readonly BlockHeader _blockHeader;
 
@@ -12,6 +13,13 @@ namespace ToyBlockChain.Core
         {
             _blockHeader = blockHeader;
             _transaction = transaction;
+        }
+
+        public Block(string serializedString)
+        {
+            string[] strings = serializedString.Split(SEPARATOR);
+            _blockHeader = new BlockHeader(strings[0]);
+            _transaction = new Transaction(strings[1]);
         }
 
         public int Index
@@ -80,10 +88,11 @@ namespace ToyBlockChain.Core
 
         public string ToSerializedString()
         {
-            return String.Format(
-                "{0},{1}",
-                BlockHeader.ToSerializedString(),
-                Transaction.ToSerializedString());
+            return String.Join(
+                SEPARATOR,
+                new string[] {
+                    BlockHeader.ToSerializedString(),
+                    Transaction.ToSerializedString() });
         }
 
         public byte[] ToSerializedBytes()
