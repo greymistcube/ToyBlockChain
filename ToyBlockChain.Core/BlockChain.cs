@@ -20,10 +20,28 @@ namespace ToyBlockChain.Core
     }
 
     /// <summary>
+    /// Thrown when the previoush hash value for given block does not match
+    /// the hash value of the last block in the chain.
+    /// </summary>
+    public class BlockPreviousHashMismatchException
+        : BlockInvalidForChainException
+    {
+        public BlockPreviousHashMismatchException()
+        {
+        }
+
+        public BlockPreviousHashMismatchException(string message)
+            : base(message)
+        {
+        }
+    }
+
+    /// <summary>
     /// Thrown when the index of a block to add is less than or equal
     /// to the index of the last block in the chain.
     /// </summary>
-    public class BlockIndexLowForChainException : Exception
+    public class BlockIndexLowForChainException
+        : BlockInvalidForChainException
     {
         public BlockIndexLowForChainException()
         {
@@ -38,7 +56,8 @@ namespace ToyBlockChain.Core
     /// Thrown when the index of a block to add is greater than
     /// the index of the last block in the chain plus one.
     /// </summary>
-    public class BlockIndexHighForChainException : Exception
+    public class BlockIndexHighForChainException
+        : BlockInvalidForChainException
     {
         public BlockIndexHighForChainException()
         {
@@ -109,18 +128,18 @@ namespace ToyBlockChain.Core
                 throw new BlockIndexHighForChainException(
                     "given block index is too high");
             }
+            else if (
+                (LastBlock() != null)
+                && (LastBlock().HashString != block.PreviousHashString))
+            {
+                throw new BlockPreviousHashMismatchException(
+                    "given block's previous hash does not match " +
+                    "the chain's last block's hash");
+            }
             else
             {
-                if (ValidateBlock(block))
-                {
-                    _chain.Add(block);
-                    AdjustDifficulty();
-                }
-                else
-                {
-                    throw new BlockInvalidForChainException(
-                        "block is not valid for the chain");
-                }
+                _chain.Add(block);
+                AdjustDifficulty();
             }
         }
 
@@ -164,15 +183,6 @@ namespace ToyBlockChain.Core
                     _difficulty = Math.Max(DIFFICULTY_MIN, _difficulty - 1);
                 }
             }
-        }
-
-        private bool ValidateBlock(Block block)
-        {
-            return (
-                block.IsValid()
-            ) && (
-                LastBlock() == null
-                || LastBlock().HashString == block.PreviousHashString);
         }
 
         public bool HasTransaction(Transaction transaction)
