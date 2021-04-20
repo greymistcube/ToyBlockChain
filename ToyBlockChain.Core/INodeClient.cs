@@ -14,9 +14,19 @@ namespace ToyBlockChain.Core
         bool HasTransactionInPool(Transaction transaction);
 
         /// <summary>
+        /// Checks if given transaction is in the pool.
+        /// </summary>
+        bool HasTransactionInPool(string transactionHashString);
+
+        /// <summary>
         /// Checks if a transaction with the same sender is in the pool.
         /// </summary>
         bool HasSenderInPool(Transaction transaction);
+
+        /// <summary>
+        /// Checks if a transaction with the same sender is in the pool.
+        /// </summary>
+        bool HasSenderInPool(string senderAddress);
 
         /// <summary>
         /// Adds given transaction to the pool.
@@ -37,9 +47,19 @@ namespace ToyBlockChain.Core
             return _transactionPool.HasTransaction(transaction);
         }
 
+        bool INodeClient.HasTransactionInPool(string transactionHashString)
+        {
+            return _transactionPool.HasTransaction(transactionHashString);
+        }
+
         bool INodeClient.HasSenderInPool(Transaction transaction)
         {
             return _transactionPool.HasSender(transaction);
+        }
+
+        bool INodeClient.HasSenderInPool(string senderAddress)
+        {
+            return _transactionPool.HasSender(senderAddress);
         }
 
         void INodeClient.AddTransactionToPool(Transaction transaction)

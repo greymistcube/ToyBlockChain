@@ -27,11 +27,9 @@ namespace ToyBlockChain.Service
 
         public void Run()
         {
-            Transaction transaction = null;
-
             while(true)
             {
-                transaction = CreateTransaction();
+                Transaction transaction = CreateTransaction();
                 lock (_node)
                 {
                     _node.AddTransactionToPool(transaction);
