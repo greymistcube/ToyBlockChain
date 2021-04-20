@@ -40,7 +40,7 @@ namespace ToyBlockChain.Core
 
         int INodeMiner.GetTargetDifficulty()
         {
-            return TargetDifficulty();
+            return GetTargetDifficulty();
         }
 
         void INodeMiner.AddBlockToBlockChain(Block block)

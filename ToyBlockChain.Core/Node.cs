@@ -150,7 +150,7 @@ namespace ToyBlockChain.Core
             return _blockChain.LastBlock();
         }
 
-        public int TargetDifficulty()
+        public int GetTargetDifficulty()
         {
             return _difficulty;
         }

@@ -7,6 +7,7 @@ namespace ToyBlockChain.Core
 {
     public class BlockHeader
     {
+        public const string SEPARATOR = "<BH>";
         private readonly int _index;
         private readonly string _previousHashString;
         private readonly string _transactionHashString;
@@ -31,6 +32,18 @@ namespace ToyBlockChain.Core
             _timestamp = timestamp;
             _nonce = nonce;
             _difficulty = difficulty;
+        }
+
+        public BlockHeader(string serializedString)
+        {
+            string[] substrings = serializedString.Split(SEPARATOR);
+            _index = Int32.Parse(substrings[0]);
+            _previousHashString = substrings[1];
+            _transactionHashString = substrings[2];
+            _miner = substrings[3];
+            _timestamp = Int64.Parse(substrings[4]);
+            _nonce = substrings[5];
+            _difficulty = Int32.Parse(substrings[6]);
         }
 
         public int Index
@@ -136,10 +149,11 @@ namespace ToyBlockChain.Core
 
         public string ToSerializedString()
         {
-            return String.Format(
-                "{0},{1},{2},{3},{4},{5},{6}",
-                Index, PreviousHashString, TransactionHashString, Miner,
-                Timestamp, Nonce, Difficulty);
+            return String.Join(
+                SEPARATOR,
+                new string[] {
+                    Index.ToString(), PreviousHashString, TransactionHashString, Miner,
+                    Timestamp.ToString(), Nonce, Difficulty.ToString() });
         }
 
         public byte[] ToSerializedBytes()

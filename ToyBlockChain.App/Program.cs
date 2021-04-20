@@ -138,7 +138,7 @@ namespace ToyBlockChain.App
                     // TODO: Implement.
                     _miner = new Miner((INodeMiner)_node, _identity, Announce);
                     minerThread = new Thread(_miner.Run);
-                    // minerThread.Start();
+                    minerThread.Start();
                 }
                 if (_clientFlag)
                 {
@@ -431,7 +431,8 @@ namespace ToyBlockChain.App
             {
                 try
                 {
-                    Transaction transaction = new Transaction(inboundPayload.Body);
+                    Transaction transaction = new Transaction(
+                        inboundPayload.Body);
                     _node.AddTransactionToPool(transaction);
                     Logger.Log(
                         $"Updated: Transaction {transaction.HashString[0..16]} "
@@ -448,8 +449,21 @@ namespace ToyBlockChain.App
             }
             else if (header == Protocol.ANNOUNCE_BLOCK)
             {
-                throw new NotImplementedException(
-                    $"invalid protocol header: {header}");
+                try
+                {
+                    Block block = new Block(inboundPayload.Body);
+                    _node.AddBlockToChain(block);
+                    Logger.Log(
+                        $"Updated: Block {block.HashString[0..16]} "
+                        + "added to blockchain",
+                        Logger.INFO, ConsoleColor.Yellow);
+                    Announce(inboundPayload);
+                }
+                catch (BlockIndexLowForChainException)
+                {
+                    Logger.Log(
+                        $"Info: Block index too low");
+                }
             }
             else
             {

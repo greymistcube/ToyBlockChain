@@ -3,6 +3,52 @@ using System.Collections.Generic;
 
 namespace ToyBlockChain.Core
 {
+    /// <summary>
+    /// Thrown when the index of a block is equal to the index of
+    /// the last block in the chain plus one but does not pass the
+    /// validation.
+    /// </summary>
+    public class BlockInvalidForChainException : Exception
+    {
+        public BlockInvalidForChainException()
+        {
+        }
+
+        public BlockInvalidForChainException(string message) : base(message)
+        {
+        }
+    }
+
+    /// <summary>
+    /// Thrown when the index of a block to add is less than or equal
+    /// to the index of the last block in the chain.
+    /// </summary>
+    public class BlockIndexLowForChainException : Exception
+    {
+        public BlockIndexLowForChainException()
+        {
+        }
+
+        public BlockIndexLowForChainException(string message) : base (message)
+        {
+        }
+    }
+
+    /// <summary>
+    /// Thrown when the index of a block to add is greater than
+    /// the index of the last block in the chain plus one.
+    /// </summary>
+    public class BlockIndexHighForChainException : Exception
+    {
+        public BlockIndexHighForChainException()
+        {
+        }
+
+        public BlockIndexHighForChainException(string message) : base(message)
+        {
+        }
+    }
+
     public class BlockChain
     {
         private List<Block> _chain;
@@ -25,16 +71,31 @@ namespace ToyBlockChain.Core
             }
         }
 
-        public bool AddBlock(Block block)
+        public void AddBlock(Block block)
         {
-            if (ValidateBlock(block))
+            Block lastBlock = LastBlock();
+
+            if (_chain.Count > block.Index)
             {
-                _chain.Add(block);
-                return true;
+                throw new BlockIndexLowForChainException(
+                    "given block index is too low");
+            }
+            else if (_chain.Count < block.Index)
+            {
+                throw new BlockIndexHighForChainException(
+                    "given block index is too high");
             }
             else
             {
-                return false;
+                if (ValidateBlock(block))
+                {
+                    _chain.Add(block);
+                }
+                else
+                {
+                    throw new BlockInvalidForChainException(
+                        "block is not valid for the chain");
+                }
             }
         }
 
@@ -42,7 +103,6 @@ namespace ToyBlockChain.Core
         {
             return (
                 block.IsValid()
-                && block.Index == _chain.Count
             ) && (
                 LastBlock() == null
                 || LastBlock().HashString == block.PreviousHashString);

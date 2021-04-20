@@ -14,6 +14,8 @@ namespace ToyBlockChain.Core
 
         string GetAccountCatalogueSerializedString();
         string GetTransactionPoolSerializedString();
+
+        void AddBlockToChain(Block block);
         void AddAccountToCatalogue(Account account);
         void AddTransactionToPool(Transaction transaction);
     }
@@ -42,6 +44,16 @@ namespace ToyBlockChain.Core
         string INodeApp.GetTransactionPoolSerializedString()
         {
             return _transactionPool.ToSerializedString();
+        }
+
+        /// <summary>
+        /// Adds given block to the chain.
+        /// </summary>
+        void INodeApp.AddBlockToChain(Block block)
+        {
+            // TODO: dirty fix
+            this.AddBlock(block);
+            // _blockChain.AddBlock(block);
         }
 
         /// <summary>
