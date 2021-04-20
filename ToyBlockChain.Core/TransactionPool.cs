@@ -113,9 +113,19 @@ namespace ToyBlockChain.Core
             return _poolByHash.ContainsKey(transaction.HashString);
         }
 
+        internal bool HasTransaction(string transactionHashString)
+        {
+            return _poolByHash.ContainsKey(transactionHashString);
+        }
+
         internal bool HasSender(Transaction transaction)
         {
             return _poolBySender.ContainsKey(transaction.Sender);
+        }
+
+        internal bool HasSender(string senderAddress)
+        {
+            return _poolBySender.ContainsKey(senderAddress);
         }
 
         internal Dictionary<string, Transaction> Pool

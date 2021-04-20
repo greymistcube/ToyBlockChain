@@ -42,7 +42,6 @@ namespace ToyBlockChain.Core
         {
             _transactionPool.RemoveTransaction(block.Transaction);
             _blockChain.AddBlock(block);
-            return;
         }
 
         /// <summary>
