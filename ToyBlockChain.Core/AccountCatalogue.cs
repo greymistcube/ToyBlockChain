@@ -5,6 +5,10 @@ using System.Linq;
 
 namespace ToyBlockChain.Core
 {
+    /// <summary>
+    /// Thrown if the account is already in the catalogue
+    /// when trying to add an account.
+    /// </summary>
     public class AccountInCatalogueException : Exception
     {
         public AccountInCatalogueException()
@@ -16,6 +20,10 @@ namespace ToyBlockChain.Core
         }
     }
 
+    /// <summary>
+    /// Thrown if at least one of the accounts associated with a transaction
+    /// is not found in the catalogue when processing a transaction.
+    /// </summary>
     public class AccountNotInCatalogueException : Exception
     {
         public AccountNotInCatalogueException()
@@ -39,9 +47,9 @@ namespace ToyBlockChain.Core
 
         public void Sync(string serializedString)
         {
+            _catalogue = new Dictionary<string, Account>();
             if (serializedString != null && serializedString.Length > 0)
             {
-                _catalogue = new Dictionary<string, Account>();
                 string[] accountStrings = serializedString.Split(SEPARATOR);
                 foreach (string accountString in accountStrings)
                 {

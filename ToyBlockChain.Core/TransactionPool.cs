@@ -4,6 +4,10 @@ using System.Linq;
 
 namespace ToyBlockChain.Core
 {
+    /// <summary>
+    /// Thrown if the transaction is already in the pool
+    /// when trying to add a transaction.
+    /// </summary>
     public class TransactionInPoolException : Exception
     {
         public TransactionInPoolException()
@@ -15,6 +19,9 @@ namespace ToyBlockChain.Core
         }
     }
 
+    /// <summary>
+    /// Thrown if the transaction is not in the pool.
+    /// </summary>
     public class TransactionNotInPoolException : Exception
     {
         public TransactionNotInPoolException()
@@ -38,9 +45,9 @@ namespace ToyBlockChain.Core
 
         public void Sync(string serializedString)
         {
+            _pool = new Dictionary<string, Transaction>();
             if (serializedString != null && serializedString.Length > 0)
             {
-                _pool = new Dictionary<string, Transaction>();
                 string[] transactionStrings = serializedString.Split(SEPARATOR);
                 foreach (string transactionString in transactionStrings)
                 {
