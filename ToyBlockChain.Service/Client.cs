@@ -27,46 +27,47 @@ namespace ToyBlockChain.Service
 
         public void Run()
         {
-            Random rnd = new Random();
-
-            string value;
-            string recipient;
-            Dictionary<string, Account> addressCatalogue;
             Transaction transaction = null;
 
             while(true)
             {
+                transaction = CreateTransaction();
                 lock (_node)
                 {
-                    addressCatalogue = _node.GetAccountCatalogue();
+                    _node.AddTransactionToPool(transaction);
                 }
-
-                value = rnd.Next().ToString();
-                recipient = addressCatalogue.Keys.ToList()[
-                    rnd.Next(addressCatalogue.Count)];
-                if (transaction == null
-                    || !_node.HasTransactionInPool(transaction))
-                {
-                    transaction = CreateTransaction(value, recipient);
-                    lock (_node)
-                    {
-                        _node.AddTransactionToPool(transaction);
-                    }
-                    Announce(new Payload(
-                        Protocol.ANNOUNCE_TRANSACTION,
-                        transaction.ToSerializedString()));
-                }
+                Announce(new Payload(
+                    Protocol.ANNOUNCE_TRANSACTION,
+                    transaction.ToSerializedString()));
+                Thread.Sleep(1000);
             }
         }
 
-        private Transaction CreateTransaction(string value, string recipient)
+        /// <summary>
+        /// Creates a random transaction.
+        /// </summary>
+        private Transaction CreateTransaction()
         {
-            // TODO: remove dummy nonce.
-            // Create an unsigned, invalid transaction.
+            Random rnd = new Random();
+
+            Dictionary<string, Account> addressCatalogue;
+            lock (_node)
+            {
+                addressCatalogue = _node.GetAccountCatalogue();
+            }
+
+            Account account = addressCatalogue[_identity.Address];
+
+            // TODO: Random value and recipient selection as a placeholder.
+            string value = rnd.Next().ToString();
+            string recipient = addressCatalogue.Keys.ToList()[
+                    rnd.Next(addressCatalogue.Count)];
+
+            // Create an unsigned transaction.
             long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
             Transaction transaction = new Transaction(
-                _identity.Address, 0, value, recipient, timestamp,
-                _identity.PublicKey);
+                _identity.Address, account.Count + 1, value, recipient,
+                timestamp, _identity.PublicKey);
 
             // Create a valid signature and sign the transaction.
             string signature = CryptoUtil.Sign(
