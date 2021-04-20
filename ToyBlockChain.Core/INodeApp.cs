@@ -12,6 +12,7 @@ namespace ToyBlockChain.Core
         void SyncAccountCatalogue(string serializedString);
         void SyncTransactionPool(string serializedString);
 
+        string GetBlockChainSerializedString();
         string GetAccountCatalogueSerializedString();
         string GetTransactionPoolSerializedString();
 
@@ -35,8 +36,7 @@ namespace ToyBlockChain.Core
     {
         void INodeApp.SyncBlockChain(string serializedString)
         {
-            // TODO: Implement.
-            throw new NotImplementedException();
+            _blockChain.Sync(serializedString);
         }
 
         void INodeApp.SyncAccountCatalogue(string serializedString)
@@ -47,6 +47,11 @@ namespace ToyBlockChain.Core
         void INodeApp.SyncTransactionPool(string serializedString)
         {
             _transactionPool.Sync(serializedString);
+        }
+
+        string INodeApp.GetBlockChainSerializedString()
+        {
+            return _blockChain.ToSerializedString();
         }
 
         string INodeApp.GetAccountCatalogueSerializedString()
