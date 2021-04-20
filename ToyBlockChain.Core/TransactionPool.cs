@@ -33,19 +33,36 @@ namespace ToyBlockChain.Core
         }
     }
 
+    /// <summary>
+    /// Thrown if there is a transaction with the same sender in the pool
+    /// when trying to add a transaction.
+    /// </summary>
+    public class TransactionSenderInPoolException : Exception
+    {
+        public TransactionSenderInPoolException()
+        {
+        }
+
+        public TransactionSenderInPoolException(string message) : base(message)
+        {
+        }
+    }
+
     public class TransactionPool
     {
         public const string SEPARATOR = "<TP>";
-        private Dictionary<string, Transaction> _pool;
+        private Dictionary<string, Transaction> _poolByHash;
+        private Dictionary<string, Transaction> _poolBySender;
 
         public TransactionPool()
         {
-            _pool = new Dictionary<string, Transaction>();
+            _poolByHash = new Dictionary<string, Transaction>();
+            _poolBySender = new Dictionary<string, Transaction>();
         }
 
         public void Sync(string serializedString)
         {
-            _pool = new Dictionary<string, Transaction>();
+            _poolByHash = new Dictionary<string, Transaction>();
             if (serializedString != null && serializedString.Length > 0)
             {
                 string[] transactionStrings = serializedString.Split(SEPARATOR);
@@ -53,52 +70,59 @@ namespace ToyBlockChain.Core
                 {
                     Transaction transaction = new Transaction(
                         transactionString);
-                    _pool.Add(transaction.HashString, transaction);
+                    _poolByHash.Add(transaction.HashString, transaction);
                 }
             }
         }
 
-        /// <summary>
-        /// Returns a shallow copy of the transaction pool as
-        /// a list of <see cref="Transaction"/>s.
-        /// </summary>
-        public List<Transaction> GetTransactions()
-        {
-            return _pool.Values.ToList();
-        }
-
         public void AddTransaction(Transaction transaction)
         {
-            if (_pool.ContainsKey(transaction.HashString))
+            if (HasTransaction(transaction))
             {
                 throw new TransactionInPoolException(
                     "transaction already exists in pool: "
                     + $"{transaction.HashString}");
             }
-            _pool.Add(transaction.HashString, transaction);
+            else if (HasSender(transaction))
+            {
+                throw new TransactionSenderInPoolException(
+                    "transaction with the same sender already exists in pool: "
+                    + $"{transaction.HashString}");
+            }
+            else
+            {
+                _poolByHash.Add(transaction.HashString, transaction);
+                _poolBySender.Add(transaction.Sender, transaction);
+            }
         }
 
         public void RemoveTransaction(Transaction transaction)
         {
-            if (!_pool.ContainsKey(transaction.HashString))
+            if (!_poolByHash.ContainsKey(transaction.HashString))
             {
                 throw new TransactionNotInPoolException(
                     "transaction not found in pool: "
                     + $"{transaction.HashString}");
             }
-            _pool.Remove(transaction.HashString);
+            _poolByHash.Remove(transaction.HashString);
+            _poolBySender.Remove(transaction.Sender);
         }
 
-        public bool HasTransaction(Transaction transaction)
+        internal bool HasTransaction(Transaction transaction)
         {
-            return _pool.ContainsKey(transaction.HashString);
+            return _poolByHash.ContainsKey(transaction.HashString);
+        }
+
+        internal bool HasSender(Transaction transaction)
+        {
+            return _poolBySender.ContainsKey(transaction.Sender);
         }
 
         internal Dictionary<string, Transaction> Pool
         {
             get
             {
-                return _pool;
+                return _poolByHash;
             }
         }
 
@@ -106,7 +130,7 @@ namespace ToyBlockChain.Core
         {
             get
             {
-                return _pool.Count;
+                return _poolByHash.Count;
             }
         }
 
@@ -114,7 +138,7 @@ namespace ToyBlockChain.Core
         {
             return String.Join(
                 SEPARATOR,
-                _pool.Values.Select(
+                _poolByHash.Values.Select(
                     account => account.ToSerializedString()));
         }
     }

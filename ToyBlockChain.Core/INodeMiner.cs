@@ -13,6 +13,9 @@ namespace ToyBlockChain.Core
         /// </summary>
         bool HasTransactionInPool(Transaction transaction);
 
+        /// <summary>
+        /// Adds given block to the chain.
+        /// </summary>
         void AddBlockToBlockChain(Block block);
 
         Block GetLastBlock();
@@ -20,7 +23,7 @@ namespace ToyBlockChain.Core
         int GetTargetDifficulty();
 
         /// <summary>
-        /// Get a shallow copy of the transaction pool as a
+        /// Returns a shallow copy of the transaction pool as a
         /// <see cref="Dictionary{TKey, TValue}"/>.
         /// </summary>
         Dictionary<string, Transaction> GetTransactionPool();
@@ -45,7 +48,7 @@ namespace ToyBlockChain.Core
 
         void INodeMiner.AddBlockToBlockChain(Block block)
         {
-            _blockChain.AddBlock(block);
+            AddBlockToBlockChain(block);
         }
 
         Dictionary<string, Transaction> INodeMiner.GetTransactionPool()

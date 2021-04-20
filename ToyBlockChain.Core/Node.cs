@@ -27,8 +27,9 @@ namespace ToyBlockChain.Core
         /// validations are performed. Additional validations occur
         /// when given block is passed to the <see cref="BlockChain"/> class.
         /// </summary>
-        public void AddBlock(Block block)
+        internal void AddBlockToBlockChain(Block block)
         {
+            // TODO: Temporary check until account count is implemented.
             if (HasTransactionInChain(block.Transaction))
             {
                 Logger.Log(
@@ -61,7 +62,7 @@ namespace ToyBlockChain.Core
             // the target difficulty.
             else
             {
-                RemoveTransaction(block.Transaction);
+                RemoveTransactionFromPool(block.Transaction);
                 _blockChain.AddBlock(block);
             }
             return;
@@ -72,7 +73,7 @@ namespace ToyBlockChain.Core
         /// Mainly used to prevent the same transaction getting
         /// added to the chain more than once.
         /// </summary>
-        public bool HasTransactionInChain(Transaction transaction)
+        internal bool HasTransactionInChain(Transaction transaction)
         {
             return _blockChain.HasTransaction(transaction);
         }
@@ -80,7 +81,7 @@ namespace ToyBlockChain.Core
         /// <summary>
         /// Checks if given transaction is in the transaction pool.
         /// </summary>
-        public bool HasTransactionInPool(Transaction transaction)
+        internal bool HasTransactionInPool(Transaction transaction)
         {
             return _transactionPool.HasTransaction(transaction);
         }
@@ -91,30 +92,9 @@ namespace ToyBlockChain.Core
         /// a transaction to a block in the blockchain.
         /// This makes a registered transaction uncancellable.
         /// </summary>
-        private void RemoveTransaction(Transaction transaction)
+        private void RemoveTransactionFromPool(Transaction transaction)
         {
             _transactionPool.RemoveTransaction(transaction);
-        }
-
-        public Block LastBlock()
-        {
-            return _blockChain.LastBlock();
-        }
-
-        public AccountCatalogue AccountCatalogue
-        {
-            get
-            {
-                return _accountCatalogue;
-            }
-        }
-
-        public TransactionPool TransactionPool
-        {
-            get
-            {
-                return _transactionPool;
-            }
         }
     }
 }

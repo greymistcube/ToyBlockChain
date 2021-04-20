@@ -421,7 +421,10 @@ namespace ToyBlockChain.App
             else if (header == Protocol.ANNOUNCE_ACCOUNT)
             {
                 Account account = new Account(inboundPayload.Body);
-                _node.AddAccountToCatalogue(account);
+                lock (_node)
+                {
+                    _node.AddAccountToCatalogue(account);
+                }
                 Logger.Log(
                     $"Updated: Account {account.Address[..16]} "
                     + "added to account catalogue",
@@ -433,7 +436,10 @@ namespace ToyBlockChain.App
                 {
                     Transaction transaction = new Transaction(
                         inboundPayload.Body);
-                    _node.AddTransactionToPool(transaction);
+                    lock (_node)
+                    {
+                        _node.AddTransactionToPool(transaction);
+                    }
                     Logger.Log(
                         $"Updated: Transaction {transaction.HashString[0..16]} "
                         + "added to transaction pool",
@@ -452,7 +458,10 @@ namespace ToyBlockChain.App
                 try
                 {
                     Block block = new Block(inboundPayload.Body);
-                    _node.AddBlockToChain(block);
+                    lock (_node)
+                    {
+                        _node.AddBlockToChain(block);
+                    }
                     Logger.Log(
                         $"Updated: Block {block.HashString[0..16]} "
                         + "added to blockchain",

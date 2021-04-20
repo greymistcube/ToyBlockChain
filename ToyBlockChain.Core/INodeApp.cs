@@ -8,22 +8,35 @@ namespace ToyBlockChain.Core
     /// </summary>
     public interface INodeApp
     {
-        void SyncBlockChain();
+        void SyncBlockChain(string serializedString);
         void SyncAccountCatalogue(string serializedString);
         void SyncTransactionPool(string serializedString);
 
         string GetAccountCatalogueSerializedString();
         string GetTransactionPoolSerializedString();
 
+        /// <summary>
+        /// Adds given block to the chain.
+        /// </summary>
         void AddBlockToChain(Block block);
+
+        /// <summary>
+        /// Adds given account to the catalogue.
+        /// </summary>
         void AddAccountToCatalogue(Account account);
+
+        /// <summary>
+        /// Adds given transaction to the pool.
+        /// </summary>
         void AddTransactionToPool(Transaction transaction);
     }
 
     public partial class Node : INodeApp
     {
-        void INodeApp.SyncBlockChain()
+        void INodeApp.SyncBlockChain(string serializedString)
         {
+            // TODO: Implement.
+            throw new NotImplementedException();
         }
 
         void INodeApp.SyncAccountCatalogue(string serializedString)
@@ -46,27 +59,18 @@ namespace ToyBlockChain.Core
             return _transactionPool.ToSerializedString();
         }
 
-        /// <summary>
-        /// Adds given block to the chain.
-        /// </summary>
         void INodeApp.AddBlockToChain(Block block)
         {
-            // TODO: dirty fix
-            this.AddBlock(block);
+            // TODO: Dirty fix.
+            AddBlockToBlockChain(block);
             // _blockChain.AddBlock(block);
         }
 
-        /// <summary>
-        /// Adds given account to the catalogue.
-        /// </summary>
         void INodeApp.AddAccountToCatalogue(Account account)
         {
             _accountCatalogue.AddAccount(account);
         }
 
-        /// <summary>
-        /// Adds given transaction to the pool.
-        /// </summary>
         void INodeApp.AddTransactionToPool(Transaction transaction)
         {
             _transactionPool.AddTransaction(transaction);

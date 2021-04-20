@@ -17,9 +17,9 @@ namespace ToyBlockChain.Core
 
         public Block(string serializedString)
         {
-            string[] strings = serializedString.Split(SEPARATOR);
-            _blockHeader = new BlockHeader(strings[0]);
-            _transaction = new Transaction(strings[1]);
+            string[] substrings = serializedString.Split(SEPARATOR);
+            _blockHeader = new BlockHeader(substrings[0]);
+            _transaction = new Transaction(substrings[1]);
         }
 
         public int Index

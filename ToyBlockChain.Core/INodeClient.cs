@@ -14,12 +14,17 @@ namespace ToyBlockChain.Core
         bool HasTransactionInPool(Transaction transaction);
 
         /// <summary>
+        /// Checks if a transaction with the same sender is in the pool.
+        /// </summary>
+        bool HasSenderInPool(Transaction transaction);
+
+        /// <summary>
         /// Adds given transaction to the pool.
         /// </summary>
         void AddTransactionToPool(Transaction transaction);
 
         /// <summary>
-        /// Get a shallow copy of the account catalogue as a
+        /// Returns a shallow copy of the account catalogue as a
         /// <see cref="Dictionary{TKey, TValue}"/>.
         /// </summary>
         Dictionary<string, Account> GetAccountCatalogue();
@@ -30,6 +35,11 @@ namespace ToyBlockChain.Core
         bool INodeClient.HasTransactionInPool(Transaction transaction)
         {
             return _transactionPool.HasTransaction(transaction);
+        }
+
+        bool INodeClient.HasSenderInPool(Transaction transaction)
+        {
+            return _transactionPool.HasSender(transaction);
         }
 
         void INodeClient.AddTransactionToPool(Transaction transaction)
