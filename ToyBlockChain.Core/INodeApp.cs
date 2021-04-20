@@ -66,9 +66,7 @@ namespace ToyBlockChain.Core
 
         void INodeApp.AddBlockToChain(Block block)
         {
-            // TODO: Dirty fix.
             AddBlockToBlockChain(block);
-            // _blockChain.AddBlock(block);
         }
 
         void INodeApp.AddAccountToCatalogue(Account account)
