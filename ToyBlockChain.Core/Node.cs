@@ -15,18 +15,6 @@ namespace ToyBlockChain.Core
         }
     }
 
-    public class InvalidTransactionInBlockException : Exception
-    {
-        public InvalidTransactionInBlockException()
-        {
-        }
-
-        public InvalidTransactionInBlockException(string message)
-            : base(message)
-        {
-        }
-    }
-
     /// <summary>
     /// The class representing a node in a blockchain ecosystem.
     /// Generally handles higher level logic, such as enforcing
@@ -52,23 +40,8 @@ namespace ToyBlockChain.Core
         /// </summary>
         internal void AddBlockToBlockChain(Block block)
         {
-            // Possibly unnecessarily restricts block validation.
-            if (!_transactionPool.HasTransaction(block.Transaction))
-            {
-                Logger.Log(
-                    $"block {block.HashString[0..16]} contains "
-                    + "an unknown transaction",
-                    Logger.INFO, ConsoleColor.Red);
-            }
-            // Transaction must be removed from the pool
-            // before getting added to the blockchain.
-            // Once the blockchain has been updated, adjust
-            // the target difficulty.
-            else
-            {
-                RemoveTransactionFromPool(block.Transaction);
-                _blockChain.AddBlock(block);
-            }
+            _transactionPool.RemoveTransaction(block.Transaction);
+            _blockChain.AddBlock(block);
             return;
         }
 
@@ -88,17 +61,6 @@ namespace ToyBlockChain.Core
         internal bool HasTransactionInPool(Transaction transaction)
         {
             return _transactionPool.HasTransaction(transaction);
-        }
-
-        /// <summary>
-        /// Removes a transaction from the transaction pool.
-        /// Made private so that this can be called only when moving
-        /// a transaction to a block in the blockchain.
-        /// This makes a registered transaction uncancellable.
-        /// </summary>
-        private void RemoveTransactionFromPool(Transaction transaction)
-        {
-            _transactionPool.RemoveTransaction(transaction);
         }
     }
 }

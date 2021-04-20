@@ -44,12 +44,12 @@ namespace ToyBlockChain.Core
 
         void INodeClient.AddTransactionToPool(Transaction transaction)
         {
-            if (HasTransactionInChain(transaction))
+            if (_blockChain.HasTransaction(transaction))
             {
                 throw new ArgumentException(
                     "given transaction already exists in the chain");
             }
-            else if (!_accountCatalogue.HasAccount(transaction.Sender))
+            if (!_accountCatalogue.HasAccount(transaction.Sender))
             {
                 throw new ArgumentException(
                     "sender address not found in the book");
