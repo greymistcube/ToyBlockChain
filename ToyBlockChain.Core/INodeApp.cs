@@ -51,7 +51,9 @@ namespace ToyBlockChain.Core
         /// </summary>
         void INodeApp.AddBlockToChain(Block block)
         {
-            _blockChain.AddBlock(block);
+            // TODO: dirty fix
+            this.AddBlock(block);
+            // _blockChain.AddBlock(block);
         }
 
         /// <summary>
