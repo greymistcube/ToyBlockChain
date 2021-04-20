@@ -45,7 +45,7 @@ namespace ToyBlockChain.Core
 
         void INodeMiner.AddBlockToBlockChain(Block block)
         {
-            _blockChain.AddBlock(block);
+            AddBlockToBlockChain(block);
         }
 
         Dictionary<string, Transaction> INodeMiner.GetTransactionPool()
