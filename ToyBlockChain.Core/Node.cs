@@ -11,19 +11,12 @@ namespace ToyBlockChain.Core
     /// </summary>
     public partial class Node
     {
-        private const int DEFAULT_DIFFICULTY = 4;
-        private const int MOVING_AVERAGE_LENGTH = 4;
-        private const int MINING_INTERVAL_LOWER_LIMIT = 4;
-        private const int MINING_INTERVAL_UPPER_LIMIT = 8;
         private readonly BlockChain _blockChain;
         private readonly AccountCatalogue _accountCatalogue;
         private readonly TransactionPool _transactionPool;
 
-        private int _difficulty;
-
         public Node()
         {
-            _difficulty = DEFAULT_DIFFICULTY;
             _blockChain = new BlockChain();
             _accountCatalogue = new AccountCatalogue();
             _transactionPool = new TransactionPool();
@@ -70,48 +63,6 @@ namespace ToyBlockChain.Core
             {
                 RemoveTransaction(block.Transaction);
                 _blockChain.AddBlock(block);
-                AdjustDifficulty();
-            }
-            return;
-        }
-
-        /// <summary>
-        /// Adjusts the target difficulty for the next prospective block.
-        /// Uses a simple moving average of time spend to mine the last
-        /// <c>MOVING_AVERAGE_LENGTH - 1</c> blocks.
-        ///
-        /// If the average is lower than
-        /// <see cref="MINING_INTERVAL_LOWER_LIMIT"/>, then the target
-        /// difficulty is raised. If the average is higher than
-        /// <see cref="MINING_INTERVAL_UPPER_LIMIT"/>, then the target
-        /// difficulty is lowerd.
-        ///
-        /// Note that the terget difficulty is never lowered below
-        /// <see cref="DEFAULT_DIFFICULTY"/>.
-        /// </summary>
-        private void AdjustDifficulty()
-        {
-            // Get the last MOVING_AVERAGE_LENGTH number of blocks.
-            List<Block> chain = _blockChain.Chain;
-            List<Block> subChain = chain.GetRange(
-                Math.Max(0, chain.Count - MOVING_AVERAGE_LENGTH),
-                Math.Min(chain.Count, MOVING_AVERAGE_LENGTH));
-
-            if (subChain.Count > 1)
-            {
-                long start = subChain[0].BlockHeader.Timestamp;
-                long end = subChain[subChain.Count - 1].BlockHeader.Timestamp;
-                double simpleMovingAverage = (
-                    (end - start) / (subChain.Count - 1));
-                if (simpleMovingAverage < MINING_INTERVAL_LOWER_LIMIT)
-                {
-                    _difficulty += 1;
-                }
-                else if (simpleMovingAverage > MINING_INTERVAL_UPPER_LIMIT)
-                {
-                    // Prevents the difficulty getting too low.
-                    _difficulty = Math.Max(DEFAULT_DIFFICULTY, _difficulty - 1);
-                }
             }
             return;
         }
@@ -148,11 +99,6 @@ namespace ToyBlockChain.Core
         public Block LastBlock()
         {
             return _blockChain.LastBlock();
-        }
-
-        public int GetTargetDifficulty()
-        {
-            return _difficulty;
         }
 
         public AccountCatalogue AccountCatalogue
