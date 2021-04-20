@@ -4,6 +4,17 @@ using ToyBlockChain.Util;
 
 namespace ToyBlockChain.Core
 {
+    public class InvalidBlockException : Exception
+    {
+        public InvalidBlockException()
+        {
+        }
+
+        public InvalidBlockException(string message) : base(message)
+        {
+        }
+    }
+
     /// <summary>
     /// The class representing a node in a blockchain ecosystem.
     /// Generally handles higher level logic, such as enforcing
@@ -29,42 +40,8 @@ namespace ToyBlockChain.Core
         /// </summary>
         internal void AddBlockToBlockChain(Block block)
         {
-            // TODO: Temporary check until account count is implemented.
-            if (HasTransactionInChain(block.Transaction))
-            {
-                Logger.Log(
-                    $"block {block.HashString[0..16]} contains "
-                    + "a transaction already in the blockchain",
-                    Logger.INFO, ConsoleColor.Red);
-            }
-            // Possibly unnecessarily restricts block validation.
-            else if (!HasTransactionInPool(block.Transaction))
-            {
-                Logger.Log(
-                    $"block {block.HashString[0..16]} contains "
-                    + "an unknown transaction",
-                    Logger.INFO, ConsoleColor.Red);
-            }
-            // Ensures block timestamps are in order.
-            else if (
-                _blockChain.LastBlock() != null
-                && !(_blockChain.LastBlock().BlockHeader.Timestamp
-                    <= block.BlockHeader.Timestamp))
-            {
-                Logger.Log(
-                    $"block {block.HashString[0..16]} has an "
-                    + "invalid timestamp",
-                    Logger.INFO, ConsoleColor.Red);
-            }
-            // Transaction must be removed from the pool
-            // before getting added to the blockchain.
-            // Once the blockchain has been updated, adjust
-            // the target difficulty.
-            else
-            {
-                RemoveTransactionFromPool(block.Transaction);
-                _blockChain.AddBlock(block);
-            }
+            _transactionPool.RemoveTransaction(block.Transaction);
+            _blockChain.AddBlock(block);
             return;
         }
 
@@ -84,17 +61,6 @@ namespace ToyBlockChain.Core
         internal bool HasTransactionInPool(Transaction transaction)
         {
             return _transactionPool.HasTransaction(transaction);
-        }
-
-        /// <summary>
-        /// Removes a transaction from the transaction pool.
-        /// Made private so that this can be called only when moving
-        /// a transaction to a block in the blockchain.
-        /// This makes a registered transaction uncancellable.
-        /// </summary>
-        private void RemoveTransactionFromPool(Transaction transaction)
-        {
-            _transactionPool.RemoveTransaction(transaction);
         }
     }
 }
