@@ -4,6 +4,29 @@ using ToyBlockChain.Util;
 
 namespace ToyBlockChain.Core
 {
+    public class InvalidBlockException : Exception
+    {
+        public InvalidBlockException()
+        {
+        }
+
+        public InvalidBlockException(string message) : base(message)
+        {
+        }
+    }
+
+    public class InvalidTransactionInBlockException : Exception
+    {
+        public InvalidTransactionInBlockException()
+        {
+        }
+
+        public InvalidTransactionInBlockException(string message)
+            : base(message)
+        {
+        }
+    }
+
     /// <summary>
     /// The class representing a node in a blockchain ecosystem.
     /// Generally handles higher level logic, such as enforcing
@@ -29,31 +52,12 @@ namespace ToyBlockChain.Core
         /// </summary>
         internal void AddBlockToBlockChain(Block block)
         {
-            // TODO: Temporary check until account count is implemented.
-            if (HasTransactionInChain(block.Transaction))
-            {
-                Logger.Log(
-                    $"block {block.HashString[0..16]} contains "
-                    + "a transaction already in the blockchain",
-                    Logger.INFO, ConsoleColor.Red);
-            }
             // Possibly unnecessarily restricts block validation.
-            else if (!HasTransactionInPool(block.Transaction))
+            if (!_transactionPool.HasTransaction(block.Transaction))
             {
                 Logger.Log(
                     $"block {block.HashString[0..16]} contains "
                     + "an unknown transaction",
-                    Logger.INFO, ConsoleColor.Red);
-            }
-            // Ensures block timestamps are in order.
-            else if (
-                _blockChain.LastBlock() != null
-                && !(_blockChain.LastBlock().BlockHeader.Timestamp
-                    <= block.BlockHeader.Timestamp))
-            {
-                Logger.Log(
-                    $"block {block.HashString[0..16]} has an "
-                    + "invalid timestamp",
                     Logger.INFO, ConsoleColor.Red);
             }
             // Transaction must be removed from the pool

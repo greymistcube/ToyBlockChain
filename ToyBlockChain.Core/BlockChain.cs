@@ -37,6 +37,21 @@ namespace ToyBlockChain.Core
     }
 
     /// <summary>
+    /// Thrown when the timestamp of given block is earlier than the timestamp
+    /// of the last block in the chain.
+    /// </summary>
+    public class BlockInvalidTimestampException : BlockInvalidForChainException
+    {
+        public BlockInvalidTimestampException()
+        {
+        }
+
+        public BlockInvalidTimestampException(string message) : base(message)
+        {
+        }
+    }
+
+    /// <summary>
     /// Thrown when the index of a block to add is less than or equal
     /// to the index of the last block in the chain.
     /// </summary>
@@ -133,8 +148,17 @@ namespace ToyBlockChain.Core
                 && (LastBlock().HashString != block.PreviousHashString))
             {
                 throw new BlockPreviousHashMismatchException(
-                    "given block's previous hash does not match " +
-                    "the chain's last block's hash");
+                    "previous hash for given block does not match " +
+                    "hash of the last block in the chain");
+            }
+            else if (
+                (LastBlock() != null)
+                && !(LastBlock().BlockHeader.Timestamp
+                    <= block.BlockHeader.Timestamp))
+            {
+                throw new BlockInvalidTimestampException(
+                    "timestamp for given block is earlier than "
+                    + "timestamp for the last block in the chain");
             }
             else
             {
