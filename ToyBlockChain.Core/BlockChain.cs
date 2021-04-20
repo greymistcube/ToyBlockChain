@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace ToyBlockChain.Core
 {
@@ -96,7 +98,7 @@ namespace ToyBlockChain.Core
         private List<Block> _chain;
         private int _difficulty;
 
-        public BlockChain()
+        internal BlockChain()
         {
             _chain = new List<Block>();
             return;
@@ -117,7 +119,7 @@ namespace ToyBlockChain.Core
             AdjustDifficulty();
         }
 
-        public Block LastBlock()
+        internal Block LastBlock()
         {
             if (_chain.Count > 0)
             {
@@ -129,7 +131,7 @@ namespace ToyBlockChain.Core
             }
         }
 
-        public void AddBlock(Block block)
+        internal void AddBlock(Block block)
         {
             Block lastBlock = LastBlock();
 
@@ -179,7 +181,8 @@ namespace ToyBlockChain.Core
         /// difficulty is lowerd.
         /// <br/>
         /// Note that the terget difficulty is never lowered below
-        /// <see cref="DIFFICULTY_MIN"/>.
+        /// <see cref="DIFFICULTY_MIN"/> or raised above
+        /// <see cref="DIFFICULTY_MAX"/>.
         /// </summary>
         private void AdjustDifficulty()
         {
@@ -209,7 +212,7 @@ namespace ToyBlockChain.Core
             }
         }
 
-        public bool HasTransaction(Transaction transaction)
+        internal bool HasTransaction(Transaction transaction)
         {
             foreach (Block block in _chain)
             {
@@ -221,17 +224,22 @@ namespace ToyBlockChain.Core
             return false;
         }
 
-        public List<Block> Chain
-        {
-            get
-            {
-                return _chain;
-            }
-        }
-
-        public int GetTargetDifficulty()
+        internal int GetTargetDifficulty()
         {
             return _difficulty;
+        }
+
+        public string ToSerializedString()
+        {
+            return String.Join(
+                SEPARATOR,
+                _chain.Select(
+                    block => block.ToSerializedString()));
+        }
+
+        public byte[] ToSerializedBytes()
+        {
+            return Encoding.UTF8.GetBytes(ToSerializedString());
         }
     }
 }
