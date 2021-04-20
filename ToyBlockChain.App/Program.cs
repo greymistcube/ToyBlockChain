@@ -449,13 +449,21 @@ namespace ToyBlockChain.App
             }
             else if (header == Protocol.ANNOUNCE_BLOCK)
             {
-                Block block = new Block(inboundPayload.Body);
-                _node.AddBlockToChain(block);
-                Logger.Log(
-                    $"Updated: Block {block.HashString[0..16]} "
-                    + "added to blockchain",
-                    Logger.INFO, ConsoleColor.Yellow);
-                Announce(inboundPayload);
+                try
+                {
+                    Block block = new Block(inboundPayload.Body);
+                    _node.AddBlockToChain(block);
+                    Logger.Log(
+                        $"Updated: Block {block.HashString[0..16]} "
+                        + "added to blockchain",
+                        Logger.INFO, ConsoleColor.Yellow);
+                    Announce(inboundPayload);
+                }
+                catch (BlockIndexLowForChainException)
+                {
+                    Logger.Log(
+                        $"Info: Block index too low");
+                }
             }
             else
             {
