@@ -47,9 +47,9 @@ namespace ToyBlockChain.Core
 
         public void Sync(string serializedString)
         {
+            _catalogue = new Dictionary<string, Account>();
             if (serializedString != null && serializedString.Length > 0)
             {
-                _catalogue = new Dictionary<string, Account>();
                 string[] accountStrings = serializedString.Split(SEPARATOR);
                 foreach (string accountString in accountStrings)
                 {

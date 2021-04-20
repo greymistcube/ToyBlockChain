@@ -51,12 +51,27 @@ namespace ToyBlockChain.Core
 
     public class BlockChain
     {
+        public const string SEPARATOR = "<BC>";
         private List<Block> _chain;
 
         public BlockChain()
         {
             _chain = new List<Block>();
             return;
+        }
+
+        public void Sync(string serializedString)
+        {
+            _chain = new List<Block>();
+            if (serializedString != null && serializedString.Length > 0)
+            {
+                string[] blockStrings = serializedString.Split(SEPARATOR);
+                foreach (string blockString in blockStrings)
+                {
+                    Block block = new Block(blockString);
+                    _chain.Add(block);
+                }
+            }
         }
 
         public Block LastBlock()
