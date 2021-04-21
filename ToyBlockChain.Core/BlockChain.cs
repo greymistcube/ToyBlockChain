@@ -119,21 +119,9 @@ namespace ToyBlockChain.Core
             AdjustDifficulty();
         }
 
-        internal Block LastBlock()
-        {
-            if (_chain.Count > 0)
-            {
-                return _chain[_chain.Count - 1];
-            }
-            else
-            {
-                return null;
-            }
-        }
-
         internal void AddBlock(Block block)
         {
-            Block lastBlock = LastBlock();
+            Block lastBlock = GetLastBlock();
 
             if (_chain.Count > block.Index)
             {
@@ -146,16 +134,16 @@ namespace ToyBlockChain.Core
                     "given block index is too high");
             }
             else if (
-                (LastBlock() != null)
-                && (LastBlock().HashString != block.PreviousHashString))
+                (GetLastBlock() != null)
+                && (GetLastBlock().HashString != block.PreviousHashString))
             {
                 throw new BlockPreviousHashMismatchException(
                     "previous hash for given block does not match " +
                     "hash of the last block in the chain");
             }
             else if (
-                (LastBlock() != null)
-                && !(LastBlock().BlockHeader.Timestamp
+                (GetLastBlock() != null)
+                && !(GetLastBlock().BlockHeader.Timestamp
                     <= block.BlockHeader.Timestamp))
             {
                 throw new BlockInvalidTimestampException(
@@ -227,6 +215,18 @@ namespace ToyBlockChain.Core
         internal int GetTargetDifficulty()
         {
             return _difficulty;
+        }
+
+        internal Block GetLastBlock()
+        {
+            if (_chain.Count > 0)
+            {
+                return _chain[_chain.Count - 1];
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public string ToSerializedString()
