@@ -6,8 +6,7 @@ using System.Linq;
 namespace ToyBlockChain.Core
 {
     /// <summary>
-    /// Thrown if the account is already in the catalogue
-    /// when trying to add an account.
+    /// Thrown if given account is already in the catalogue.
     /// </summary>
     public class AccountInCatalogueException : Exception
     {
@@ -21,8 +20,7 @@ namespace ToyBlockChain.Core
     }
 
     /// <summary>
-    /// Thrown if at least one of the accounts associated with a transaction
-    /// is not found in the catalogue when processing a transaction.
+    /// Thrown if given account is not found in the catalogue.
     /// </summary>
     public class AccountNotInCatalogueException : Exception
     {
@@ -31,6 +29,21 @@ namespace ToyBlockChain.Core
         }
 
         public AccountNotInCatalogueException(string message) : base(message)
+        {
+        }
+    }
+
+    /// <summary>
+    /// Thrown if given transaction is not valid for consumption.
+    /// </summary>
+    public class TransactionInvalidForCatalogueException : Exception
+    {
+        public TransactionInvalidForCatalogueException()
+        {
+        }
+
+        public TransactionInvalidForCatalogueException(string message)
+            : base(message)
         {
         }
     }
@@ -69,14 +82,50 @@ namespace ToyBlockChain.Core
             _catalogue.Add(account.Address, account);
         }
 
-        public bool HasAccount(Account account)
+        internal bool HasAccount(Account account)
         {
             return _catalogue.ContainsKey(account.Address);
         }
 
-        public bool HasAccount(string address)
+        internal bool HasAccount(string address)
         {
             return _catalogue.ContainsKey(address);
+        }
+
+        internal Dictionary<string, Account> Catalogue
+        {
+            get
+            {
+                return _catalogue;
+            }
+        }
+
+        internal List<string> Addresses
+        {
+            get
+            {
+                return new List<string>(_catalogue.Keys.ToList());
+            }
+        }
+
+        /// <summary>
+        /// Checks if given transaction is valid for consumption.
+        /// </summary>
+        internal void ValidateTransaction(Transaction transaction)
+        {
+            if (!HasAccount(transaction.Sender)
+                || !(HasAccount(transaction.Recipient)))
+            {
+                throw new TransactionInvalidForCatalogueException(
+                    "one of the accounts in transaction "
+                    + "is not found in the catalogue");
+            }
+            else if ((_catalogue[transaction.Sender].Count + 1)
+                != transaction.Nonce)
+            {
+                throw new TransactionInvalidForCatalogueException(
+                    "transaction count is invalid");
+            }
         }
 
         public string ToSerializedString()
@@ -90,22 +139,6 @@ namespace ToyBlockChain.Core
         public byte[] ToSerializedBytes()
         {
             return Encoding.UTF8.GetBytes(ToSerializedString());
-        }
-
-        public Dictionary<string, Account> Catalogue
-        {
-            get
-            {
-                return _catalogue;
-            }
-        }
-
-        public List<string> Addresses
-        {
-            get
-            {
-                return new List<string>(_catalogue.Keys.ToList());
-            }
         }
     }
 }
