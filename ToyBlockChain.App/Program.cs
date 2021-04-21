@@ -135,7 +135,6 @@ namespace ToyBlockChain.App
 
                 if (_minerFlag)
                 {
-                    // TODO: Implement.
                     _miner = new Miner((INodeMiner)_node, _identity, Announce);
                     minerThread = new Thread(_miner.Run);
                     minerThread.Start();
@@ -183,7 +182,6 @@ namespace ToyBlockChain.App
                     $"cannot sync to self: {address.ToSerializedString()}");
             }
 
-            // TODO: Implement
             SyncBlockChain(address);
             SyncAccountCatalogue(address);
             SyncTransactionPool(address);
@@ -362,8 +360,6 @@ namespace ToyBlockChain.App
         private static void ProcessRequestPayload(
             NetworkStream stream, Payload inboundPayload)
         {
-            // TODO: Below is a placeholder.
-            // This should be more fully fledged out.
             string header = inboundPayload.Header;
             if (header == Protocol.REQUEST_ROUTING_TABLE)
             {
@@ -455,6 +451,9 @@ namespace ToyBlockChain.App
                 catch (TransactionSenderInPoolException)
                 {
                     Logger.Log(
+                        $"[Info] App: Transaction {transaction.LogId} ignored",
+                        Logger.INFO, ConsoleColor.Blue);
+                    Logger.Log(
                         $"[Debug] App: Transaction sender {transaction.Sender} "
                         + "already in transaction pool",
                         Logger.DEBUG, ConsoleColor.Red);
@@ -462,12 +461,18 @@ namespace ToyBlockChain.App
                 catch (TransactionInPoolException)
                 {
                     Logger.Log(
+                        $"[Info] App: Transaction {transaction.LogId} ignored",
+                        Logger.INFO, ConsoleColor.Blue);
+                    Logger.Log(
                         $"[Debug] App: Transaction {transaction.HashString} "
                         + "already in transaction pool",
                         Logger.DEBUG, ConsoleColor.Red);
                 }
                 catch (TransactionInvalidForChainException)
                 {
+                    Logger.Log(
+                        $"[Info] App: Transaction {transaction.LogId} ignored",
+                        Logger.INFO, ConsoleColor.Blue);
                     Logger.Log(
                         $"[Debug] App: Transaction {transaction.HashString} "
                         + "already in blockchain",
@@ -492,6 +497,9 @@ namespace ToyBlockChain.App
                 catch (TransactionNotInPoolException)
                 {
                     Logger.Log(
+                        $"[Info] App: Block {block.LogId} ignored",
+                        Logger.INFO, ConsoleColor.Blue);
+                    Logger.Log(
                         "[Debug] App: Transaction "
                         + $"{block.Transaction.HashString} not found in pool.",
                         Logger.DEBUG, ConsoleColor.Red);
@@ -499,8 +507,23 @@ namespace ToyBlockChain.App
                 catch (BlockIndexLowForChainException)
                 {
                     Logger.Log(
+                        $"[Info] App: Block {block.LogId} ignored",
+                        Logger.INFO, ConsoleColor.Blue);
+                    Logger.Log(
                         $"[Debug] App: Block index too low",
                         Logger.DEBUG, ConsoleColor.Red);
+                }
+                catch (BlockIndexHighForChainException)
+                {
+                    throw new NotImplementedException();
+                }
+                catch (BlockInvalidTimestampException)
+                {
+                    throw new NotImplementedException();
+                }
+                catch (BlockPreviousHashMismatchException)
+                {
+                    throw new NotImplementedException();
                 }
             }
             else
@@ -515,8 +538,6 @@ namespace ToyBlockChain.App
         /// </summary>
         private static void ProcessResponsePayload(Payload inboundPayload)
         {
-            // TODO: Below is a placeholder.
-            // This should be more fully fledged out.
             string header = inboundPayload.Header;
             if (header == Protocol.RESPONSE_ROUTING_TABLE)
             {
