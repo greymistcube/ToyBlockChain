@@ -21,12 +21,12 @@ maintaining/running components.
   - Optional runnable component.
   - Responsible for generating `Transaction`s.
 * `Identity`
-  - Optional required compoent. Needed when `App` runs as a `Miner` or a
-    `Client`.
+  - Optional required compoent. Needed when `App` runs as a `Miner` and/or
+    a `Client`.
 
 When run with all possible components, three running threads are spawned,
-`App`, `Miner`, and `Client`. For each entity, its interaction with `Node` is
-controlled by an `interface`.
+`App`, `Miner`, and `Client`. For each entity, its interaction with the `Node`
+is controlled by an `interface`.
 
 ## `Node`
 
