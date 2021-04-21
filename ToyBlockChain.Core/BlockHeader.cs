@@ -119,6 +119,14 @@ namespace ToyBlockChain.Core
             }
         }
 
+        public string LogId
+        {
+            get
+            {
+                return HashString[0..16];
+            }
+        }
+
         public bool IsValid()
         {
             BitArray bits = new BitArray(HashBytes);

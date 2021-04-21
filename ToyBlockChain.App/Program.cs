@@ -135,7 +135,6 @@ namespace ToyBlockChain.App
 
                 if (_minerFlag)
                 {
-                    // TODO: Implement.
                     _miner = new Miner((INodeMiner)_node, _identity, Announce);
                     minerThread = new Thread(_miner.Run);
                     minerThread.Start();
@@ -183,7 +182,6 @@ namespace ToyBlockChain.App
                     $"cannot sync to self: {address.ToSerializedString()}");
             }
 
-            // TODO: Implement
             SyncBlockChain(address);
             SyncAccountCatalogue(address);
             SyncTransactionPool(address);
@@ -362,8 +360,6 @@ namespace ToyBlockChain.App
         private static void ProcessRequestPayload(
             NetworkStream stream, Payload inboundPayload)
         {
-            // TODO: Below is a placeholder.
-            // This should be more fully fledged out.
             string header = inboundPayload.Header;
             if (header == Protocol.REQUEST_ROUTING_TABLE)
             {
@@ -431,10 +427,6 @@ namespace ToyBlockChain.App
                 {
                     _node.AddAccountToCatalogue(account);
                 }
-                Logger.Log(
-                    $"[Info] App: Account {account.Address[..16]} "
-                    + "added to account catalogue",
-                    Logger.INFO, ConsoleColor.Blue);
             }
             else if (header == Protocol.ANNOUNCE_TRANSACTION)
             {
@@ -446,23 +438,35 @@ namespace ToyBlockChain.App
                     {
                         _node.AddTransactionToPool(transaction);
                     }
-                    Logger.Log(
-                        $"[Info] App: Transaction {transaction.HashString[0..16]} "
-                        + "added to transaction pool",
-                        Logger.INFO, ConsoleColor.Blue);
                     Announce(inboundPayload);
+                }
+                catch (TransactionSenderInPoolException)
+                {
+                    Logger.Log(
+                        $"[Info] App: Transaction {transaction.LogId} ignored",
+                        Logger.INFO, ConsoleColor.Blue);
+                    Logger.Log(
+                        $"[Debug] App: Transaction sender {transaction.Sender} "
+                        + "already in transaction pool",
+                        Logger.DEBUG, ConsoleColor.Red);
                 }
                 catch (TransactionInPoolException)
                 {
                     Logger.Log(
-                        $"[Debug] App: Transaction {transaction.HashString[0..16]} "
+                        $"[Info] App: Transaction {transaction.LogId} ignored",
+                        Logger.INFO, ConsoleColor.Blue);
+                    Logger.Log(
+                        $"[Debug] App: Transaction {transaction.HashString} "
                         + "already in transaction pool",
                         Logger.DEBUG, ConsoleColor.Red);
                 }
                 catch (TransactionInvalidForChainException)
                 {
                     Logger.Log(
-                        $"[Debug] App: Transaction {transaction.HashString[0..16]} "
+                        $"[Info] App: Transaction {transaction.LogId} ignored",
+                        Logger.INFO, ConsoleColor.Blue);
+                    Logger.Log(
+                        $"[Debug] App: Transaction {transaction.HashString} "
                         + "already in blockchain",
                         Logger.DEBUG, ConsoleColor.Red);
                 }
@@ -476,24 +480,38 @@ namespace ToyBlockChain.App
                     {
                         _node.AddBlockToChain(block);
                     }
-                    Logger.Log(
-                        $"[Info] App: Block {block.HashString[0..16]} "
-                        + "added to blockchain",
-                        Logger.INFO, ConsoleColor.Blue);
                     Announce(inboundPayload);
                 }
                 catch (TransactionNotInPoolException)
                 {
                     Logger.Log(
-                        $"[Debug] App: Transaction {block.Transaction.HashString[0..16]} "
-                        + "not found in pool.",
+                        $"[Info] App: Block {block.LogId} ignored",
+                        Logger.INFO, ConsoleColor.Blue);
+                    Logger.Log(
+                        "[Debug] App: Transaction "
+                        + $"{block.Transaction.HashString} not found in pool.",
                         Logger.DEBUG, ConsoleColor.Red);
                 }
                 catch (BlockIndexLowForChainException)
                 {
                     Logger.Log(
+                        $"[Info] App: Block {block.LogId} ignored",
+                        Logger.INFO, ConsoleColor.Blue);
+                    Logger.Log(
                         $"[Debug] App: Block index too low",
                         Logger.DEBUG, ConsoleColor.Red);
+                }
+                catch (BlockIndexHighForChainException)
+                {
+                    throw new NotImplementedException();
+                }
+                catch (BlockInvalidTimestampException)
+                {
+                    throw new NotImplementedException();
+                }
+                catch (BlockPreviousHashMismatchException)
+                {
+                    throw new NotImplementedException();
                 }
             }
             else
@@ -508,8 +526,6 @@ namespace ToyBlockChain.App
         /// </summary>
         private static void ProcessResponsePayload(Payload inboundPayload)
         {
-            // TODO: Below is a placeholder.
-            // This should be more fully fledged out.
             string header = inboundPayload.Header;
             if (header == Protocol.RESPONSE_ROUTING_TABLE)
             {

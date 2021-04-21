@@ -54,6 +54,14 @@ namespace ToyBlockChain.Core
             }
         }
 
+        public string LogId
+        {
+            get
+            {
+                return Address[0..16];
+            }
+        }
+
         public string ToSerializedString()
         {
             return $"{_count}{SEPARATOR}{_address}{SEPARATOR}{_balance}";

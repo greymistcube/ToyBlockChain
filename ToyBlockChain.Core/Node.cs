@@ -41,9 +41,13 @@ namespace ToyBlockChain.Core
             _transactionPool.RemoveTransaction(block.Transaction);
             _blockChain.AddBlock(block);
             Logger.Log(
-                $"[Info] Node: Block {block.BlockHeader.HashString[0..16]} "
-                + "added to the chain",
+                $"[Info] Node: Block {block.LogId} "
+                + "added to chain",
                 Logger.INFO, ConsoleColor.Green);
+            Logger.Log(
+                "[Debug] Node: Block detail:\n"
+                + $"{block.BlockHeader.ToString()}",
+                Logger.DEBUG, ConsoleColor.Red);
         }
 
         /// <summary>
@@ -53,8 +57,8 @@ namespace ToyBlockChain.Core
         {
             _accountCatalogue.AddAccount(account);
             Logger.Log(
-                $"[Info] Node: Account {account.Address[0..16]} "
-                + "added to the catalogue",
+                $"[Info] Node: Account {account.LogId} "
+                + "added to catalogue",
                 Logger.INFO, ConsoleColor.Green);
         }
 
@@ -69,8 +73,8 @@ namespace ToyBlockChain.Core
 
             _transactionPool.AddTransaction(transaction);
             Logger.Log(
-                $"[Info] Node: Transaction {transaction.HashString[0..16]} "
-                + "added to the pool",
+                $"[Info] Node: Transaction {transaction.LogId} "
+                + "added to pool",
                 Logger.INFO, ConsoleColor.Green);
             Logger.Log(
                 "[Debug] Node: Transaction detail:\n"
