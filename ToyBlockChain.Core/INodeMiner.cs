@@ -38,7 +38,7 @@ namespace ToyBlockChain.Core
 
         Block INodeMiner.GetLastBlock()
         {
-            return _blockChain.LastBlock();
+            return _blockChain.GetLastBlock();
         }
 
         int INodeMiner.GetTargetDifficulty()

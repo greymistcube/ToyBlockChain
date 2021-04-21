@@ -85,6 +85,18 @@ namespace ToyBlockChain.Core
         }
     }
 
+    public class TransactionInvalidForChainException : Exception
+    {
+        public TransactionInvalidForChainException()
+        {
+        }
+
+        public TransactionInvalidForChainException(string message)
+            : base(message)
+        {
+        }
+    }
+
     public class BlockChain
     {
         public const string SEPARATOR = "<BC>";
@@ -197,6 +209,15 @@ namespace ToyBlockChain.Core
                 {
                     _difficulty = Math.Max(DIFFICULTY_MIN, _difficulty - 1);
                 }
+            }
+        }
+
+        internal void ValidateTransaction(Transaction transaction)
+        {
+            if (HasTransaction(transaction))
+            {
+                throw new TransactionInvalidForChainException(
+                    "given transaction is in the chain");
             }
         }
 
