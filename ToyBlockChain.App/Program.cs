@@ -534,6 +534,8 @@ namespace ToyBlockChain.App
                     "[Info] App: Routing table synced.",
                     Logger.INFO, ConsoleColor.Blue);
             }
+            // TODO: Major security hole.
+            // Currently blindly trusts received data without any validation.
             else if (header == Protocol.RESPONSE_BLOCKCHAIN)
             {
                 lock (_node)
