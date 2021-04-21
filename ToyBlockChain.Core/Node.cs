@@ -42,7 +42,7 @@ namespace ToyBlockChain.Core
             _blockChain.AddBlock(block);
             Logger.Log(
                 $"[Info] Node: Block {block.LogId} "
-                + "added to the chain",
+                + "added to chain",
                 Logger.INFO, ConsoleColor.Green);
             Logger.Log(
                 "[Debug] Node: Block detail:\n"
@@ -58,7 +58,7 @@ namespace ToyBlockChain.Core
             _accountCatalogue.AddAccount(account);
             Logger.Log(
                 $"[Info] Node: Account {account.LogId} "
-                + "added to the catalogue",
+                + "added to catalogue",
                 Logger.INFO, ConsoleColor.Green);
         }
 
@@ -74,7 +74,7 @@ namespace ToyBlockChain.Core
             _transactionPool.AddTransaction(transaction);
             Logger.Log(
                 $"[Info] Node: Transaction {transaction.LogId} "
-                + "added to the pool",
+                + "added to pool",
                 Logger.INFO, ConsoleColor.Green);
             Logger.Log(
                 "[Debug] Node: Transaction detail:\n"

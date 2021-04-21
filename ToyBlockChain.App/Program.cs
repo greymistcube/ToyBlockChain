@@ -427,10 +427,6 @@ namespace ToyBlockChain.App
                 {
                     _node.AddAccountToCatalogue(account);
                 }
-                Logger.Log(
-                    $"[Info] App: Account {account.LogId} "
-                    + "added to account catalogue",
-                    Logger.INFO, ConsoleColor.Blue);
             }
             else if (header == Protocol.ANNOUNCE_TRANSACTION)
             {
@@ -442,10 +438,6 @@ namespace ToyBlockChain.App
                     {
                         _node.AddTransactionToPool(transaction);
                     }
-                    Logger.Log(
-                        $"[Info] App: Transaction {transaction.LogId} "
-                        + "added to transaction pool",
-                        Logger.INFO, ConsoleColor.Blue);
                     Announce(inboundPayload);
                 }
                 catch (TransactionSenderInPoolException)
@@ -488,10 +480,6 @@ namespace ToyBlockChain.App
                     {
                         _node.AddBlockToChain(block);
                     }
-                    Logger.Log(
-                        $"[Info] App: Block {block.LogId} "
-                        + "added to blockchain",
-                        Logger.INFO, ConsoleColor.Blue);
                     Announce(inboundPayload);
                 }
                 catch (TransactionNotInPoolException)
