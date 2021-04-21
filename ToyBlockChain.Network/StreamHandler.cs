@@ -20,9 +20,13 @@ namespace ToyBlockChain.Network
                 inboundBytes, 0, numBytesRead);
             Payload inboundPayload = new Payload(inboundString);
             Logger.Log(
-                "[Info] Network: Received "
-                + $"{inboundPayload.ToSerializedString()}",
+                "[Info] Network: Received Header "
+                + $"{inboundPayload.Header}",
                 Logger.INFO, ConsoleColor.Cyan);
+            Logger.Log(
+                "[Debug] Network: Received Body "
+                + $"{inboundPayload.Body}",
+                Logger.DEBUG, ConsoleColor.Red);
             return inboundPayload;
         }
 
@@ -36,8 +40,13 @@ namespace ToyBlockChain.Network
                 outboundPayload.ToSerializedBytes(), 0,
                 outboundPayload.ToSerializedBytes().Length);
             Logger.Log(
-                $"[Info] Network: Sent {outboundPayload.ToSerializedString()}",
+                "[Info] Network: Sent Header "
+                + $"{outboundPayload.Header}",
                 Logger.INFO, ConsoleColor.Magenta);
+            Logger.Log(
+                "[Debug] Network: Sent Body "
+                + $"{outboundPayload.Body}",
+                Logger.DEBUG, ConsoleColor.Red);
         }
     }
 }

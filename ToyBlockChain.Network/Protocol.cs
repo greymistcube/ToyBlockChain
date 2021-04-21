@@ -17,7 +17,7 @@ namespace ToyBlockChain.Network
         public const string ANNOUNCE_ACCOUNT = "<AC>";
         public const string ANNOUNCE_TRANSACTION = "<AT>";
         public const string ANNOUNCE_BLOCK = "<AB>";
-        public const int BUFFER_SIZE = 1024;
+        public const int BUFFER_SIZE = 65536;
         public const int HEADER_SIZE = 4;
         public static readonly string[] REQUEST = new string[] {
             REQUEST_ROUTING_TABLE, REQUEST_BLOCKCHAIN,
