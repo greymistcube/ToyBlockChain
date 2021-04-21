@@ -58,7 +58,6 @@ namespace ToyBlockChain.Service
         public void Run()
         {
             Random rnd = new Random();
-
             Block block = null;
 
             while (true)
@@ -67,17 +66,6 @@ namespace ToyBlockChain.Service
                 {
                     Transaction transaction = GetTransactionToMine();
                     block = Mine(transaction);
-                }
-                catch (TransactionSelectionFailException)
-                {
-                    Thread.Sleep(1000);
-                }
-                catch (TransactionRemovedFromPoolException)
-                {
-                    Thread.Sleep(1000);
-                }
-                if (block != null)
-                {
                     lock (_node)
                     {
                         _node.AddBlockToBlockChain(block);
@@ -85,6 +73,16 @@ namespace ToyBlockChain.Service
                     Announce(new Payload(
                         Protocol.ANNOUNCE_BLOCK,
                         block.ToSerializedString()));
+                }
+                catch (TransactionSelectionFailException)
+                {
+                    Thread.Sleep(1000);
+                    continue;
+                }
+                catch (TransactionRemovedFromPoolException)
+                {
+                    Thread.Sleep(1000);
+                    continue;
                 }
             }
         }
