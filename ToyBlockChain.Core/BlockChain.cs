@@ -193,7 +193,7 @@ namespace ToyBlockChain.Core
             else
             {
                 int startIndex = (
-                    ((_chain.Count - 1) / MOVING_AVERAGE_LENGTH)
+                    ((_chain.Count / MOVING_AVERAGE_LENGTH) - 1)
                     * MOVING_AVERAGE_LENGTH);
                 int endIndex = startIndex + (MOVING_AVERAGE_LENGTH - 1);
                 long startTimestamp = _chain[startIndex].BlockHeader.Timestamp;
