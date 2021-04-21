@@ -1,0 +1,64 @@
+# Validation
+
+## Sync Validation
+
+Triggered when syncing to another `Node` in the network. As `Node` is just a
+container for `BlockChain`, `AccountCatalogue`, `TransactionPool`,
+all three are synced.<sup>[1](#footnote_01)</sup> <sup>[2](#footnote_02)</sup>
+Happens when a new `Node` is created, a `Node` has been brought back online,
+or a `Node` has been desynced, most likely due to having fallen behind in
+`BlockChain` length.<sup>[3](#footnote_03)</sup>
+
+Sync validation simply involves treating missing each individual `Block`,
+`Account`, and/or `Transaction` as if they are announcements received.
+
+----
+
+<a name="footnote_01">1</a>
+In its purest form, only `BlockChain` may be synced. Depending on
+implementation, `TransactionPool` may be emptied during the syncing phase
+and filled with only newly announced `Transaction`s. As for `AccountCatalogue`,
+the current state of all non-trivial accounts with at least
+one `Transaction` history can be created and derived on the fly.
+
+<a name="footnote_02">2</a>
+`Account` registration is implemented for only practical reasons.
+For one `Account` to interact with another `Account`, it would make sense
+to keep records of all `Account`s in the network. Theoretically, however,
+as mentioned above, any `Account`s involved in a `Transaction` not yet
+in `AccountCatalogue` can be created on the fly with little or
+no detriment to the security of the network.
+
+<a name="footnote_03">3</a>
+Ultimately, all three cases involve a `Node`'s `BlockChain` length being
+shorter than what it should be. Hence the resulting syncing processes
+should have little to no difference for all three cases.
+
+# Announce Validation
+
+Triggered when announcements are received. When each unit of data
+is received, be it a `Block`, a `Transaction`, or an `Account`,
+it must be validated both internally and
+externally.<sup>[4](#footnote_04)</sup> <sup>[5](#footnote_05)</sup>
+
+* Internal validation: Validation does not depend on external state
+  and/or context.
+* External validation: Validation does depend on external state
+  and/or context.<sup>[6](#footnote_06)</sup>
+
+----
+
+<a name="footnote_04">4</a>
+For example, in order for a `Block` to be added to a `BlockChain`, the `Block`
+itself must be internally/structurally valid and externally/relationally appendable to the `BlockChain`.
+
+<a name="footnote_05">5</a>
+This applies not only to the top level unit such as `Block`, but also
+to each subunit, such as `BlockHeader` and `Transaction`, contained
+in the received `Block`.
+
+<a name="footnote_06">6</a>
+The context, hence also the requirements, may change depending on
+the process a unit of data is going through. For example, `Transaction`
+getting added to a `TransactionPool` and getting added to a `BlockChain`
+as a part of a `Block` is under two different contexts.
