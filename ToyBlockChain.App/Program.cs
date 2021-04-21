@@ -438,10 +438,10 @@ namespace ToyBlockChain.App
             }
             else if (header == Protocol.ANNOUNCE_TRANSACTION)
             {
+                Transaction transaction = new Transaction(
+                    inboundPayload.Body);
                 try
                 {
-                    Transaction transaction = new Transaction(
-                        inboundPayload.Body);
                     lock (_node)
                     {
                         _node.AddTransactionToPool(transaction);
@@ -455,33 +455,39 @@ namespace ToyBlockChain.App
                 catch (TransactionInPoolException)
                 {
                     Logger.Log(
-                        "[Debug] App: Transaction already in transaction pool",
+                        $"[Debug] App: Transaction {transaction.HashString[0..16]} "
+                        + "already in transaction pool",
+                        Logger.DEBUG, ConsoleColor.Red);
+                }
+                catch (TransactionInvalidForChainException)
+                {
+                    Logger.Log(
+                        $"[Debug] App: Transaction {transaction.HashString[0..16]} "
+                        + "already in blockchain",
                         Logger.DEBUG, ConsoleColor.Red);
                 }
             }
             else if (header == Protocol.ANNOUNCE_BLOCK)
             {
+                Block block = new Block(inboundPayload.Body);
                 try
                 {
-                    Block block = new Block(inboundPayload.Body);
-                    try
+                    lock (_node)
                     {
-                        lock (_node)
-                        {
-                            _node.AddBlockToChain(block);
-                        }
-                        Logger.Log(
-                            $"[Info] App: Block {block.HashString[0..16]} "
-                            + "added to blockchain",
-                            Logger.INFO, ConsoleColor.Blue);
-                        Announce(inboundPayload);
+                        _node.AddBlockToChain(block);
                     }
-                    catch (TransactionNotInPoolException)
-                    {
-                        Logger.Log(
-                            $"[Debug] App: Transaction not found in pool.",
-                            Logger.DEBUG, ConsoleColor.Red);
-                    }
+                    Logger.Log(
+                        $"[Info] App: Block {block.HashString[0..16]} "
+                        + "added to blockchain",
+                        Logger.INFO, ConsoleColor.Blue);
+                    Announce(inboundPayload);
+                }
+                catch (TransactionNotInPoolException)
+                {
+                    Logger.Log(
+                        $"[Debug] App: Transaction {block.Transaction.HashString[0..16]} "
+                        + "not found in pool.",
+                        Logger.DEBUG, ConsoleColor.Red);
                 }
                 catch (BlockIndexLowForChainException)
                 {
