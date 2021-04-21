@@ -40,6 +40,10 @@ namespace ToyBlockChain.Core
         {
             _transactionPool.RemoveTransaction(block.Transaction);
             _blockChain.AddBlock(block);
+            Logger.Log(
+                $"[Info] Node: Block {block.BlockHeader.HashString[0..16]} "
+                + "added to the chain",
+                Logger.INFO, ConsoleColor.Yellow);
         }
 
         /// <summary>
@@ -48,6 +52,10 @@ namespace ToyBlockChain.Core
         internal void AddAccountToCatalogue(Account account)
         {
             _accountCatalogue.AddAccount(account);
+            Logger.Log(
+                $"[Info] Node: Account {account.Address[0..16]} "
+                + "added to the catalogue",
+                Logger.INFO, ConsoleColor.Yellow);
         }
 
         /// <summary>
@@ -60,6 +68,10 @@ namespace ToyBlockChain.Core
             _accountCatalogue.ValidateTransaction(transaction);
 
             _transactionPool.AddTransaction(transaction);
+            Logger.Log(
+                $"[Info] Node: Transaction {transaction.HashString[0..16]} "
+                + "added to the pool",
+                Logger.INFO, ConsoleColor.Yellow);
         }
 
         /// <summary>

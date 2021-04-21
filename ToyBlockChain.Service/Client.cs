@@ -30,13 +30,20 @@ namespace ToyBlockChain.Service
             while(true)
             {
                 Transaction transaction = CreateTransaction();
-                lock (_node)
+                try
                 {
-                    _node.AddTransactionToPool(transaction);
+                    lock (_node)
+                    {
+                        _node.AddTransactionToPool(transaction);
+                    }
+                    Announce(new Payload(
+                        Protocol.ANNOUNCE_TRANSACTION,
+                        transaction.ToSerializedString()));
                 }
-                Announce(new Payload(
-                    Protocol.ANNOUNCE_TRANSACTION,
-                    transaction.ToSerializedString()));
+                catch (TransactionSenderInPoolException)
+                {
+                    continue;
+                }
                 Thread.Sleep(1000);
             }
         }

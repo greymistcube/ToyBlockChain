@@ -84,13 +84,13 @@ namespace ToyBlockChain.App
             if (_seedFlag)
             {
                 Logger.Log(
-                    "Running as a seed node...",
+                    "[Info] App: Running as a seed node...",
                     Logger.INFO, ConsoleColor.Blue);
             }
             else
             {
                 Logger.Log(
-                    "Running as a non-seed node...",
+                    "[Info] App: Running as a non-seed node...",
                     Logger.INFO, ConsoleColor.Blue);
             }
 
@@ -264,8 +264,8 @@ namespace ToyBlockChain.App
         private static void Listen(Address address)
         {
             Logger.Log(
-                "Starting to listen...",
-                Logger.INFO, ConsoleColor.White);
+                "[Info] App: Starting to listen...",
+                Logger.INFO, ConsoleColor.Blue);
 
             TcpListener server = new TcpListener(
                 IPAddress.Parse(address.IpAddress), address.PortNumber);
@@ -420,9 +420,9 @@ namespace ToyBlockChain.App
                 Address address = new Address(inboundPayload.Body);
                 _routingTable.AddAddress(address);
                 Logger.Log(
-                    $"Updated: Address {address.PortNumber} "
+                    $"[Info] App: Address {address.PortNumber} "
                     + "added to routing table",
-                    Logger.INFO, ConsoleColor.Yellow);
+                    Logger.INFO, ConsoleColor.Blue);
             }
             else if (header == Protocol.ANNOUNCE_ACCOUNT)
             {
@@ -432,9 +432,9 @@ namespace ToyBlockChain.App
                     _node.AddAccountToCatalogue(account);
                 }
                 Logger.Log(
-                    $"Updated: Account {account.Address[..16]} "
+                    $"[Info] App: Account {account.Address[..16]} "
                     + "added to account catalogue",
-                    Logger.INFO, ConsoleColor.Yellow);
+                    Logger.INFO, ConsoleColor.Blue);
             }
             else if (header == Protocol.ANNOUNCE_TRANSACTION)
             {
@@ -447,16 +447,16 @@ namespace ToyBlockChain.App
                         _node.AddTransactionToPool(transaction);
                     }
                     Logger.Log(
-                        $"Updated: Transaction {transaction.HashString[0..16]} "
+                        $"[Info] App: Transaction {transaction.HashString[0..16]} "
                         + "added to transaction pool",
-                        Logger.INFO, ConsoleColor.Yellow);
+                        Logger.INFO, ConsoleColor.Blue);
                     Announce(inboundPayload);
                 }
                 catch (TransactionInPoolException)
                 {
                     Logger.Log(
-                        "Info: Transaction already in transaction pool",
-                        Logger.INFO, ConsoleColor.Red);
+                        "[Debug] App: Transaction already in transaction pool",
+                        Logger.DEBUG, ConsoleColor.Red);
                 }
             }
             else if (header == Protocol.ANNOUNCE_BLOCK)
@@ -464,20 +464,30 @@ namespace ToyBlockChain.App
                 try
                 {
                     Block block = new Block(inboundPayload.Body);
-                    lock (_node)
+                    try
                     {
-                        _node.AddBlockToChain(block);
+                        lock (_node)
+                        {
+                            _node.AddBlockToChain(block);
+                        }
+                        Logger.Log(
+                            $"[Info] App: Block {block.HashString[0..16]} "
+                            + "added to blockchain",
+                            Logger.INFO, ConsoleColor.Blue);
+                        Announce(inboundPayload);
                     }
-                    Logger.Log(
-                        $"Updated: Block {block.HashString[0..16]} "
-                        + "added to blockchain",
-                        Logger.INFO, ConsoleColor.Yellow);
-                    Announce(inboundPayload);
+                    catch (TransactionNotInPoolException)
+                    {
+                        Logger.Log(
+                            $"[Debug] App: Transaction not found in pool.",
+                            Logger.DEBUG, ConsoleColor.Red);
+                    }
                 }
                 catch (BlockIndexLowForChainException)
                 {
                     Logger.Log(
-                        $"Info: Block index too low");
+                        $"[Debug] App: Block index too low",
+                        Logger.DEBUG, ConsoleColor.Red);
                 }
             }
             else
@@ -499,8 +509,8 @@ namespace ToyBlockChain.App
             {
                 _routingTable.Sync(inboundPayload.Body);
                 Logger.Log(
-                    "Updated: Routing table synced.",
-                    Logger.INFO, ConsoleColor.Yellow);
+                    "[Info] App: Routing table synced.",
+                    Logger.INFO, ConsoleColor.Blue);
             }
             else if (header == Protocol.RESPONSE_BLOCKCHAIN)
             {
@@ -509,8 +519,8 @@ namespace ToyBlockChain.App
                     _node.SyncBlockChain(inboundPayload.Body);
                 }
                 Logger.Log(
-                    "Updated: Blockchain synced.",
-                    Logger.INFO, ConsoleColor.Yellow);
+                    "[Info] App: Blockchain synced.",
+                    Logger.INFO, ConsoleColor.Blue);
             }
             else if (header == Protocol.RESPONSE_ACCOUNT_CATALOGUE)
             {
@@ -519,8 +529,8 @@ namespace ToyBlockChain.App
                     _node.SyncAccountCatalogue(inboundPayload.Body);
                 }
                 Logger.Log(
-                    "Updated: Account catalogue synced.",
-                    Logger.INFO, ConsoleColor.Yellow);
+                    "[Info] App: Account catalogue synced.",
+                    Logger.INFO, ConsoleColor.Blue);
             }
             else if (header == Protocol.RESPONSE_TRANSACTION_POOL)
             {
@@ -529,8 +539,8 @@ namespace ToyBlockChain.App
                     _node.SyncTransactionPool(inboundPayload.Body);
                 }
                 Logger.Log(
-                    "Updated: Transaction pool synced.",
-                    Logger.INFO, ConsoleColor.Yellow);
+                    "[Info] App: Transaction pool synced.",
+                    Logger.INFO, ConsoleColor.Blue);
             }
             else
             {
