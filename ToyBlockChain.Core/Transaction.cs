@@ -9,8 +9,8 @@ namespace ToyBlockChain.Core
     {
         public const string SEPARATOR = "<T>";
         private readonly string _sender;
-        private readonly int _nonce;
-        private readonly string _value;
+        private readonly int _count;
+        private readonly string _action;
         private readonly string _recipient;
         private readonly long _timestamp;
         private readonly string _publicKey;
@@ -18,16 +18,16 @@ namespace ToyBlockChain.Core
 
         public Transaction(
             string sender,
-            int nonce,
-            string value,
+            int count,
+            string action,
             string recipient,
             long timestamp,
             string publicKey,
             string signature = null)
         {
             _sender = sender;
-            _nonce = nonce;
-            _value = value;
+            _count = count;
+            _action = action;
             _recipient = recipient;
             _timestamp = timestamp;
             _publicKey = publicKey;
@@ -38,8 +38,8 @@ namespace ToyBlockChain.Core
         {
             string[] substrings = serializedString.Split(SEPARATOR);
             _sender = substrings[0];
-            _nonce = Int32.Parse(substrings[1]);
-            _value = substrings[2];
+            _count = Int32.Parse(substrings[1]);
+            _action = substrings[2];
             _recipient = substrings[3];
             _timestamp = Int64.Parse(substrings[4]);
             _publicKey = substrings[5];
@@ -71,12 +71,12 @@ namespace ToyBlockChain.Core
             return String.Format(
                 "Sender: {0}\n"
                 + "Nonce: {1}\n"
-                + "Value: {2}\n"
+                + "Action: {2}\n"
                 + "Recipient: {3}\n"
                 + "Timestamp: {4}\n"
                 + "Public Key: {5}\n"
                 + "Signature: {6}",
-                Sender, Nonce, Value, Recipient, Timestamp,
+                Sender, Count, Action, Recipient, Timestamp,
                 PublicKey, Signature);
         }
 
@@ -85,7 +85,7 @@ namespace ToyBlockChain.Core
             return String.Join(
                 SEPARATOR,
                 new string[] {
-                    Sender, Nonce.ToString(), Value, Recipient,
+                    Sender, Count.ToString(), Action, Recipient,
                     Timestamp.ToString(), PublicKey, Signature });
         }
 
@@ -99,7 +99,7 @@ namespace ToyBlockChain.Core
             return String.Join(
                 SEPARATOR,
                 new string[] {
-                    Sender, Nonce.ToString(), Value, Recipient,
+                    Sender, Count.ToString(), Action, Recipient,
                     Timestamp.ToString(), PublicKey });
         }
 
@@ -128,19 +128,19 @@ namespace ToyBlockChain.Core
             }
         }
 
-        public int Nonce
+        public int Count
         {
             get
             {
-                return _nonce;
+                return _count;
             }
         }
 
-        public string Value
+        public string Action
         {
             get
             {
-                return _value;
+                return _action;
             }
         }
 

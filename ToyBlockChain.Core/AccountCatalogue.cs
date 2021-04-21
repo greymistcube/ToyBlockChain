@@ -121,7 +121,7 @@ namespace ToyBlockChain.Core
                     + "is not found in the catalogue");
             }
             else if ((_catalogue[transaction.Sender].Count + 1)
-                != transaction.Nonce)
+                != transaction.Count)
             {
                 throw new TransactionInvalidForCatalogueException(
                     "transaction count is invalid");

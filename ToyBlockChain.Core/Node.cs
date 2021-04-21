@@ -44,6 +44,10 @@ namespace ToyBlockChain.Core
                 $"[Info] Node: Block {block.BlockHeader.HashString[0..16]} "
                 + "added to the chain",
                 Logger.INFO, ConsoleColor.Green);
+            Logger.Log(
+                "[Debug] Node: Block detail:\n"
+                + $"{block.BlockHeader.ToString()}",
+                Logger.DEBUG, ConsoleColor.Red);
         }
 
         /// <summary>
