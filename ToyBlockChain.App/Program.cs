@@ -432,7 +432,7 @@ namespace ToyBlockChain.App
                     _node.AddAccountToCatalogue(account);
                 }
                 Logger.Log(
-                    $"[Info] App: Account {account.Address[..16]} "
+                    $"[Info] App: Account {account.LogId} "
                     + "added to account catalogue",
                     Logger.INFO, ConsoleColor.Blue);
             }
@@ -447,22 +447,29 @@ namespace ToyBlockChain.App
                         _node.AddTransactionToPool(transaction);
                     }
                     Logger.Log(
-                        $"[Info] App: Transaction {transaction.HashString[0..16]} "
+                        $"[Info] App: Transaction {transaction.LogId} "
                         + "added to transaction pool",
                         Logger.INFO, ConsoleColor.Blue);
                     Announce(inboundPayload);
                 }
+                catch (TransactionSenderInPoolException)
+                {
+                    Logger.Log(
+                        $"[Debug] App: Transaction sender {transaction.Sender} "
+                        + "already in transaction pool",
+                        Logger.DEBUG, ConsoleColor.Red);
+                }
                 catch (TransactionInPoolException)
                 {
                     Logger.Log(
-                        $"[Debug] App: Transaction {transaction.HashString[0..16]} "
+                        $"[Debug] App: Transaction {transaction.HashString} "
                         + "already in transaction pool",
                         Logger.DEBUG, ConsoleColor.Red);
                 }
                 catch (TransactionInvalidForChainException)
                 {
                     Logger.Log(
-                        $"[Debug] App: Transaction {transaction.HashString[0..16]} "
+                        $"[Debug] App: Transaction {transaction.HashString} "
                         + "already in blockchain",
                         Logger.DEBUG, ConsoleColor.Red);
                 }
@@ -477,7 +484,7 @@ namespace ToyBlockChain.App
                         _node.AddBlockToChain(block);
                     }
                     Logger.Log(
-                        $"[Info] App: Block {block.HashString[0..16]} "
+                        $"[Info] App: Block {block.LogId} "
                         + "added to blockchain",
                         Logger.INFO, ConsoleColor.Blue);
                     Announce(inboundPayload);
@@ -485,8 +492,8 @@ namespace ToyBlockChain.App
                 catch (TransactionNotInPoolException)
                 {
                     Logger.Log(
-                        $"[Debug] App: Transaction {block.Transaction.HashString[0..16]} "
-                        + "not found in pool.",
+                        "[Debug] App: Transaction "
+                        + $"{block.Transaction.HashString} not found in pool.",
                         Logger.DEBUG, ConsoleColor.Red);
                 }
                 catch (BlockIndexLowForChainException)

@@ -120,6 +120,14 @@ namespace ToyBlockChain.Core
             }
         }
 
+        public string LogId
+        {
+            get
+            {
+                return HashString[0..16];
+            }
+        }
+
         public string Sender
         {
             get

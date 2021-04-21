@@ -46,6 +46,14 @@ namespace ToyBlockChain.Core
             }
         }
 
+        public string LogId
+        {
+            get
+            {
+                return BlockHeader.LogId;
+            }
+        }
+
         public string PreviousHashString
         {
             get
