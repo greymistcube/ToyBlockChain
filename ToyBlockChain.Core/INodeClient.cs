@@ -64,25 +64,7 @@ namespace ToyBlockChain.Core
 
         void INodeClient.AddTransactionToPool(Transaction transaction)
         {
-            if (_blockChain.HasTransaction(transaction))
-            {
-                throw new ArgumentException(
-                    "given transaction already exists in the chain");
-            }
-            if (!_accountCatalogue.HasAccount(transaction.Sender))
-            {
-                throw new ArgumentException(
-                    "sender address not found in the book");
-            }
-            else if (!_accountCatalogue.HasAccount(transaction.Recipient))
-            {
-                throw new ArgumentException(
-                    "recipient address not found in the book");
-            }
-            else
-            {
-                _transactionPool.AddTransaction(transaction);
-            }
+            AddTransactionToPool(transaction);
         }
 
         Dictionary<string, Account> INodeClient.GetAccountCatalogue()

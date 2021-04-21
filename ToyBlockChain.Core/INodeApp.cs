@@ -71,12 +71,12 @@ namespace ToyBlockChain.Core
 
         void INodeApp.AddAccountToCatalogue(Account account)
         {
-            _accountCatalogue.AddAccount(account);
+            AddAccountToCatalogue(account);
         }
 
         void INodeApp.AddTransactionToPool(Transaction transaction)
         {
-            _transactionPool.AddTransaction(transaction);
+            AddTransactionToPool(transaction);
         }
     }
 }
