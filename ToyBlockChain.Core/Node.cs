@@ -34,14 +34,46 @@ namespace ToyBlockChain.Core
         }
 
         /// <summary>
-        /// Adds a block to the blockchain. Only metablockchain level
-        /// validations are performed. Additional validations occur
-        /// when given block is passed to the <see cref="BlockChain"/> class.
+        /// Adds given block to the chain.
         /// </summary>
         internal void AddBlockToBlockChain(Block block)
         {
             _transactionPool.RemoveTransaction(block.Transaction);
             _blockChain.AddBlock(block);
+        }
+
+        /// <summary>
+        /// Adds given account to the catalogue.
+        /// </summary>
+        internal void AddAccountToCatalogue(Account account)
+        {
+            _accountCatalogue.AddAccount(account);
+        }
+
+        /// <summary>
+        /// Adds given transaction to the pool.
+        /// </summary>
+        internal void AddTransactionToPool(Transaction transaction)
+        {
+            if (_blockChain.HasTransaction(transaction))
+            {
+                throw new ArgumentException(
+                    "given transaction already exists in the chain");
+            }
+            if (!_accountCatalogue.HasAccount(transaction.Sender))
+            {
+                throw new ArgumentException(
+                    "sender address not found in the book");
+            }
+            else if (!_accountCatalogue.HasAccount(transaction.Recipient))
+            {
+                throw new ArgumentException(
+                    "recipient address not found in the book");
+            }
+            else
+            {
+                _transactionPool.AddTransaction(transaction);
+            }
         }
 
         /// <summary>
