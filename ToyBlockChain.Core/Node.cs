@@ -40,6 +40,7 @@ namespace ToyBlockChain.Core
         {
             _transactionPool.RemoveTransaction(block.Transaction);
             _blockChain.AddBlock(block);
+            _accountCatalogue.ConsumeTransaction(block.Transaction);
             Logger.Log(
                 $"[Info] Node: Block {block.LogId} "
                 + "added to chain",

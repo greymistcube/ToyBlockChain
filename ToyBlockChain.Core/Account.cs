@@ -3,6 +3,21 @@ using System.Text;
 
 namespace ToyBlockChain.Core
 {
+    /// <summary>
+    /// Thrown when given transaction cannot be consumed by an account.
+    /// </summary>
+    public class TransactionInvalidForAccountException : Exception
+    {
+        public TransactionInvalidForAccountException()
+        {
+        }
+
+        public TransactionInvalidForAccountException(string message)
+            : base(message)
+        {
+        }
+    }
+
     public class Account
     {
         public const string SEPARATOR = "<A>";
@@ -25,9 +40,44 @@ namespace ToyBlockChain.Core
             _balance = Int32.Parse(substrings[2]);
         }
 
-        public void ProcessTransaction(Transaction transaction)
+        public void ConsumeTransaction(Transaction transaction)
         {
-            throw new NotImplementedException();
+            if (transaction.Sender != _address
+                && transaction.Recipient != _address)
+            {
+                throw new TransactionInvalidForAccountException(
+                    "transaction does not involve this account");
+            }
+            else if (transaction.Sender == _address)
+            {
+                ConsumeTransactionAsSender(transaction);
+            }
+            else if (transaction.Recipient == _address)
+            {
+                ConsumeTransactionAsRecipient(transaction);
+            }
+            else
+            {
+                throw new ArgumentException(
+                    "something went wrong");
+            }
+        }
+
+        internal void ConsumeTransactionAsSender(Transaction transaction)
+        {
+            if (transaction.Count != _count + 1)
+            {
+                throw new TransactionInvalidForAccountException(
+                    "transaction count is invalid");
+            }
+            else
+            {
+                _count = _count + 1;
+            }
+        }
+
+        internal void ConsumeTransactionAsRecipient(Transaction transaction)
+        {
         }
 
         public int Count

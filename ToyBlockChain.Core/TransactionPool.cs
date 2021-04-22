@@ -71,6 +71,7 @@ namespace ToyBlockChain.Core
                     Transaction transaction = new Transaction(
                         transactionString);
                     _poolByHash.Add(transaction.HashString, transaction);
+                    _poolBySender.Add(transaction.Sender, transaction);
                 }
             }
         }
@@ -133,14 +134,6 @@ namespace ToyBlockChain.Core
             get
             {
                 return _poolByHash;
-            }
-        }
-
-        public int Count
-        {
-            get
-            {
-                return _poolByHash.Count;
             }
         }
 

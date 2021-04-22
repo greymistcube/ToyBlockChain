@@ -44,6 +44,10 @@ namespace ToyBlockChain.Service
                 {
                     continue;
                 }
+                catch (TransactionInvalidForCatalogueException)
+                {
+                    continue;
+                }
                 Thread.Sleep(1000);
             }
         }
