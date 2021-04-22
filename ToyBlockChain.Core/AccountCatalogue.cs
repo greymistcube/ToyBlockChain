@@ -33,21 +33,6 @@ namespace ToyBlockChain.Core
         }
     }
 
-    /// <summary>
-    /// Thrown if given transaction is not valid for consumption.
-    /// </summary>
-    public class TransactionInvalidForCatalogueException : Exception
-    {
-        public TransactionInvalidForCatalogueException()
-        {
-        }
-
-        public TransactionInvalidForCatalogueException(string message)
-            : base(message)
-        {
-        }
-    }
-
     public class AccountCatalogue
     {
         public const string SEPARATOR = "<AC>";

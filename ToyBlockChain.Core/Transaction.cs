@@ -5,6 +5,69 @@ using ToyBlockChain.Crypto;
 
 namespace ToyBlockChain.Core
 {
+    public class TransactionInvalidException : Exception
+    {
+        public TransactionInvalidException()
+        {
+        }
+
+        public TransactionInvalidException(string message) : base(message)
+        {
+        }
+    }
+
+    public class TransactionInvalidForPoolException
+        : TransactionInvalidException
+    {
+        public TransactionInvalidForPoolException()
+        {
+        }
+
+        public TransactionInvalidForPoolException(string message)
+            : base(message)
+        {
+        }
+    }
+
+    public class TransactionInvalidForChainException
+        : TransactionInvalidException
+    {
+        public TransactionInvalidForChainException()
+        {
+        }
+
+        public TransactionInvalidForChainException(string message)
+            : base(message)
+        {
+        }
+    }
+
+    public class TransactionInvalidForCatalogueException
+        : TransactionInvalidException
+    {
+        public TransactionInvalidForCatalogueException()
+        {
+        }
+
+        public TransactionInvalidForCatalogueException(string message)
+            : base(message)
+        {
+        }
+    }
+
+    public class TransactionInvalidForAccountException
+        : TransactionInvalidForCatalogueException
+    {
+        public TransactionInvalidForAccountException()
+        {
+        }
+
+        public TransactionInvalidForAccountException(string message)
+            : base(message)
+        {
+        }
+    }
+
     public class Transaction
     {
         public const string SEPARATOR = "<T>";

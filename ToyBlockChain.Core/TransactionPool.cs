@@ -4,50 +4,6 @@ using System.Linq;
 
 namespace ToyBlockChain.Core
 {
-    /// <summary>
-    /// Thrown if the transaction is already in the pool
-    /// when trying to add a transaction.
-    /// </summary>
-    public class TransactionInPoolException : Exception
-    {
-        public TransactionInPoolException()
-        {
-        }
-
-        public TransactionInPoolException(string message) : base(message)
-        {
-        }
-    }
-
-    /// <summary>
-    /// Thrown if the transaction is not in the pool.
-    /// </summary>
-    public class TransactionNotInPoolException : Exception
-    {
-        public TransactionNotInPoolException()
-        {
-        }
-
-        public TransactionNotInPoolException(string message) : base(message)
-        {
-        }
-    }
-
-    /// <summary>
-    /// Thrown if there is a transaction with the same sender in the pool
-    /// when trying to add a transaction.
-    /// </summary>
-    public class TransactionSenderInPoolException : Exception
-    {
-        public TransactionSenderInPoolException()
-        {
-        }
-
-        public TransactionSenderInPoolException(string message) : base(message)
-        {
-        }
-    }
-
     public class TransactionPool
     {
         public const string SEPARATOR = "<TP>";
@@ -80,13 +36,13 @@ namespace ToyBlockChain.Core
         {
             if (HasTransaction(transaction))
             {
-                throw new TransactionInPoolException(
+                throw new TransactionInvalidForPoolException(
                     "transaction already exists in pool: "
                     + $"{transaction.HashString}");
             }
             else if (HasSender(transaction))
             {
-                throw new TransactionSenderInPoolException(
+                throw new TransactionInvalidForPoolException(
                     "transaction with the same sender already exists in pool: "
                     + $"{transaction.HashString}");
             }
@@ -101,7 +57,7 @@ namespace ToyBlockChain.Core
         {
             if (!_poolByHash.ContainsKey(transaction.HashString))
             {
-                throw new TransactionNotInPoolException(
+                throw new TransactionInvalidForPoolException(
                     "transaction not found in pool: "
                     + $"{transaction.HashString}");
             }

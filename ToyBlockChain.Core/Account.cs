@@ -3,21 +3,6 @@ using System.Text;
 
 namespace ToyBlockChain.Core
 {
-    /// <summary>
-    /// Thrown when given transaction cannot be consumed by an account.
-    /// </summary>
-    public class TransactionInvalidForAccountException : Exception
-    {
-        public TransactionInvalidForAccountException()
-        {
-        }
-
-        public TransactionInvalidForAccountException(string message)
-            : base(message)
-        {
-        }
-    }
-
     public class Account
     {
         public const string SEPARATOR = "<A>";

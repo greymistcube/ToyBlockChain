@@ -85,18 +85,6 @@ namespace ToyBlockChain.Core
         }
     }
 
-    public class TransactionInvalidForChainException : Exception
-    {
-        public TransactionInvalidForChainException()
-        {
-        }
-
-        public TransactionInvalidForChainException(string message)
-            : base(message)
-        {
-        }
-    }
-
     public class BlockChain
     {
         public const string SEPARATOR = "<BC>";
