@@ -461,7 +461,7 @@ namespace ToyBlockChain.App
                     }
                     Announce(inboundPayload);
                 }
-                catch (TransactionInvalidForNodeException ex)
+                catch (TransactionInvalidExternalException ex)
                 {
                     Logger.Log(
                         $"[Info] App: Block {block.LogId} ignored",
