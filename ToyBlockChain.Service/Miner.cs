@@ -1,19 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Security.Cryptography;
 using ToyBlockChain.Core;
 using ToyBlockChain.Crypto;
+using ToyBlockChain.Network;
 
 namespace ToyBlockChain.Service
 {
+    public class MiningFailException : Exception
+    {
+        public MiningFailException()
+        {
+        }
+
+        public MiningFailException(string message) : base(message)
+        {
+        }
+    }
+
     public class Miner
     {
         public static int NONCE_LENGTH = 16;
-        private readonly Node _node;
-        private RSAParameters _rsaParameters;
-        private string _publicKey;
-        private string _address;
+        private readonly INodeMiner _node;
+        private Identity _identity;
+
+        public delegate void AnnounceDelegate(Payload payload);
+        private AnnounceDelegate Announce;
 
         /// <summary>
         /// The class representing a miner in a blockchain ecosystem.
@@ -22,50 +36,37 @@ namespace ToyBlockChain.Service
         /// and "mine" a valid <see cref="Block"/> containing such
         /// <see cref="Transaction"/>.
         /// </summary>
-        public Miner(Node node)
+        public Miner(INodeMiner node, Identity identity, AnnounceDelegate Func)
         {
             _node = node;
-
-            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-            _rsaParameters = rsa.ExportParameters(true);
-
-            string modulus = Convert.ToHexString(_rsaParameters.Modulus);
-            string exponent = Convert.ToHexString(_rsaParameters.Exponent);
-            _publicKey = $"{modulus}:{exponent}";
-            _address = CryptoUtil.ComputeHashString(_publicKey);
+            _identity = identity;
+            Announce = Func;
         }
 
         public void Run()
         {
-            // TODO: Temporary running script.
             Random rnd = new Random();
-
-            List<Transaction> transactionPool;
-            Transaction transaction;
-            Block block;
+            Block block = null;
 
             while (true)
             {
-                // I have no idea why this fixes the issue of getting
-                // a null reference few lines below.
-                lock (_node)
+                try
                 {
-                    transactionPool = _node.TransactionPool;
-                }
-
-                if (transactionPool.Count > 0)
-                {
-                    transaction = transactionPool[
-                        rnd.Next(transactionPool.Count)];
-
-                    block = Mine(transaction);
-                    if (block != null)
+                    block = Mine();
+                    lock (_node)
                     {
-                        lock (_node)
-                        {
-                            _node.AddBlock(block);
-                        }
+                        _node.AddBlockToBlockChain(block);
                     }
+                    Announce(new Payload(
+                        Protocol.ANNOUNCE_BLOCK,
+                        block.ToSerializedString()));
+                }
+                catch (MiningFailException)
+                {
+                }
+                finally
+                {
+                    Thread.Sleep(1000);
                 }
             }
         }
@@ -74,27 +75,55 @@ namespace ToyBlockChain.Service
         /// Continuously makes multiple attempts to mine a <see cref="Block"/>
         /// until transaction is added to the blockchain.
         /// </summary>
-        private Block Mine(Transaction transaction)
+        private Block Mine()
         {
+            Transaction transaction = GetTransactionToMine();
+
             while (true)
             {
                 // Check if transaction is still in the pool.
                 if (_node.HasTransactionInPool(transaction))
                 {
-                    Block block = Pick(transaction);
-                    if (block != null)
+                    try
                     {
+                        Block block = Pick(transaction);
+                        block.Validate();
                         return block;
                     }
-                    else
+                    catch (BlockInvalidException)
                     {
                         continue;
                     }
                 }
                 else
                 {
-                    return null;
+                    throw new MiningFailException(
+                        "transaction can no longer be found in the pool: "
+                        + $"{transaction.HashString}");
                 }
+            }
+        }
+
+        private Transaction GetTransactionToMine()
+        {
+            Dictionary<string, Transaction> transactionPool;
+            lock (_node)
+            {
+                transactionPool = _node.GetTransactionPool();
+            }
+
+            if (!(transactionPool.Keys.Count > 0))
+            {
+                throw new MiningFailException(
+                    "transaction pool is empty");
+            }
+            else
+            {
+                Random rnd = new Random();
+                string key =
+                    transactionPool.Keys.ToList()[
+                        rnd.Next(transactionPool.Keys.Count)];
+                return transactionPool[key];
             }
         }
 
@@ -103,15 +132,15 @@ namespace ToyBlockChain.Service
         /// </summary>
         private Block Pick(Transaction transaction)
         {
-            Block lastBlock = _node.LastBlock();
+            Block lastBlock = _node.GetLastBlock();
 
             int index;
             string previousHashString;
             string transactionHashString = transaction.HashString;
-            string miner = Address;
+            string miner = _identity.Address;
             long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
             string nonce = CryptoUtil.GenerateNonce();
-            int difficulty = _node.TargetDifficulty();
+            int difficulty = _node.GetTargetDifficulty();
 
             if (lastBlock == null)
             {
@@ -128,30 +157,7 @@ namespace ToyBlockChain.Service
                 index, previousHashString, transaction.HashString,
                 miner, timestamp, nonce, difficulty);
 
-            if (blockHeader.IsValid())
-            {
-                return new Block(blockHeader, transaction);
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public string Address
-        {
-            get
-            {
-                return _address;
-            }
-        }
-
-        public string PublicKey
-        {
-            get
-            {
-                return _publicKey;
-            }
+            return new Block(blockHeader, transaction);
         }
     }
 }

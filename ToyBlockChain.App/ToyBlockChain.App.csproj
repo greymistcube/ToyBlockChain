@@ -1,7 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <ProjectReference Include="..\ToyBlockChain.Core\ToyBlockChain.Core.csproj" />
     <ProjectReference Include="..\ToyBlockChain.Service\ToyBlockChain.Service.csproj" />
+    <ProjectReference Include="..\ToyBlockChain.Network\ToyBlockChain.Network.csproj" />
+    <ProjectReference Include="..\ToyBlockChain.Util\ToyBlockChain.Util.csproj" />
   </ItemGroup>
 
   <ItemGroup>

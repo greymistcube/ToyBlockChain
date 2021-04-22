@@ -1,101 +1,93 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
 using ToyBlockChain.Core;
 using ToyBlockChain.Crypto;
+using ToyBlockChain.Network;
 
 namespace ToyBlockChain.Service
 {
     public class Client
     {
-        private Node _node;
-        private RSAParameters _rsaParameters;
-        private string _publicKey;
-        private string _address;
+        private INodeClient _node;
+        private Identity _identity;
 
-        public Client(Node node)
+        public delegate void AnnounceDelegate(Payload payload);
+        private AnnounceDelegate Announce;
+
+        public Client(
+            INodeClient node, Identity identity, AnnounceDelegate Func)
         {
             _node = node;
-
-            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-            _rsaParameters = rsa.ExportParameters(true);
-
-            string modulus = Convert.ToHexString(_rsaParameters.Modulus);
-            string exponent = Convert.ToHexString(_rsaParameters.Exponent);
-            _publicKey = $"{modulus}:{exponent}";
-            _address = CryptoUtil.ComputeHashString(_publicKey);
+            _identity = identity;
+            Announce = Func;
         }
 
         public void Run()
         {
-            // TODO: Temporary running script.
-            lock (_node)
-            {
-                _node.RegisterAddress(_address);
-            }
-
-            Random rnd = new Random();
-
-            double value;
-            string recipient;
-            Transaction transaction = null;
-
             while(true)
             {
-                List<string> addressBook = _node.AddressBook;
-
-                value = rnd.NextDouble();
-                recipient = addressBook[rnd.Next(addressBook.Count)];
-                if (transaction == null
-                    || !_node.HasTransactionInPool(transaction))
+                Transaction transaction = CreateTransaction();
+                try
                 {
-                    transaction = CreateTransaction(value, recipient);
                     lock (_node)
                     {
-                        _node.RegisterTransaction(transaction);
+                        _node.AddTransactionToPool(transaction);
                     }
+                    Announce(new Payload(
+                        Protocol.ANNOUNCE_TRANSACTION,
+                        transaction.ToSerializedString()));
+                }
+                catch (TransactionInvalidForPoolException)
+                {
+                }
+                catch (TransactionInvalidForCatalogueException)
+                {
+                }
+                catch (TransactionInvalidForChainException)
+                {
+                }
+                finally
+                {
+                    Thread.Sleep(1000);
                 }
             }
         }
 
-        public Transaction CreateTransaction(double value, string recipient)
+        /// <summary>
+        /// Creates a random transaction.
+        /// </summary>
+        private Transaction CreateTransaction()
         {
-            // Create an unsigned, invalid transaction.
+            Random rnd = new Random();
+
+            Dictionary<string, Account> addressCatalogue;
+            lock (_node)
+            {
+                addressCatalogue = _node.GetAccountCatalogue();
+            }
+
+            Account account = addressCatalogue[_identity.Address];
+
+            // TODO: Random action and recipient selection as a placeholder.
+            string action = rnd.Next().ToString();
+            string recipient = addressCatalogue.Keys.ToList()[
+                    rnd.Next(addressCatalogue.Count)];
+
+            // Create an unsigned transaction.
             long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
             Transaction transaction = new Transaction(
-                _address, value, recipient, timestamp, PublicKey);
+                _identity.Address, account.Count + 1, action, recipient,
+                timestamp, _identity.PublicKey);
 
             // Create a valid signature and sign the transaction.
             string signature = CryptoUtil.Sign(
-                transaction.SignatureInputString(), _rsaParameters);
+                transaction.SignatureInputString(), _identity.RSAParameters);
             transaction.Sign(signature);
 
             return transaction;
-        }
-
-        public string Address
-        {
-            get
-            {
-                return _address;
-            }
-        }
-
-        public string PublicKey
-        {
-            get
-            {
-                return _publicKey;
-            }
-        }
-
-        public override string ToString()
-        {
-            return String.Format(
-                "Address: {0}\n"
-                + "Public Key: {1}",
-                Address, PublicKey);
         }
     }
 }

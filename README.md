@@ -7,10 +7,16 @@ and the C# language.
 
 ## Usage
 
-Included test script can be run with:
+First, run with
 
 ```powershell
-dotnet run --project ToyBlockChain.Script
+dotnet run --project ToyBlockChain.App -- -s
 ```
 
-Run with `--help` to see available options.
+to start running a seed node. Additional nodes can be
+run with various options. Run with `--help` to see available options.
+
+## Resources
+
+* [Architecture](./Docs/Architecture.md)
+* [Validation](./Docs/Validation.md)
