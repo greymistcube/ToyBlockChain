@@ -90,10 +90,7 @@ namespace ToyBlockChain.Service
                         block.Validate();
                         return block;
                     }
-                    catch (Exception ex) when (
-                        ex is BlockInvalidException
-                        || ex is BlockHeaderInvalidException
-                        || ex is TransactionInvalidException)
+                    catch (BlockInvalidException)
                     {
                         continue;
                     }

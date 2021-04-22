@@ -38,6 +38,12 @@ namespace ToyBlockChain.Core
         /// </summary>
         internal void AddBlockToBlockChain(Block block)
         {
+            // Validate for safe operation.
+            block.Validate();
+            _transactionPool.ValidateBlock(block);
+            _accountCatalogue.ValidateBlock(block);
+            _blockChain.ValidateBlock(block);
+
             _transactionPool.RemoveTransaction(block.Transaction);
             _blockChain.AddBlock(block);
             _accountCatalogue.ConsumeTransaction(block.Transaction);
@@ -72,9 +78,11 @@ namespace ToyBlockChain.Core
         /// </summary>
         internal void AddTransactionToPool(Transaction transaction)
         {
-            // Validate against the chain and the catalogue.
+            // Validate for safe operation.
+            transaction.Validate();
             _blockChain.ValidateTransaction(transaction);
             _accountCatalogue.ValidateTransaction(transaction);
+            _transactionPool.ValidateTransaction(transaction);
 
             _transactionPool.AddTransaction(transaction);
             Logger.Log(

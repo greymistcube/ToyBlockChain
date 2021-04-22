@@ -32,7 +32,7 @@ namespace ToyBlockChain.Core
             }
         }
 
-        public void AddTransaction(Transaction transaction)
+        internal void ValidateTransaction(Transaction transaction)
         {
             if (HasTransaction(transaction))
             {
@@ -46,21 +46,26 @@ namespace ToyBlockChain.Core
                     "transaction with the same sender already exists in pool: "
                     + $"{transaction.HashString}");
             }
-            else
+        }
+
+        internal void ValidateBlock(Block block)
+        {
+            if (!_poolByHash.ContainsKey(block.Transaction.HashString))
             {
-                _poolByHash.Add(transaction.HashString, transaction);
-                _poolBySender.Add(transaction.Sender, transaction);
+                throw new TransactionInvalidForPoolException(
+                    "block transaction not found in pool: "
+                    + $"{block.Transaction.HashString}");
             }
+        }
+
+        public void AddTransaction(Transaction transaction)
+        {
+            _poolByHash.Add(transaction.HashString, transaction);
+            _poolBySender.Add(transaction.Sender, transaction);
         }
 
         public void RemoveTransaction(Transaction transaction)
         {
-            if (!_poolByHash.ContainsKey(transaction.HashString))
-            {
-                throw new TransactionInvalidForPoolException(
-                    "transaction not found in pool: "
-                    + $"{transaction.HashString}");
-            }
             _poolByHash.Remove(transaction.HashString);
             _poolBySender.Remove(transaction.Sender);
         }

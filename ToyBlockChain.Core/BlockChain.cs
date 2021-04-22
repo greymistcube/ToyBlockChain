@@ -39,7 +39,7 @@ namespace ToyBlockChain.Core
             AdjustDifficulty();
         }
 
-        internal void AddBlock(Block block)
+        internal void ValidateBlock(Block block)
         {
             Block lastBlock = GetLastBlock();
 
@@ -70,11 +70,12 @@ namespace ToyBlockChain.Core
                     "timestamp for given block is earlier than "
                     + "timestamp for the last block in the chain");
             }
-            else
-            {
-                _chain.Add(block);
-                AdjustDifficulty();
-            }
+        }
+
+        internal void AddBlock(Block block)
+        {
+            _chain.Add(block);
+            AdjustDifficulty();
         }
 
         /// <summary>
