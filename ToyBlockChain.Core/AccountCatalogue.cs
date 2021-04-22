@@ -113,6 +113,13 @@ namespace ToyBlockChain.Core
             }
         }
 
+        internal void ValidateBlock(Block block)
+        {
+            // Assuming block contains only transactions in the pool,
+            // there is nothing to validate.
+            return;
+        }
+
         internal void ConsumeTransaction(Transaction transaction)
         {
             _catalogue[transaction.Sender].ConsumeTransactionAsSender(transaction);

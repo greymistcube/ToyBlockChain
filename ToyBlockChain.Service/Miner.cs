@@ -84,12 +84,13 @@ namespace ToyBlockChain.Service
                 // Check if transaction is still in the pool.
                 if (_node.HasTransactionInPool(transaction))
                 {
-                    Block block = Pick(transaction);
-                    if (block != null)
+                    try
                     {
+                        Block block = Pick(transaction);
+                        block.Validate();
                         return block;
                     }
-                    else
+                    catch (BlockInvalidException)
                     {
                         continue;
                     }
@@ -156,14 +157,7 @@ namespace ToyBlockChain.Service
                 index, previousHashString, transaction.HashString,
                 miner, timestamp, nonce, difficulty);
 
-            if (blockHeader.IsValid())
-            {
-                return new Block(blockHeader, transaction);
-            }
-            else
-            {
-                return null;
-            }
+            return new Block(blockHeader, transaction);
         }
     }
 }

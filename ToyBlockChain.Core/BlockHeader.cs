@@ -5,6 +5,43 @@ using System.Security.Cryptography;
 
 namespace ToyBlockChain.Core
 {
+    public class BlockHeaderInvalidException : Exception
+    {
+        public BlockHeaderInvalidException()
+        {
+        }
+
+        public BlockHeaderInvalidException(string message) : base(message)
+        {
+        }
+    }
+
+    public class BlockHeaderInvalidInternalException
+        : BlockHeaderInvalidException
+    {
+        public BlockHeaderInvalidInternalException()
+        {
+        }
+
+        public BlockHeaderInvalidInternalException(string message)
+            : base(message)
+        {
+        }
+    }
+
+    public class BlockHeaderInvalidExternalException
+        : BlockHeaderInvalidException
+    {
+        public BlockHeaderInvalidExternalException()
+        {
+        }
+
+        public BlockHeaderInvalidExternalException(string message)
+            : base(message)
+        {
+        }
+    }
+
     public class BlockHeader
     {
         public const string SEPARATOR = "<BH>";
@@ -127,7 +164,7 @@ namespace ToyBlockChain.Core
             }
         }
 
-        public bool IsValid()
+        public void Validate()
         {
             BitArray bits = new BitArray(HashBytes);
 
@@ -135,10 +172,10 @@ namespace ToyBlockChain.Core
             {
                 if (bits[i] != false)
                 {
-                    return false;
+                    throw new BlockHeaderInvalidInternalException(
+                        "hash does not satisfy the difficulty requirement");
                 }
             }
-            return true;
         }
 
         public override string ToString()

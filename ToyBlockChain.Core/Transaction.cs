@@ -144,15 +144,21 @@ namespace ToyBlockChain.Core
             _signature = signature;
         }
 
-        public bool IsValid()
+        public void Validate()
         {
-            bool senderValid = (
-                Sender == CryptoUtil.ComputeHashString(PublicKey));
-            bool signatureValid = CryptoUtil.Verify(
+            if (Sender != CryptoUtil.ComputeHashString(PublicKey))
+            {
+                throw new TransactionInvalidInternalException(
+                    "sender identity does not match public key");
+            }
+            else if (!CryptoUtil.Verify(
                 SignatureInputString(),
                 Signature,
-                CryptoUtil.ExtractRSAParameters(PublicKey));
-            return senderValid && signatureValid;
+                CryptoUtil.ExtractRSAParameters(PublicKey)))
+            {
+                throw new TransactionInvalidInternalException(
+                    "signature is not valid");
+            }
         }
 
         public override string ToString()

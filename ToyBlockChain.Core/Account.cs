@@ -8,13 +8,13 @@ namespace ToyBlockChain.Core
         public const string SEPARATOR = "<A>";
         private int _count;
         private string _address;
-        private int _balance;
+        private string _state;
 
-        public Account(string address, int balance)
+        public Account(string address, string state)
         {
             _count = 0;
             _address = address;
-            _balance = balance;
+            _state = state;
         }
 
         public Account(string serializedString)
@@ -22,7 +22,7 @@ namespace ToyBlockChain.Core
             string[] substrings = serializedString.Split(SEPARATOR);
             _count = Int32.Parse(substrings[0]);
             _address = substrings[1];
-            _balance = Int32.Parse(substrings[2]);
+            _state = substrings[2];
         }
 
         public void ConsumeTransaction(Transaction transaction)
@@ -81,11 +81,11 @@ namespace ToyBlockChain.Core
             }
         }
 
-        public int Balance
+        public string State
         {
             get
             {
-                return _balance;
+                return _state;
             }
         }
 
@@ -99,7 +99,7 @@ namespace ToyBlockChain.Core
 
         public string ToSerializedString()
         {
-            return $"{_count}{SEPARATOR}{_address}{SEPARATOR}{_balance}";
+            return $"{_count}{SEPARATOR}{_address}{SEPARATOR}{_state}";
         }
 
         public byte[] ToSerializedBytes()
