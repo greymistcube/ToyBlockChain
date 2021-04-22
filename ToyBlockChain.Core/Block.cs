@@ -148,12 +148,16 @@ namespace ToyBlockChain.Core
             }
         }
 
-        public bool IsValid()
+        public void Validate()
         {
-            return (
-                _blockHeader.TransactionHashString == _transaction.HashString
-                && BlockHeader.IsValid()
-                && Transaction.IsValid());
+            if (_blockHeader.TransactionHashString != _transaction.HashString)
+            {
+                throw new BlockInvalidInternalException(
+                    "block header transaction hash does not match "
+                    + "the hash of the transaction");
+            }
+            _blockHeader.Validate();
+            _transaction.Validate();
         }
 
         public override string ToString()
