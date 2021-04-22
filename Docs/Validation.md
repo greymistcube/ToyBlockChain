@@ -71,11 +71,13 @@ it contains are valid.<sup>[8](#footnote_08)</sup>
   by `PublicKey`.
 * (external) `Sender` does not match the `Sender` of a `Transaction`
   in the `TransactionPool`.<sup>[10](#footnote_10)</sup>
-  <sup>[11](#footnote_11)</sup>
+  <sup>[11](#footnote_11)</sup> *Only checked before a `Transaction` gets added
+  to the `TransactionPool`.*
 * (external) `HashString` does not match any `HashString` of all `Transaction`s
   in the `BlockChain`.<sup>[10](#footnote_10)</sup>
 * (external) `HashString` matches the `HashString` of a `Transaction` in the
-  `TransactionPool`.<sup>[11](#footnote_11)</sup>
+  `TransactionPool`.<sup>[11](#footnote_11)</sup> *Only checked before
+  a `Transaction` gets added to the `Blockchain`.*
 
 ----
 
@@ -132,4 +134,4 @@ These are optional if we decide to create an `Account` on the fly.
 These are redundant as other validations cover these cases.
 
 <a name="footnote_11">11</a>
-These are optional if we decide not to use `TransactionPool` as a gatekeeper.
+These are optional if we decide not to use `TransactionPool` for gatekeeping.
