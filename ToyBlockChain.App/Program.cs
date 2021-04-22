@@ -440,25 +440,7 @@ namespace ToyBlockChain.App
                     }
                     Announce(inboundPayload);
                 }
-                catch (TransactionInvalidForPoolException ex)
-                {
-                    Logger.Log(
-                        $"[Info] App: Transaction {transaction.LogId} ignored",
-                        Logger.INFO, ConsoleColor.Blue);
-                    Logger.Log(
-                        $"[Debug] App: {ex.Message}",
-                        Logger.DEBUG, ConsoleColor.Red);
-                }
-                catch (TransactionInvalidForChainException ex)
-                {
-                    Logger.Log(
-                        $"[Info] App: Transaction {transaction.LogId} ignored",
-                        Logger.INFO, ConsoleColor.Blue);
-                    Logger.Log(
-                        $"[Debug] App: {ex.Message}",
-                        Logger.DEBUG, ConsoleColor.Red);
-                }
-                catch (TransactionInvalidForCatalogueException ex)
+                catch (TransactionInvalidException ex)
                 {
                     Logger.Log(
                         $"[Info] App: Transaction {transaction.LogId} ignored",
@@ -479,7 +461,7 @@ namespace ToyBlockChain.App
                     }
                     Announce(inboundPayload);
                 }
-                catch (TransactionInvalidException ex)
+                catch (TransactionInvalidForNodeException ex)
                 {
                     Logger.Log(
                         $"[Info] App: Block {block.LogId} ignored",
@@ -488,7 +470,7 @@ namespace ToyBlockChain.App
                         $"[Debug] App: {ex.Message}",
                         Logger.DEBUG, ConsoleColor.Red);
                 }
-                catch (BlockIndexLowForChainException ex)
+                catch (BlockInvalidForChainIgnorableException ex)
                 {
                     Logger.Log(
                         $"[Info] App: Block {block.LogId} ignored",
@@ -497,15 +479,7 @@ namespace ToyBlockChain.App
                         $"[Debug] App: {ex.Message}",
                         Logger.DEBUG, ConsoleColor.Red);
                 }
-                catch (BlockIndexHighForChainException)
-                {
-                    throw new NotImplementedException();
-                }
-                catch (BlockInvalidTimestampException)
-                {
-                    throw new NotImplementedException();
-                }
-                catch (BlockPreviousHashMismatchException)
+                catch (BlockInvalidForChainCriticalException)
                 {
                     throw new NotImplementedException();
                 }

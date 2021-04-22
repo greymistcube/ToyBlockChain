@@ -16,8 +16,34 @@ namespace ToyBlockChain.Core
         }
     }
 
-    public class TransactionInvalidForPoolException
+    public class TransactionInvalidInternalException
         : TransactionInvalidException
+    {
+        public TransactionInvalidInternalException()
+        {
+        }
+
+        public TransactionInvalidInternalException(string message)
+            : base(message)
+        {
+        }
+    }
+
+    public class TransactionInvalidExternalException
+        : TransactionInvalidException
+    {
+        public TransactionInvalidExternalException()
+        {
+        }
+
+        public TransactionInvalidExternalException(string message)
+            : base(message)
+        {
+        }
+    }
+
+    public class TransactionInvalidForPoolException
+        : TransactionInvalidExternalException
     {
         public TransactionInvalidForPoolException()
         {
@@ -30,7 +56,7 @@ namespace ToyBlockChain.Core
     }
 
     public class TransactionInvalidForChainException
-        : TransactionInvalidException
+        : TransactionInvalidExternalException
     {
         public TransactionInvalidForChainException()
         {
@@ -43,7 +69,7 @@ namespace ToyBlockChain.Core
     }
 
     public class TransactionInvalidForCatalogueException
-        : TransactionInvalidException
+        : TransactionInvalidExternalException
     {
         public TransactionInvalidForCatalogueException()
         {

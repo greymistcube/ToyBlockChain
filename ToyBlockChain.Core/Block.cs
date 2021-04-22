@@ -3,12 +3,40 @@ using System.Text;
 
 namespace ToyBlockChain.Core
 {
-    /// <summary>
-    /// Thrown when the index of a block is equal to the index of
-    /// the last block in the chain plus one but does not pass the
-    /// validation.
-    /// </summary>
-    public class BlockInvalidForChainException : Exception
+    public class BlockInvalidException : Exception
+    {
+        public BlockInvalidException()
+        {
+        }
+
+        public BlockInvalidException(string message) : base(message)
+        {
+        }
+    }
+
+    public class BlockInvalidInternalException : BlockInvalidException
+    {
+        public BlockInvalidInternalException()
+        {
+        }
+
+        public BlockInvalidInternalException(string message) : base(message)
+        {
+        }
+    }
+
+    public class BlockInvalidExternalException : BlockInvalidException
+    {
+        public BlockInvalidExternalException()
+        {
+        }
+
+        public BlockInvalidExternalException(string message) : base(message)
+        {
+        }
+    }
+
+    public class BlockInvalidForChainException : BlockInvalidExternalException
     {
         public BlockInvalidForChainException()
         {
@@ -19,66 +47,28 @@ namespace ToyBlockChain.Core
         }
     }
 
-    /// <summary>
-    /// Thrown when the previoush hash value for given block does not match
-    /// the hash value of the last block in the chain.
-    /// </summary>
-    public class BlockPreviousHashMismatchException
+    public class BlockInvalidForChainIgnorableException
         : BlockInvalidForChainException
     {
-        public BlockPreviousHashMismatchException()
+        public BlockInvalidForChainIgnorableException()
         {
         }
 
-        public BlockPreviousHashMismatchException(string message)
+        public BlockInvalidForChainIgnorableException(string message)
             : base(message)
         {
         }
     }
 
-    /// <summary>
-    /// Thrown when the timestamp of given block is earlier than the timestamp
-    /// of the last block in the chain.
-    /// </summary>
-    public class BlockInvalidTimestampException : BlockInvalidForChainException
-    {
-        public BlockInvalidTimestampException()
-        {
-        }
-
-        public BlockInvalidTimestampException(string message) : base(message)
-        {
-        }
-    }
-
-    /// <summary>
-    /// Thrown when the index of a block to add is less than or equal
-    /// to the index of the last block in the chain.
-    /// </summary>
-    public class BlockIndexLowForChainException
+    public class BlockInvalidForChainCriticalException
         : BlockInvalidForChainException
     {
-        public BlockIndexLowForChainException()
+        public BlockInvalidForChainCriticalException()
         {
         }
 
-        public BlockIndexLowForChainException(string message) : base (message)
-        {
-        }
-    }
-
-    /// <summary>
-    /// Thrown when the index of a block to add is greater than
-    /// the index of the last block in the chain plus one.
-    /// </summary>
-    public class BlockIndexHighForChainException
-        : BlockInvalidForChainException
-    {
-        public BlockIndexHighForChainException()
-        {
-        }
-
-        public BlockIndexHighForChainException(string message) : base(message)
+        public BlockInvalidForChainCriticalException(string message)
+            : base(message)
         {
         }
     }
