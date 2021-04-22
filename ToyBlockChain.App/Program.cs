@@ -126,7 +126,7 @@ namespace ToyBlockChain.App
             if (_minerFlag || _clientFlag)
             {
                 _identity = new Identity();
-                _account = new Account(_identity.Address, 0);
+                _account = new Account(_identity.Address, "");
 
                 _node.AddAccountToCatalogue(_account);
                 outboundPayload = new Payload(
