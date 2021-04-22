@@ -34,6 +34,51 @@ In order for a generated `Block` or a `Transaction` to be
 accepted by a `Node`, a generated entity must pass the same validation
 required by [announce validation](#announce-validation).
 
+## Entity Validation
+
+### `Block` Validation
+
+As a `Block` is simply a wrapper for a `BlockHeader` and a `Transaction`,
+a `Block` is considered valid if both the `BlockHeader` and the `Transaction`
+it contains are valid.<sup>[8](#footnote_08)</sup>
+
+### `BlockHead` Validation
+
+* (internal) `Index` matches the current `BlockChain` length.
+* (external) `PreviousHashString` matches the `LastBlock` of the `BlockChain`.
+* (external) `TransactionHashString` matches the `HashString` of
+  the `Transaction` in the `Block` containing this `BlockHead`.
+* (external) `Miner` matches an address
+  in the `AccountCatalogue`.<sup>[9](#footnote_09)</sup>
+* (external) `Timestamp` is later than the `Timestamp` of the `LastBlock`
+  of the `BlockChain`.
+* (external) `Difficulty` matches the `TargetDifficulty` of the current
+  `BlockChain`.
+* (internal) `HashString` satisfies the `Difficulty`.
+
+### `Transaction` Validation
+
+* (external) `Sender` matches an address
+  in the `AccountCatalogue`.<sup>[9](#footnote_09)</sup>
+* (external) `Count` matches the `Count` of the corresponding `Account`
+  plus one.
+* (external) `Action` is consumable by both `Account`s associated with this
+  `Transaction`.
+* (external) `Recipient` matches an address
+  in the `AccountCatalogue`.<sup>[9](#footnote_09)</sup>
+* (internal) `PublicKey` matches the `Sender` when hashed.
+* (internal) `Signature` matches the unsigned (hashed) data when decrypted
+  by `PublicKey`.
+* (external) `Sender` does not match the `Sender` of a `Transaction`
+  in the `TransactionPool`.<sup>[10](#footnote_10)</sup>
+  <sup>[11](#footnote_11)</sup> *Only checked before a `Transaction` gets added
+  to the `TransactionPool`.*
+* (external) `HashString` does not match any `HashString` of all `Transaction`s
+  in the `BlockChain`.<sup>[10](#footnote_10)</sup>
+* (external) `HashString` matches the `HashString` of a `Transaction` in the
+  `TransactionPool`.<sup>[11](#footnote_11)</sup> *Only checked before
+  a `Transaction` gets added to the `Blockchain`.*
+
 ----
 
 <a name="footnote_01">1</a>
@@ -57,8 +102,9 @@ shorter than what it should be. Hence the resulting syncing processes
 should have little to no difference for all three cases.
 
 <a name="footnote_04">4</a>
-For example, in order for a `Block` to be added to a `BlockChain`, the `Block`
-itself must be internally/structurally valid and externally/relationally appendable to the `BlockChain`.
+For example, in order for a `Block` to be added to a `BlockChain`,
+the `Block` itself must be internally/structurally valid and
+externally/relationally appendable to the `BlockChain`.
 
 <a name="footnote_05">5</a>
 This applies not only to the top level unit such as `Block`, but also
@@ -75,3 +121,17 @@ as a part of a `Block` is under two different contexts.
 Technically, `Miner`s and `Client`s may generate any `Block`s and/or
 `Transaction`s, doing away with validation, but will be rejected
 by all honest `Node`s, so there is no point.
+
+<a name="footnote_08">8</a>
+When implementing, however, logical checks may occur on the `Block` level,
+or at an even higher level, when validating its members, as there are
+external validations required.
+
+<a name="footnote_09">9</a>
+These are optional if we decide to create an `Account` on the fly.
+
+<a name="footnote_10">10</a>
+These are redundant as other validations cover these cases.
+
+<a name="footnote_11">11</a>
+These are optional if we decide not to use `TransactionPool` for gatekeeping.
