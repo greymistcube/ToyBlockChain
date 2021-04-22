@@ -46,8 +46,8 @@ namespace ToyBlockChain.Core
                 + "added to chain",
                 Logger.INFO, ConsoleColor.Green);
             Logger.Log(
-                "[Debug] Node: Block detail:\n"
-                + $"{block.BlockHeader.ToString()}",
+                "[Debug] Node: block detail:\n"
+                + $"{block.ToString()}",
                 Logger.DEBUG, ConsoleColor.Red);
         }
 
@@ -61,6 +61,10 @@ namespace ToyBlockChain.Core
                 $"[Info] Node: Account {account.LogId} "
                 + "added to catalogue",
                 Logger.INFO, ConsoleColor.Green);
+            Logger.Log(
+                "[Debug] Node: account detail:\n "
+                + $"{account.ToString()}",
+                Logger.DEBUG, ConsoleColor.Red);
         }
 
         /// <summary>
@@ -78,7 +82,7 @@ namespace ToyBlockChain.Core
                 + "added to pool",
                 Logger.INFO, ConsoleColor.Green);
             Logger.Log(
-                "[Debug] Node: Transaction detail:\n"
+                "[Debug] Node: transaction detail:\n"
                 + $"{transaction.ToString()}",
                 Logger.DEBUG, ConsoleColor.Red);
         }

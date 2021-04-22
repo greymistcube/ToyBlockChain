@@ -159,9 +159,8 @@ namespace ToyBlockChain.Core
         public override string ToString()
         {
             return (
-                $"BLOCK HEADER:\n{BlockHeader}".Replace("\n", "\n\t")
-                + "\n"
-                + $"TRANSACTION:\n{Transaction}".Replace("\n", "\n\t"));
+                $"BLOCKHEADER:\n{BlockHeader}\n"
+                + $"TRANSACTION:\n{Transaction}");
         }
 
         public string ToSerializedString()
