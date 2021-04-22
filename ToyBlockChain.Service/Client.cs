@@ -40,11 +40,19 @@ namespace ToyBlockChain.Service
                         Protocol.ANNOUNCE_TRANSACTION,
                         transaction.ToSerializedString()));
                 }
-                catch (TransactionSenderInPoolException)
+                catch (TransactionInvalidForPoolException)
                 {
-                    continue;
                 }
-                Thread.Sleep(1000);
+                catch (TransactionInvalidForCatalogueException)
+                {
+                }
+                catch (TransactionInvalidForChainException)
+                {
+                }
+                finally
+                {
+                    Thread.Sleep(1000);
+                }
             }
         }
 

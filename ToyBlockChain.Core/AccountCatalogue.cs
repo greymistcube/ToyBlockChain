@@ -33,21 +33,6 @@ namespace ToyBlockChain.Core
         }
     }
 
-    /// <summary>
-    /// Thrown if given transaction is not valid for consumption.
-    /// </summary>
-    public class TransactionInvalidForCatalogueException : Exception
-    {
-        public TransactionInvalidForCatalogueException()
-        {
-        }
-
-        public TransactionInvalidForCatalogueException(string message)
-            : base(message)
-        {
-        }
-    }
-
     public class AccountCatalogue
     {
         public const string SEPARATOR = "<AC>";
@@ -126,6 +111,12 @@ namespace ToyBlockChain.Core
                 throw new TransactionInvalidForCatalogueException(
                     "transaction count is invalid");
             }
+        }
+
+        internal void ConsumeTransaction(Transaction transaction)
+        {
+            _catalogue[transaction.Sender].ConsumeTransactionAsSender(transaction);
+            _catalogue[transaction.Recipient].ConsumeTransactionAsRecipient(transaction);
         }
 
         public string ToSerializedString()

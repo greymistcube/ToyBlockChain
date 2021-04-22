@@ -5,6 +5,95 @@ using ToyBlockChain.Crypto;
 
 namespace ToyBlockChain.Core
 {
+    public class TransactionInvalidException : Exception
+    {
+        public TransactionInvalidException()
+        {
+        }
+
+        public TransactionInvalidException(string message) : base(message)
+        {
+        }
+    }
+
+    public class TransactionInvalidInternalException
+        : TransactionInvalidException
+    {
+        public TransactionInvalidInternalException()
+        {
+        }
+
+        public TransactionInvalidInternalException(string message)
+            : base(message)
+        {
+        }
+    }
+
+    public class TransactionInvalidExternalException
+        : TransactionInvalidException
+    {
+        public TransactionInvalidExternalException()
+        {
+        }
+
+        public TransactionInvalidExternalException(string message)
+            : base(message)
+        {
+        }
+    }
+
+    public class TransactionInvalidForPoolException
+        : TransactionInvalidExternalException
+    {
+        public TransactionInvalidForPoolException()
+        {
+        }
+
+        public TransactionInvalidForPoolException(string message)
+            : base(message)
+        {
+        }
+    }
+
+    public class TransactionInvalidForChainException
+        : TransactionInvalidExternalException
+    {
+        public TransactionInvalidForChainException()
+        {
+        }
+
+        public TransactionInvalidForChainException(string message)
+            : base(message)
+        {
+        }
+    }
+
+    public class TransactionInvalidForCatalogueException
+        : TransactionInvalidExternalException
+    {
+        public TransactionInvalidForCatalogueException()
+        {
+        }
+
+        public TransactionInvalidForCatalogueException(string message)
+            : base(message)
+        {
+        }
+    }
+
+    public class TransactionInvalidForAccountException
+        : TransactionInvalidForCatalogueException
+    {
+        public TransactionInvalidForAccountException()
+        {
+        }
+
+        public TransactionInvalidForAccountException(string message)
+            : base(message)
+        {
+        }
+    }
+
     public class Transaction
     {
         public const string SEPARATOR = "<T>";

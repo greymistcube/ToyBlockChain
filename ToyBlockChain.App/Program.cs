@@ -440,34 +440,13 @@ namespace ToyBlockChain.App
                     }
                     Announce(inboundPayload);
                 }
-                catch (TransactionSenderInPoolException)
+                catch (TransactionInvalidException ex)
                 {
                     Logger.Log(
                         $"[Info] App: Transaction {transaction.LogId} ignored",
                         Logger.INFO, ConsoleColor.Blue);
                     Logger.Log(
-                        $"[Debug] App: Transaction sender {transaction.Sender} "
-                        + "already in transaction pool",
-                        Logger.DEBUG, ConsoleColor.Red);
-                }
-                catch (TransactionInPoolException)
-                {
-                    Logger.Log(
-                        $"[Info] App: Transaction {transaction.LogId} ignored",
-                        Logger.INFO, ConsoleColor.Blue);
-                    Logger.Log(
-                        $"[Debug] App: Transaction {transaction.HashString} "
-                        + "already in transaction pool",
-                        Logger.DEBUG, ConsoleColor.Red);
-                }
-                catch (TransactionInvalidForChainException)
-                {
-                    Logger.Log(
-                        $"[Info] App: Transaction {transaction.LogId} ignored",
-                        Logger.INFO, ConsoleColor.Blue);
-                    Logger.Log(
-                        $"[Debug] App: Transaction {transaction.HashString} "
-                        + "already in blockchain",
+                        $"[Debug] App: {ex.Message}",
                         Logger.DEBUG, ConsoleColor.Red);
                 }
             }
@@ -482,34 +461,25 @@ namespace ToyBlockChain.App
                     }
                     Announce(inboundPayload);
                 }
-                catch (TransactionNotInPoolException)
+                catch (TransactionInvalidExternalException ex)
                 {
                     Logger.Log(
                         $"[Info] App: Block {block.LogId} ignored",
                         Logger.INFO, ConsoleColor.Blue);
                     Logger.Log(
-                        "[Debug] App: Transaction "
-                        + $"{block.Transaction.HashString} not found in pool.",
+                        $"[Debug] App: {ex.Message}",
                         Logger.DEBUG, ConsoleColor.Red);
                 }
-                catch (BlockIndexLowForChainException)
+                catch (BlockInvalidForChainIgnorableException ex)
                 {
                     Logger.Log(
                         $"[Info] App: Block {block.LogId} ignored",
                         Logger.INFO, ConsoleColor.Blue);
                     Logger.Log(
-                        $"[Debug] App: Block index too low",
+                        $"[Debug] App: {ex.Message}",
                         Logger.DEBUG, ConsoleColor.Red);
                 }
-                catch (BlockIndexHighForChainException)
-                {
-                    throw new NotImplementedException();
-                }
-                catch (BlockInvalidTimestampException)
-                {
-                    throw new NotImplementedException();
-                }
-                catch (BlockPreviousHashMismatchException)
+                catch (BlockInvalidForChainCriticalException)
                 {
                     throw new NotImplementedException();
                 }

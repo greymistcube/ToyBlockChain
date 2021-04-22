@@ -9,25 +9,13 @@ using ToyBlockChain.Network;
 
 namespace ToyBlockChain.Service
 {
-    public class TransactionSelectionFailException : Exception
+    public class MiningFailException : Exception
     {
-        public TransactionSelectionFailException()
+        public MiningFailException()
         {
         }
 
-        public TransactionSelectionFailException(string message) : base(message)
-        {
-        }
-    }
-
-    public class TransactionRemovedFromPoolException : Exception
-    {
-        public TransactionRemovedFromPoolException()
-        {
-        }
-
-        public TransactionRemovedFromPoolException(string message)
-            : base(message)
+        public MiningFailException(string message) : base(message)
         {
         }
     }
@@ -64,8 +52,7 @@ namespace ToyBlockChain.Service
             {
                 try
                 {
-                    Transaction transaction = GetTransactionToMine();
-                    block = Mine(transaction);
+                    block = Mine();
                     lock (_node)
                     {
                         _node.AddBlockToBlockChain(block);
@@ -74,39 +61,13 @@ namespace ToyBlockChain.Service
                         Protocol.ANNOUNCE_BLOCK,
                         block.ToSerializedString()));
                 }
-                catch (TransactionSelectionFailException)
+                catch (MiningFailException)
+                {
+                }
+                finally
                 {
                     Thread.Sleep(1000);
-                    continue;
                 }
-                catch (TransactionRemovedFromPoolException)
-                {
-                    Thread.Sleep(1000);
-                    continue;
-                }
-            }
-        }
-
-        private Transaction GetTransactionToMine()
-        {
-            Dictionary<string, Transaction> transactionPool;
-            lock (_node)
-            {
-                transactionPool = _node.GetTransactionPool();
-            }
-
-            if (!(transactionPool.Keys.Count > 0))
-            {
-                throw new TransactionSelectionFailException(
-                    "transaction pool is empty");
-            }
-            else
-            {
-                Random rnd = new Random();
-                string key =
-                    transactionPool.Keys.ToList()[
-                        rnd.Next(transactionPool.Keys.Count)];
-                return transactionPool[key];
             }
         }
 
@@ -114,8 +75,10 @@ namespace ToyBlockChain.Service
         /// Continuously makes multiple attempts to mine a <see cref="Block"/>
         /// until transaction is added to the blockchain.
         /// </summary>
-        private Block Mine(Transaction transaction)
+        private Block Mine()
         {
+            Transaction transaction = GetTransactionToMine();
+
             while (true)
             {
                 // Check if transaction is still in the pool.
@@ -133,10 +96,33 @@ namespace ToyBlockChain.Service
                 }
                 else
                 {
-                    throw new TransactionRemovedFromPoolException(
+                    throw new MiningFailException(
                         "transaction can no longer be found in the pool: "
                         + $"{transaction.HashString}");
                 }
+            }
+        }
+
+        private Transaction GetTransactionToMine()
+        {
+            Dictionary<string, Transaction> transactionPool;
+            lock (_node)
+            {
+                transactionPool = _node.GetTransactionPool();
+            }
+
+            if (!(transactionPool.Keys.Count > 0))
+            {
+                throw new MiningFailException(
+                    "transaction pool is empty");
+            }
+            else
+            {
+                Random rnd = new Random();
+                string key =
+                    transactionPool.Keys.ToList()[
+                        rnd.Next(transactionPool.Keys.Count)];
+                return transactionPool[key];
             }
         }
 

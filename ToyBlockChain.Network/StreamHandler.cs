@@ -24,8 +24,8 @@ namespace ToyBlockChain.Network
                 + $"{inboundPayload.Header}",
                 Logger.INFO, ConsoleColor.Cyan);
             Logger.Log(
-                "[Debug] Network: Received Body "
-                + $"{inboundPayload.Body}",
+                "[Debug] Network: received payload:\n"
+                + $"{inboundPayload.ToSerializedString()}",
                 Logger.DEBUG, ConsoleColor.Red);
             return inboundPayload;
         }
@@ -44,8 +44,8 @@ namespace ToyBlockChain.Network
                 + $"{outboundPayload.Header}",
                 Logger.INFO, ConsoleColor.Magenta);
             Logger.Log(
-                "[Debug] Network: Sent Body "
-                + $"{outboundPayload.Body}",
+                "[Debug] Network: sent payload: "
+                + $"{outboundPayload.ToSerializedString()}",
                 Logger.DEBUG, ConsoleColor.Red);
         }
     }

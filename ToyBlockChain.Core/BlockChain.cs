@@ -5,98 +5,6 @@ using System.Text;
 
 namespace ToyBlockChain.Core
 {
-    /// <summary>
-    /// Thrown when the index of a block is equal to the index of
-    /// the last block in the chain plus one but does not pass the
-    /// validation.
-    /// </summary>
-    public class BlockInvalidForChainException : Exception
-    {
-        public BlockInvalidForChainException()
-        {
-        }
-
-        public BlockInvalidForChainException(string message) : base(message)
-        {
-        }
-    }
-
-    /// <summary>
-    /// Thrown when the previoush hash value for given block does not match
-    /// the hash value of the last block in the chain.
-    /// </summary>
-    public class BlockPreviousHashMismatchException
-        : BlockInvalidForChainException
-    {
-        public BlockPreviousHashMismatchException()
-        {
-        }
-
-        public BlockPreviousHashMismatchException(string message)
-            : base(message)
-        {
-        }
-    }
-
-    /// <summary>
-    /// Thrown when the timestamp of given block is earlier than the timestamp
-    /// of the last block in the chain.
-    /// </summary>
-    public class BlockInvalidTimestampException : BlockInvalidForChainException
-    {
-        public BlockInvalidTimestampException()
-        {
-        }
-
-        public BlockInvalidTimestampException(string message) : base(message)
-        {
-        }
-    }
-
-    /// <summary>
-    /// Thrown when the index of a block to add is less than or equal
-    /// to the index of the last block in the chain.
-    /// </summary>
-    public class BlockIndexLowForChainException
-        : BlockInvalidForChainException
-    {
-        public BlockIndexLowForChainException()
-        {
-        }
-
-        public BlockIndexLowForChainException(string message) : base (message)
-        {
-        }
-    }
-
-    /// <summary>
-    /// Thrown when the index of a block to add is greater than
-    /// the index of the last block in the chain plus one.
-    /// </summary>
-    public class BlockIndexHighForChainException
-        : BlockInvalidForChainException
-    {
-        public BlockIndexHighForChainException()
-        {
-        }
-
-        public BlockIndexHighForChainException(string message) : base(message)
-        {
-        }
-    }
-
-    public class TransactionInvalidForChainException : Exception
-    {
-        public TransactionInvalidForChainException()
-        {
-        }
-
-        public TransactionInvalidForChainException(string message)
-            : base(message)
-        {
-        }
-    }
-
     public class BlockChain
     {
         public const string SEPARATOR = "<BC>";
@@ -137,19 +45,19 @@ namespace ToyBlockChain.Core
 
             if (_chain.Count > block.Index)
             {
-                throw new BlockIndexLowForChainException(
+                throw new BlockInvalidForChainIgnorableException(
                     "given block index is too low");
             }
             else if (_chain.Count < block.Index)
             {
-                throw new BlockIndexHighForChainException(
+                throw new BlockInvalidForChainCriticalException(
                     "given block index is too high");
             }
             else if (
                 (GetLastBlock() != null)
                 && (GetLastBlock().HashString != block.PreviousHashString))
             {
-                throw new BlockPreviousHashMismatchException(
+                throw new BlockInvalidForChainIgnorableException(
                     "previous hash for given block does not match " +
                     "hash of the last block in the chain");
             }
@@ -158,7 +66,7 @@ namespace ToyBlockChain.Core
                 && !(GetLastBlock().BlockHeader.Timestamp
                     <= block.BlockHeader.Timestamp))
             {
-                throw new BlockInvalidTimestampException(
+                throw new BlockInvalidForChainIgnorableException(
                     "timestamp for given block is earlier than "
                     + "timestamp for the last block in the chain");
             }

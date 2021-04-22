@@ -3,6 +3,76 @@ using System.Text;
 
 namespace ToyBlockChain.Core
 {
+    public class BlockInvalidException : Exception
+    {
+        public BlockInvalidException()
+        {
+        }
+
+        public BlockInvalidException(string message) : base(message)
+        {
+        }
+    }
+
+    public class BlockInvalidInternalException : BlockInvalidException
+    {
+        public BlockInvalidInternalException()
+        {
+        }
+
+        public BlockInvalidInternalException(string message) : base(message)
+        {
+        }
+    }
+
+    public class BlockInvalidExternalException : BlockInvalidException
+    {
+        public BlockInvalidExternalException()
+        {
+        }
+
+        public BlockInvalidExternalException(string message) : base(message)
+        {
+        }
+    }
+
+    public class BlockInvalidForChainException : BlockInvalidExternalException
+    {
+        public BlockInvalidForChainException()
+        {
+        }
+
+        public BlockInvalidForChainException(string message) : base(message)
+        {
+        }
+    }
+
+    public class BlockInvalidForChainIgnorableException
+        : BlockInvalidForChainException
+    {
+        public BlockInvalidForChainIgnorableException()
+        {
+        }
+
+        public BlockInvalidForChainIgnorableException(string message)
+            : base(message)
+        {
+        }
+    }
+
+    public class BlockInvalidForChainCriticalException
+        : BlockInvalidForChainException
+    {
+        public BlockInvalidForChainCriticalException()
+        {
+        }
+
+        public BlockInvalidForChainCriticalException(string message)
+            : base(message)
+        {
+        }
+    }
+
     public class Block
     {
         public const string SEPARATOR = "<B>";
@@ -89,9 +159,8 @@ namespace ToyBlockChain.Core
         public override string ToString()
         {
             return (
-                $"BLOCK HEADER:\n{BlockHeader}".Replace("\n", "\n\t")
-                + "\n"
-                + $"TRANSACTION:\n{Transaction}".Replace("\n", "\n\t"));
+                $"BLOCKHEADER:\n{BlockHeader}\n"
+                + $"TRANSACTION:\n{Transaction}");
         }
 
         public string ToSerializedString()
