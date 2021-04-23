@@ -44,7 +44,17 @@ namespace ToyBlockChain.Core
         public static Action ActionFactory(
             string target, string move, string value)
         {
-            throw new NotImplementedException();
+            switch (target)
+            {
+                case ActionOnUser.TARGET:
+                    return ActionOnUser.ActionOnUserFactory(
+                        target, move, value);
+                case ActionOnContract.TARGET:
+                    return ActionOnContract.ActionOnContractFactory(
+                        target, move, value);
+                default:
+                    throw new ArgumentException($"invalid target: {target}");
+            }
         }
     }
 }
