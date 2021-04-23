@@ -17,9 +17,9 @@ namespace ToyBlockChain.App
 
         public Address(string serializedString)
         {
-            string[] strings = serializedString.Split(SEPARATOR);
-            _ipAddress = strings[0];
-            _portNumber = Int32.Parse(strings[1]);
+            string[] substrings = serializedString.Split(SEPARATOR);
+            _ipAddress = substrings[0];
+            _portNumber = Int32.Parse(substrings[1]);
         }
 
         public string IpAddress
@@ -40,7 +40,10 @@ namespace ToyBlockChain.App
 
         public string ToSerializedString()
         {
-            return $"{_ipAddress}{SEPARATOR}{_portNumber}";
+            return String.Join(
+                SEPARATOR,
+                new string[] {
+                    IpAddress, PortNumber.ToString() });
         }
 
         public byte[] ToSerializedBytes()

@@ -6,7 +6,6 @@ namespace ToyBlockChain.Core
     public abstract class Account
     {
         public const string SEPARATOR = "<A>";
-        public const int TYPE_INDEX = 1;
 
         protected string _type;
         protected int _count;
@@ -149,17 +148,8 @@ namespace ToyBlockChain.Core
 
         public static Account AccountFactory(string serializedString)
         {
-            string type = serializedString.Split(SEPARATOR)[TYPE_INDEX];
-
-            switch (type)
-            {
-                case AccountUser.TYPE:
-                    return new AccountUser(serializedString);
-                case AccountContract.TYPE:
-                    return new AccountContract(serializedString);
-                default:
-                    throw new NotImplementedException($"invalid type: {type}");
-            }
+            string[] substrings = serializedString.Split(SEPARATOR);
+            return AccountFactory(substrings[0], substrings[1], substrings[2]);
         }
     }
 }
