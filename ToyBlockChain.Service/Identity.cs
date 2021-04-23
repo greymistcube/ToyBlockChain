@@ -49,7 +49,10 @@ namespace ToyBlockChain.Service
 
         public string ToSerializedString()
         {
-            return $"{_address}{SEPARATOR}{_publicKey}";
+            return String.Join(
+                SEPARATOR,
+                new string[] {
+                    Address, PublicKey });
         }
 
         public byte[] ToSerializedBytes()

@@ -72,14 +72,16 @@ namespace ToyBlockChain.Service
             Account account = addressCatalogue[_identity.Address];
 
             // TODO: Random action and recipient selection as a placeholder.
-            string action = rnd.Next().ToString();
             string recipient = addressCatalogue.Keys.ToList()[
                     rnd.Next(addressCatalogue.Count)];
+            Operation operation = Operation.OperationFactory(
+                OperationOnUser.TARGET, OperationOnUserMessage.MOVE,
+                rnd.Next().ToString());
 
             // Create an unsigned transaction.
             long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
             Transaction transaction = new Transaction(
-                _identity.Address, account.Count + 1, action, recipient,
+                _identity.Address, account.Count + 1, operation, recipient,
                 timestamp, _identity.PublicKey);
 
             // Create a valid signature and sign the transaction.

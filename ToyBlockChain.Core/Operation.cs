@@ -8,7 +8,7 @@ namespace ToyBlockChain.Core
         protected string _move;
         protected string _value;
 
-        public const string SEPARATOR = "<A>";
+        public const string SEPARATOR = "<O>";
 
         public Operation(string target, string move, string value)
         {
@@ -41,6 +41,14 @@ namespace ToyBlockChain.Core
             }
         }
 
+        public string ToSerializedString()
+        {
+            return String.Join(
+                SEPARATOR,
+                new string[] {
+                    Target, Move, Value });
+        }
+
         public static Operation OperationFactory(
             string target, string move, string value)
         {
@@ -55,6 +63,13 @@ namespace ToyBlockChain.Core
                 default:
                     throw new ArgumentException($"invalid target: {target}");
             }
+        }
+
+        public static Operation OperationFactory(string serializedString)
+        {
+            string[] substrings = serializedString.Split(SEPARATOR);
+            return OperationFactory(
+                substrings[0], substrings[1], substrings[2]);
         }
     }
 }
