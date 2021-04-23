@@ -4,20 +4,29 @@ namespace ToyBlockChain.Core
     {
         public const string TARGET = "user";
 
-        public override string Target
+        public ActionOnUser(string target, string move, string value)
+            : base(target, move, value)
         {
-            get
-            {
-                return TARGET;
-            }
         }
     }
 
-    public class ActionMessageUser : ActionOnUser
+    public class ActionOnUserMessage : ActionOnUser
     {
+        public const string MOVE = "message";
+
+        public ActionOnUserMessage(string target, string move, string value)
+            : base(target, move, value)
+        {
+        }
     }
 
-    public class ActionRegisterUser : ActionOnUser
+    public class ActionOnUserRegister : ActionOnUser
     {
+        public const string MOVE = "register";
+
+        public ActionOnUserRegister(string target, string move, string value)
+            : base(target, move, value)
+        {
+        }
     }
 }

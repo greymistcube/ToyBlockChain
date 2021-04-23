@@ -4,27 +4,9 @@ namespace ToyBlockChain.Core
     {
         public const string TARGET = "contract";
 
-        protected string _value;
-
-        public override string Target
+        public ActionOnContract(string target, string move, string value)
+            : base(target, move, value)
         {
-            get
-            {
-                return TARGET;
-            }
-        }
-
-        public abstract string Move
-        {
-            get;
-        }
-
-        public string Value
-        {
-            get
-            {
-                return _value;
-            }
         }
     }
 
@@ -32,12 +14,9 @@ namespace ToyBlockChain.Core
     {
         public const string MOVE = "play";
 
-        public override string Move
+        public ActionOnContractPlay(string target, string move, string value)
+            : base(target, move, value)
         {
-            get
-            {
-                return MOVE;
-            }
         }
     }
 
@@ -45,12 +24,9 @@ namespace ToyBlockChain.Core
     {
         public const string MOVE = "reveal";
 
-        public override string Move
+        public ActionOnContractReveal(string target, string move, string value)
+            : base(target, move, value)
         {
-            get
-            {
-                return MOVE;
-            }
         }
     }
 }
