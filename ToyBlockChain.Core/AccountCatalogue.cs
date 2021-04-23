@@ -123,8 +123,10 @@ namespace ToyBlockChain.Core
 
         internal void ConsumeTransaction(Transaction transaction)
         {
-            _catalogue[transaction.Sender].ConsumeTransactionAsSender(transaction);
-            _catalogue[transaction.Recipient].ConsumeTransactionAsRecipient(transaction);
+            _catalogue[transaction.Sender]
+                .ConsumeTransactionAsSender(transaction);
+            _catalogue[transaction.Recipient]
+                .ConsumeTransactionAsRecipient(transaction);
         }
 
         public string ToSerializedString()

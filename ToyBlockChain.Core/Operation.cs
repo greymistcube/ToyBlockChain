@@ -2,6 +2,39 @@ using System;
 
 namespace ToyBlockChain.Core
 {
+    public class OperationInvalidException : Exception
+    {
+        public OperationInvalidException()
+        {
+        }
+
+        public OperationInvalidException(string message) : base(message)
+        {
+        }
+    }
+
+    public class OperationInvalidInternalException : OperationInvalidException
+    {
+        public OperationInvalidInternalException()
+        {
+        }
+
+        public OperationInvalidInternalException(string message) : base(message)
+        {
+        }
+    }
+
+    public class OperationInvalidExternalException : OperationInvalidException
+    {
+        public OperationInvalidExternalException()
+        {
+        }
+
+        public OperationInvalidExternalException(string message) : base(message)
+        {
+        }
+    }
+
     public abstract class Operation
     {
         protected string _target;
