@@ -4,20 +4,13 @@ namespace ToyBlockChain.Core
     {
         public const string TYPE = "user";
 
-        public AccountUser(string address, string state) : base(address, state)
+        public AccountUser(string address, string type, string state)
+            : base(address, type, state)
         {
         }
 
         public AccountUser(string serializedString) : base(serializedString)
         {
-        }
-
-        public override string Type
-        {
-            get
-            {
-                return TYPE;
-            }
         }
     }
 }

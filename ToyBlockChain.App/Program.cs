@@ -126,7 +126,8 @@ namespace ToyBlockChain.App
             if (_minerFlag || _clientFlag)
             {
                 _identity = new Identity();
-                _account = new AccountUser(_identity.Address, "");
+                _account = Account.AccountFactory(
+                    _identity.Address, AccountUser.TYPE, "");
 
                 _node.AddAccountToCatalogue(_account);
                 outboundPayload = new Payload(
@@ -423,7 +424,7 @@ namespace ToyBlockChain.App
             else if (header == Protocol.ANNOUNCE_ACCOUNT)
             {
                 // TODO: Placeholder implementation.
-                Account account = new AccountUser(inboundPayload.Body);
+                Account account = Account.AccountFactory(inboundPayload.Body);
                 lock (_node)
                 {
                     _node.AddAccountToCatalogue(account);

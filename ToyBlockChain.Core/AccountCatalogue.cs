@@ -52,7 +52,7 @@ namespace ToyBlockChain.Core
                 foreach (string accountString in accountStrings)
                 {
                     // TODO: Placeholder implementation.
-                    Account account = new AccountUser(accountString);
+                    Account account = Account.AccountFactory(accountString);
                     _catalogue.Add(account.Address, account);
                 }
             }

@@ -6,23 +6,28 @@ namespace ToyBlockChain.Core
     public abstract class Account
     {
         public const string SEPARATOR = "<A>";
-        private int _count;
-        private string _address;
-        private string _state;
+        public const int TYPE_INDEX = 1;
 
-        public Account(string address, string state)
+        protected string _type;
+        protected int _count;
+        protected string _address;
+        protected string _state;
+
+        protected Account(string address, string type, string state)
         {
-            _count = 0;
             _address = address;
+            _type = type;
+            _count = 0;
             _state = state;
         }
 
-        public Account(string serializedString)
+        protected Account(string serializedString)
         {
             string[] substrings = serializedString.Split(SEPARATOR);
-            _count = Int32.Parse(substrings[0]);
-            _address = substrings[1];
-            _state = substrings[2];
+            _address = substrings[0];
+            _type = substrings[1];
+            _count = Int32.Parse(substrings[2]);
+            _state = substrings[3];
         }
 
         public void ConsumeTransaction(Transaction transaction)
@@ -65,9 +70,20 @@ namespace ToyBlockChain.Core
         {
         }
 
-        public abstract string Type
+        public string Address
         {
-            get;
+            get
+            {
+                return _address;
+            }
+        }
+
+        public string Type
+        {
+            get
+            {
+                return _type;
+            }
         }
 
         public int Count
@@ -75,14 +91,6 @@ namespace ToyBlockChain.Core
             get
             {
                 return _count;
-            }
-        }
-
-        public string Address
-        {
-            get
-            {
-                return _address;
             }
         }
 
@@ -104,7 +112,10 @@ namespace ToyBlockChain.Core
 
         public string ToSerializedString()
         {
-            return $"{_count}{SEPARATOR}{_address}{SEPARATOR}{_state}";
+            return String.Join(
+                SEPARATOR,
+                new string[] {
+                    Address, Type, Count.ToString(), State });
         }
 
         public byte[] ToSerializedBytes()
@@ -112,5 +123,43 @@ namespace ToyBlockChain.Core
             return Encoding.UTF8.GetBytes(ToSerializedString());
         }
 
+        public override string ToString()
+        {
+            return String.Format(
+                "Address: {0}\n"
+                + "Type: {1}\n"
+                + "Count: {2}\n"
+                + "State: {3}",
+                Address, Type, Count, State);
+        }
+
+        public static Account AccountFactory(
+            string address, string type, string state)
+        {
+            switch (type)
+            {
+                case AccountUser.TYPE:
+                    return new AccountUser(address, type, state);
+                case AccountContract.TYPE:
+                    return new AccountContract(address, type, state);
+                default:
+                    throw new NotImplementedException($"invalid type: {type}");
+            }
+        }
+
+        public static Account AccountFactory(string serializedString)
+        {
+            string type = serializedString.Split(SEPARATOR)[TYPE_INDEX];
+
+            switch (type)
+            {
+                case AccountUser.TYPE:
+                    return new AccountUser(serializedString);
+                case AccountContract.TYPE:
+                    return new AccountContract(serializedString);
+                default:
+                    throw new NotImplementedException($"invalid type: {type}");
+            }
+        }
     }
 }
