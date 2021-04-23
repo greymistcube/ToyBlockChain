@@ -29,7 +29,7 @@ namespace ToyBlockChain.Core
             _state = substrings[3];
         }
 
-        public void ConsumeTransaction(Transaction transaction)
+        internal void ConsumeTransaction(Transaction transaction)
         {
             if (transaction.Sender != _address
                 && transaction.Recipient != _address)
@@ -52,22 +52,11 @@ namespace ToyBlockChain.Core
             }
         }
 
-        internal void ConsumeTransactionAsSender(Transaction transaction)
-        {
-            if (transaction.Count != _count + 1)
-            {
-                throw new TransactionInvalidForAccountException(
-                    "transaction count is invalid");
-            }
-            else
-            {
-                _count = _count + 1;
-            }
-        }
+        internal abstract void ConsumeTransactionAsSender(
+            Transaction transaction);
 
-        internal void ConsumeTransactionAsRecipient(Transaction transaction)
-        {
-        }
+        internal abstract void ConsumeTransactionAsRecipient(
+            Transaction transaction);
 
         public string Address
         {
@@ -140,7 +129,8 @@ namespace ToyBlockChain.Core
                 case AccountUser.TYPE:
                     return new AccountUser(address, type, state);
                 case AccountContract.TYPE:
-                    return new AccountContract(address, type, state);
+                    return AccountContract.AccountContractFactory(
+                        address, type, state);
                 default:
                     throw new NotImplementedException($"invalid type: {type}");
             }
