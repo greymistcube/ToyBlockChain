@@ -2,7 +2,7 @@ using System;
 
 namespace ToyBlockChain.Core
 {
-    public abstract class Action
+    public abstract class Operation
     {
         protected string _target;
         protected string _move;
@@ -10,7 +10,7 @@ namespace ToyBlockChain.Core
 
         public const string SEPARATOR = "<A>";
 
-        public Action(string target, string move, string value)
+        public Operation(string target, string move, string value)
         {
             _target = target;
             _move = move;
@@ -41,16 +41,16 @@ namespace ToyBlockChain.Core
             }
         }
 
-        public static Action ActionFactory(
+        public static Operation OperationFactory(
             string target, string move, string value)
         {
             switch (target)
             {
-                case ActionOnUser.TARGET:
-                    return ActionOnUser.ActionOnUserFactory(
+                case OperationOnUser.TARGET:
+                    return OperationOnUser.OperationOnUserFactory(
                         target, move, value);
-                case ActionOnContract.TARGET:
-                    return ActionOnContract.ActionOnContractFactory(
+                case OperationOnContract.TARGET:
+                    return OperationOnContract.OperationOnContractFactory(
                         target, move, value);
                 default:
                     throw new ArgumentException($"invalid target: {target}");
