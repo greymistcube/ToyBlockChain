@@ -3,7 +3,7 @@ using System.Text;
 
 namespace ToyBlockChain.Core
 {
-    public class Account
+    public abstract class Account
     {
         public const string SEPARATOR = "<A>";
         private int _count;
@@ -63,6 +63,11 @@ namespace ToyBlockChain.Core
 
         internal void ConsumeTransactionAsRecipient(Transaction transaction)
         {
+        }
+
+        public abstract string Type
+        {
+            get;
         }
 
         public int Count

@@ -51,7 +51,8 @@ namespace ToyBlockChain.Core
                 string[] accountStrings = serializedString.Split(SEPARATOR);
                 foreach (string accountString in accountStrings)
                 {
-                    Account account = new Account(accountString);
+                    // TODO: Placeholder implementation.
+                    Account account = new AccountUser(accountString);
                     _catalogue.Add(account.Address, account);
                 }
             }
