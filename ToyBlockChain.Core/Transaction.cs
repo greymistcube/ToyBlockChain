@@ -16,34 +16,21 @@ namespace ToyBlockChain.Core
         }
     }
 
-    public class TransactionInvalidInternalException
-        : TransactionInvalidException
+    public class TransactionUnsoundException
+        : Exception
     {
-        public TransactionInvalidInternalException()
+        public TransactionUnsoundException()
         {
         }
 
-        public TransactionInvalidInternalException(string message)
-            : base(message)
-        {
-        }
-    }
-
-    public class TransactionInvalidExternalException
-        : TransactionInvalidException
-    {
-        public TransactionInvalidExternalException()
-        {
-        }
-
-        public TransactionInvalidExternalException(string message)
+        public TransactionUnsoundException(string message)
             : base(message)
         {
         }
     }
 
     public class TransactionInvalidForPoolException
-        : TransactionInvalidExternalException
+        : TransactionInvalidException
     {
         public TransactionInvalidForPoolException()
         {
@@ -56,7 +43,7 @@ namespace ToyBlockChain.Core
     }
 
     public class TransactionInvalidForChainException
-        : TransactionInvalidExternalException
+        : TransactionInvalidException
     {
         public TransactionInvalidForChainException()
         {
@@ -69,7 +56,7 @@ namespace ToyBlockChain.Core
     }
 
     public class TransactionInvalidForCatalogueException
-        : TransactionInvalidExternalException
+        : TransactionInvalidException
     {
         public TransactionInvalidForCatalogueException()
         {
@@ -144,11 +131,11 @@ namespace ToyBlockChain.Core
             _signature = signature;
         }
 
-        public void Validate()
+        public void CheckSoundness()
         {
             if (Sender != CryptoUtil.ComputeHashString(PublicKey))
             {
-                throw new TransactionInvalidInternalException(
+                throw new TransactionUnsoundException(
                     "sender identity does not match public key");
             }
             else if (!CryptoUtil.Verify(
@@ -156,7 +143,7 @@ namespace ToyBlockChain.Core
                 Signature,
                 CryptoUtil.ExtractRSAParameters(PublicKey)))
             {
-                throw new TransactionInvalidInternalException(
+                throw new TransactionUnsoundException(
                     "signature is not valid");
             }
         }

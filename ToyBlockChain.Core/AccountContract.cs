@@ -3,6 +3,9 @@ using ToyBlockChain.Crypto;
 
 namespace ToyBlockChain.Core
 {
+    /// <summary>
+    /// Represents an account of a contract.
+    /// </summary>
     public abstract class AccountContract : Account
     {
         public const string TYPE = "contract";

@@ -13,24 +13,13 @@ namespace ToyBlockChain.Core
         }
     }
 
-    public class OperationInvalidInternalException : OperationInvalidException
+    public class OperationUnsoundException : Exception
     {
-        public OperationInvalidInternalException()
+        public OperationUnsoundException()
         {
         }
 
-        public OperationInvalidInternalException(string message) : base(message)
-        {
-        }
-    }
-
-    public class OperationInvalidExternalException : OperationInvalidException
-    {
-        public OperationInvalidExternalException()
-        {
-        }
-
-        public OperationInvalidExternalException(string message) : base(message)
+        public OperationUnsoundException(string message) : base(message)
         {
         }
     }

@@ -45,19 +45,19 @@ namespace ToyBlockChain.Core
 
             if (_chain.Count > block.Index)
             {
-                throw new BlockInvalidForChainIgnorableException(
+                throw new BlockInvalidIgnorableException(
                     "given block index is too low");
             }
             else if (_chain.Count < block.Index)
             {
-                throw new BlockInvalidForChainCriticalException(
+                throw new BlockInvalidCriticalException(
                     "given block index is too high");
             }
             else if (
                 (GetLastBlock() != null)
                 && (GetLastBlock().HashString != block.PreviousHashString))
             {
-                throw new BlockInvalidForChainIgnorableException(
+                throw new BlockInvalidIgnorableException(
                     "previous hash for given block does not match " +
                     "hash of the last block in the chain");
             }
@@ -66,7 +66,7 @@ namespace ToyBlockChain.Core
                 && !(GetLastBlock().BlockHeader.Timestamp
                     <= block.BlockHeader.Timestamp))
             {
-                throw new BlockInvalidForChainIgnorableException(
+                throw new BlockInvalidIgnorableException(
                     "timestamp for given block is earlier than "
                     + "timestamp for the last block in the chain");
             }

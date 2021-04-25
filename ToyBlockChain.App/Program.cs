@@ -463,7 +463,7 @@ namespace ToyBlockChain.App
                     }
                     Announce(inboundPayload);
                 }
-                catch (TransactionInvalidExternalException ex)
+                catch (TransactionInvalidException ex)
                 {
                     Logger.Log(
                         $"[Info] App: Block {block.LogId} ignored",
@@ -472,7 +472,7 @@ namespace ToyBlockChain.App
                         $"[Debug] App: {ex.Message}",
                         Logger.DEBUG, ConsoleColor.Red);
                 }
-                catch (BlockInvalidForChainIgnorableException ex)
+                catch (BlockInvalidIgnorableException ex)
                 {
                     Logger.Log(
                         $"[Info] App: Block {block.LogId} ignored",
@@ -481,7 +481,7 @@ namespace ToyBlockChain.App
                         $"[Debug] App: {ex.Message}",
                         Logger.DEBUG, ConsoleColor.Red);
                 }
-                catch (BlockInvalidForChainCriticalException)
+                catch (BlockInvalidCriticalException)
                 {
                     throw new NotImplementedException();
                 }
