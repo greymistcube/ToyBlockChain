@@ -24,7 +24,7 @@ namespace ToyBlockChain.Core
             return;
         }
 
-        public void Sync(string serializedString)
+        internal void Sync(string serializedString)
         {
             _chain = new List<Block>();
             if (serializedString != null && serializedString.Length > 0)
@@ -37,6 +37,11 @@ namespace ToyBlockChain.Core
                 }
             }
             AdjustDifficulty();
+        }
+
+        internal void Dump()
+        {
+            _chain = new List<Block>();
         }
 
         internal void ValidateBlock(Block block)

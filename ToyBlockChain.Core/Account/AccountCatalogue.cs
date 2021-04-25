@@ -44,7 +44,7 @@ namespace ToyBlockChain.Core
             _catalogue = new Dictionary<string, Account>();
         }
 
-        public void Sync(string serializedString)
+        internal void Sync(string serializedString)
         {
             _catalogue = new Dictionary<string, Account>();
             if (serializedString != null && serializedString.Length > 0)
@@ -57,6 +57,11 @@ namespace ToyBlockChain.Core
                     _catalogue.Add(account.Address, account);
                 }
             }
+        }
+
+        internal void Dump()
+        {
+            _catalogue = new Dictionary<string, Account>();
         }
 
         public void AddAccount(Account account)

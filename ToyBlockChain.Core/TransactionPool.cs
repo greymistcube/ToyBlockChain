@@ -32,6 +32,12 @@ namespace ToyBlockChain.Core
             }
         }
 
+        internal void Dump()
+        {
+            _poolByHash = new Dictionary<string, Transaction>();
+            _poolBySender = new Dictionary<string, Transaction>();
+        }
+
         internal void ValidateTransaction(Transaction transaction)
         {
             if (HasTransaction(transaction))
