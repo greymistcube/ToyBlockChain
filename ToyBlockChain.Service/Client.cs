@@ -61,28 +61,22 @@ namespace ToyBlockChain.Service
         /// </summary>
         private Transaction CreateTransaction()
         {
-            Random rnd = new Random();
-
-            Dictionary<string, Account> addressCatalogue;
+            Dictionary<string, Account> accountCatalogue;
             lock (_node)
             {
-                addressCatalogue = _node.GetAccountCatalogue();
+                accountCatalogue = _node.GetAccountCatalogue();
             }
 
-            Account account = addressCatalogue[_identity.Address];
-
-            // TODO: Random action and recipient selection as a placeholder.
-            string recipient = addressCatalogue.Keys.ToList()[
-                    rnd.Next(addressCatalogue.Count)];
-            Operation operation = Operation.OperationFactory(
-                OperationOnUser.TARGET, OperationOnUserMessage.MOVE,
-                rnd.Next().ToString());
-
             // Create an unsigned transaction.
-            long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
-            Transaction transaction = new Transaction(
-                _identity.Address, account.Count + 1, operation, recipient,
-                timestamp, _identity.PublicKey);
+            Transaction transaction;
+            if (!accountCatalogue.ContainsKey(_identity.Address))
+            {
+                transaction = CreateRegisterTransaction();
+            }
+            else
+            {
+                transaction = CreateMessageTransaction(accountCatalogue);
+            }
 
             // Create a valid signature and sign the transaction.
             string signature = CryptoUtil.Sign(
@@ -90,6 +84,65 @@ namespace ToyBlockChain.Service
             transaction.Sign(signature);
 
             return transaction;
+        }
+
+        private Transaction CreateRegisterTransaction()
+        {
+            int nonce = 0;
+            long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
+            string recipient = _identity.Address;
+            Operation operation = Operation.OperationFactory(
+                OperationOnUser.TARGET, OperationOnUserRegister.MOVE, "");
+            Transaction transaction = new Transaction(
+                _identity.Address, nonce, operation, recipient,
+                timestamp, _identity.PublicKey, null);
+            return transaction;
+        }
+
+        private Transaction CreateMessageTransaction(
+            Dictionary<string, Account> accountCatalogue)
+        {
+            int nonce = accountCatalogue[_identity.Address].Nonce;
+            string message = GetRandomMessage();
+            long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
+            string recipient = GetRandomUserRecipient(accountCatalogue);
+
+            Operation operation = Operation.OperationFactory(
+                OperationOnUser.TARGET, OperationOnUserMessage.MOVE, message);
+            Transaction transaction = new Transaction(
+                _identity.Address, nonce, operation, recipient,
+                timestamp, _identity.PublicKey, null);
+            return transaction;
+        }
+
+        private Transaction CreateGameTransaction()
+        {
+            throw new NotImplementedException();
+        }
+
+        private string GetRandomUserRecipient(
+            Dictionary<string, Account> accountCatalogue)
+        {
+            Random random = new Random();
+            List<Account> accounts = accountCatalogue.Values.ToList().FindAll(
+                account => account.Type == UserAccount.TYPE);
+            string recipient = accounts[random.Next(accounts.Count)].Address;
+
+            return recipient;
+        }
+
+        private string GetRandomMessage()
+        {
+            Random random = new Random();
+            string message = random.Next().ToString();
+
+            return message;
+        }
+
+        private string GetRandomContractRecipient(
+            Dictionary<string, Account> accountCatalogue)
+        {
+            throw new NotImplementedException();
         }
     }
 }

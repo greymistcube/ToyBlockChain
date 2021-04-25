@@ -11,7 +11,7 @@ namespace ToyBlockChain.Core
         {
         }
 
-        public static Operation OperationOnContractFactory(
+        internal static Operation OperationOnContractFactory(
             string target, string move, string value)
         {
             switch (move)
