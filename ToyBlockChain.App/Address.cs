@@ -5,7 +5,7 @@ namespace ToyBlockChain.App
 {
     public class Address
     {
-        public const string SEPARATOR = "<A>";
+        public const string SEPARATOR = "<AD>";
         private readonly string _ipAddress;
         private readonly int _portNumber;
 

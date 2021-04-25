@@ -83,7 +83,7 @@ namespace ToyBlockChain.Core
 
     public class Transaction
     {
-        public const string SEPARATOR = "<T>";
+        public const string SEPARATOR = "<TX>";
         private readonly string _sender;
         private readonly int _nonce;
         private readonly Operation _operation;

@@ -51,7 +51,7 @@ namespace ToyBlockChain.Core
 
     public class Block
     {
-        public const string SEPARATOR = "<B>";
+        public const string SEPARATOR = "<BK>";
         private readonly Transaction _transaction;
         private readonly BlockHeader _blockHeader;
 
