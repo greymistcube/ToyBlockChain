@@ -59,6 +59,9 @@ namespace ToyBlockChain.Core
             }
         }
 
+        /// <summary>
+        /// Dumps everything.
+        /// </summary>
         internal void Dump()
         {
             _catalogue = new Dictionary<string, Account>();
@@ -72,6 +75,14 @@ namespace ToyBlockChain.Core
                     $"account already exists in catalogue: {account.Address}");
             }
             _catalogue.Add(account.Address, account);
+            Logger.Log(
+                $"[Info] Catalogue: Account {account.LogId} "
+                + "added to the catalogue",
+                Logger.INFO, ConsoleColor.Green);
+            Logger.Log(
+                "[Debug] Catalogue: account detail:\n "
+                + $"{account.ToString()}",
+                Logger.DEBUG, ConsoleColor.Red);
         }
 
         internal bool HasAccount(string address)

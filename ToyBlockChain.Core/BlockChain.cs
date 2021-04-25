@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ToyBlockChain.Util;
 
 namespace ToyBlockChain.Core
 {
@@ -39,6 +40,9 @@ namespace ToyBlockChain.Core
             AdjustDifficulty();
         }
 
+        /// <summary>
+        /// Dumps everything.
+        /// </summary>
         internal void Dump()
         {
             _chain = new List<Block>();
@@ -81,6 +85,14 @@ namespace ToyBlockChain.Core
         {
             _chain.Add(block);
             AdjustDifficulty();
+            Logger.Log(
+                $"[Info] Chain: Block {block.LogId} "
+                + "added to the chain",
+                Logger.INFO, ConsoleColor.Green);
+            Logger.Log(
+                "[Debug] Chain: block detail:\n"
+                + $"{block.ToString()}",
+                Logger.DEBUG, ConsoleColor.Red);
         }
 
         /// <summary>

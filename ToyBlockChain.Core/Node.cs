@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using ToyBlockChain.Util;
 
 namespace ToyBlockChain.Core
 {
@@ -29,8 +27,8 @@ namespace ToyBlockChain.Core
         public Node()
         {
             _blockChain = new BlockChain();
-            _accountCatalogue = new AccountCatalogue();
             _transactionPool = new TransactionPool();
+            _accountCatalogue = new AccountCatalogue();
         }
 
         /// <summary>
@@ -45,16 +43,8 @@ namespace ToyBlockChain.Core
             _blockChain.ValidateBlock(block);
 
             _transactionPool.RemoveTransaction(block.Transaction);
-            _blockChain.AddBlock(block);
             _accountCatalogue.ConsumeTransaction(block.Transaction);
-            Logger.Log(
-                $"[Info] Node: Block {block.LogId} "
-                + "added to chain",
-                Logger.INFO, ConsoleColor.Green);
-            Logger.Log(
-                "[Debug] Node: block detail:\n"
-                + $"{block.ToString()}",
-                Logger.DEBUG, ConsoleColor.Red);
+            _blockChain.AddBlock(block);
         }
 
         /// <summary>
@@ -63,14 +53,6 @@ namespace ToyBlockChain.Core
         internal void AddAccountToCatalogue(Account account)
         {
             _accountCatalogue.AddAccount(account);
-            Logger.Log(
-                $"[Info] Node: Account {account.LogId} "
-                + "added to catalogue",
-                Logger.INFO, ConsoleColor.Green);
-            Logger.Log(
-                "[Debug] Node: account detail:\n "
-                + $"{account.ToString()}",
-                Logger.DEBUG, ConsoleColor.Red);
         }
 
         /// <summary>
@@ -85,14 +67,6 @@ namespace ToyBlockChain.Core
             _transactionPool.ValidateTransaction(transaction);
 
             _transactionPool.AddTransaction(transaction);
-            Logger.Log(
-                $"[Info] Node: Transaction {transaction.LogId} "
-                + "added to pool",
-                Logger.INFO, ConsoleColor.Green);
-            Logger.Log(
-                "[Debug] Node: transaction detail:\n"
-                + $"{transaction.ToString()}",
-                Logger.DEBUG, ConsoleColor.Red);
         }
 
         /// <summary>
