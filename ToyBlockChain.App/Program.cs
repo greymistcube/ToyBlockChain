@@ -129,11 +129,6 @@ namespace ToyBlockChain.App
                 _account = Account.AccountFactory(
                     _identity.Address, UserAccount.TYPE, "");
 
-                _node.AddAccountToCatalogue(_account);
-                outboundPayload = new Payload(
-                    Protocol.ANNOUNCE_ACCOUNT, _account.ToSerializedString());
-                Announce(outboundPayload);
-
                 if (_minerFlag)
                 {
                     _miner = new Miner((INodeMiner)_node, _identity, Announce);
@@ -184,7 +179,6 @@ namespace ToyBlockChain.App
             }
 
             SyncBlockChain(address);
-            SyncAccountCatalogue(address);
             SyncTransactionPool(address);
         }
 
@@ -192,12 +186,6 @@ namespace ToyBlockChain.App
         {
             Request(
                 address, new Payload(Protocol.REQUEST_BLOCKCHAIN, ""));
-        }
-
-        private static void SyncAccountCatalogue(Address address)
-        {
-            Request(
-                address, new Payload(Protocol.REQUEST_ACCOUNT_CATALOGUE, ""));
         }
 
         private static void SyncTransactionPool(Address address)
@@ -379,16 +367,6 @@ namespace ToyBlockChain.App
                     StreamHandler.WritePayload(stream, outboundPayload);
                 }
             }
-            else if (header == Protocol.REQUEST_ACCOUNT_CATALOGUE)
-            {
-                lock (_node)
-                {
-                    Payload outboundPayload = new Payload(
-                        Protocol.RESPONSE_ACCOUNT_CATALOGUE,
-                        _node.GetAccountCatalogueSerializedString());
-                    StreamHandler.WritePayload(stream, outboundPayload);
-                }
-            }
             else if (header == Protocol.REQUEST_TRANSACTION_POOL)
             {
                 lock (_node)
@@ -420,15 +398,6 @@ namespace ToyBlockChain.App
                     $"[Info] App: Address {address.PortNumber} "
                     + "added to routing table",
                     Logger.INFO, ConsoleColor.Blue);
-            }
-            else if (header == Protocol.ANNOUNCE_ACCOUNT)
-            {
-                // TODO: Placeholder implementation.
-                Account account = Account.AccountFactory(inboundPayload.Body);
-                lock (_node)
-                {
-                    _node.AddAccountToCatalogue(account);
-                }
             }
             else if (header == Protocol.ANNOUNCE_TRANSACTION)
             {
@@ -516,16 +485,6 @@ namespace ToyBlockChain.App
                 }
                 Logger.Log(
                     "[Info] App: Blockchain synced.",
-                    Logger.INFO, ConsoleColor.Blue);
-            }
-            else if (header == Protocol.RESPONSE_ACCOUNT_CATALOGUE)
-            {
-                lock (_node)
-                {
-                    _node.SyncAccountCatalogue(inboundPayload.Body);
-                }
-                Logger.Log(
-                    "[Info] App: Account catalogue synced.",
                     Logger.INFO, ConsoleColor.Blue);
             }
             else if (header == Protocol.RESPONSE_TRANSACTION_POOL)

@@ -146,6 +146,11 @@ namespace ToyBlockChain.Core
                 throw new TransactionUnsoundException(
                     "signature is not valid");
             }
+            else if (_nonce == 0 && !(_operation is OperationOnUserRegister))
+            {
+                throw new TransactionUnsoundException(
+                    "zero nonce must be an account registering transaction");
+            }
         }
 
         public override string ToString()
