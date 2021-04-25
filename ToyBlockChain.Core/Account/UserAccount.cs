@@ -1,3 +1,5 @@
+using System;
+
 namespace ToyBlockChain.Core
 {
     /// <summary>
@@ -6,6 +8,7 @@ namespace ToyBlockChain.Core
     public class UserAccount : Account
     {
         public const string TYPE = "user";
+        public const string INIT_STATE = "";
 
         public UserAccount(string address, string type, string state)
             : base(address, type, state)
@@ -21,8 +24,7 @@ namespace ToyBlockChain.Core
         {
             if (transaction.Nonce != _nonce)
             {
-                throw new TransactionInvalidForAccountException(
-                    "transaction count is invalid");
+                throw new ArgumentException("transaction nonce is invalid");
             }
             else
             {
@@ -33,7 +35,26 @@ namespace ToyBlockChain.Core
         internal override void ConsumeTransactionAsRecipient(
             Transaction transaction)
         {
-            // TODO: Not implemented.
+            if (transaction.Operation.Target != OperationOnUser.TARGET)
+            {
+                throw new ArgumentException(
+                    "invalid target for operation: "
+                    + $"{transaction.Operation.Target}");
+            }
+            else
+            {
+                switch (transaction.Operation.Move)
+                {
+                    case OperationOnUserRegister.MOVE:
+                        return;
+                    case OperationOnUserMessage.MOVE:
+                        _state = transaction.Operation.Value;
+                        return;
+                    default:
+                        throw new ArgumentException(
+                            "unknown operation given");
+                }
+            }
         }
     }
 }
