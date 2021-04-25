@@ -16,27 +16,13 @@ namespace ToyBlockChain.Core
         }
     }
 
-    public class BlockHeaderInvalidInternalException
-        : BlockHeaderInvalidException
+    public class BlockHeaderUnsoundException : Exception
     {
-        public BlockHeaderInvalidInternalException()
+        public BlockHeaderUnsoundException()
         {
         }
 
-        public BlockHeaderInvalidInternalException(string message)
-            : base(message)
-        {
-        }
-    }
-
-    public class BlockHeaderInvalidExternalException
-        : BlockHeaderInvalidException
-    {
-        public BlockHeaderInvalidExternalException()
-        {
-        }
-
-        public BlockHeaderInvalidExternalException(string message)
+        public BlockHeaderUnsoundException(string message)
             : base(message)
         {
         }
@@ -164,7 +150,7 @@ namespace ToyBlockChain.Core
             }
         }
 
-        public void Validate()
+        public void CheckSoundness()
         {
             BitArray bits = new BitArray(HashBytes);
 
@@ -172,7 +158,7 @@ namespace ToyBlockChain.Core
             {
                 if (bits[i] != false)
                 {
-                    throw new BlockHeaderInvalidInternalException(
+                    throw new BlockHeaderUnsoundException(
                         "hash does not satisfy the difficulty requirement");
                 }
             }

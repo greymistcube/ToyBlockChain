@@ -3,6 +3,9 @@ using System.Text;
 
 namespace ToyBlockChain.Core
 {
+    /// <summary>
+    /// Represents an account.
+    /// </summary>
     public abstract class Account
     {
         public const string SEPARATOR = "<A>";

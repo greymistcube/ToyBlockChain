@@ -25,8 +25,7 @@ namespace ToyBlockChain.Core
         }
     }
 
-    public class BlockInvalidIgnorableException
-        : BlockInvalidException
+    public class BlockInvalidIgnorableException : BlockInvalidException
     {
         public BlockInvalidIgnorableException()
         {
@@ -38,8 +37,7 @@ namespace ToyBlockChain.Core
         }
     }
 
-    public class BlockInvalidCriticalException
-        : BlockInvalidException
+    public class BlockInvalidCriticalException : BlockInvalidException
     {
         public BlockInvalidCriticalException()
         {
@@ -126,7 +124,7 @@ namespace ToyBlockChain.Core
             }
         }
 
-        public void Validate()
+        public void CheckSoundness()
         {
             if (_blockHeader.TransactionHashString != _transaction.HashString)
             {
@@ -136,11 +134,11 @@ namespace ToyBlockChain.Core
             }
             try
             {
-                _blockHeader.Validate();
-                _transaction.Validate();
+                _blockHeader.CheckSoundness();
+                _transaction.CheckSoundness();
             }
             catch (Exception ex) when (
-                ex is BlockHeaderInvalidInternalException
+                ex is BlockHeaderUnsoundException
                 || ex is TransactionUnsoundException)
             {
                 throw new BlockUnsoundException(ex.Message);

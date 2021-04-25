@@ -131,7 +131,7 @@ namespace ToyBlockChain.Core
             _signature = signature;
         }
 
-        public void Validate()
+        public void CheckSoundness()
         {
             if (Sender != CryptoUtil.ComputeHashString(PublicKey))
             {

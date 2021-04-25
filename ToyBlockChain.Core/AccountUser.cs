@@ -1,5 +1,8 @@
 namespace ToyBlockChain.Core
 {
+    /// <summary>
+    /// Represents an account of a user.
+    /// </summary>
     public class AccountUser : Account
     {
         public const string TYPE = "user";
