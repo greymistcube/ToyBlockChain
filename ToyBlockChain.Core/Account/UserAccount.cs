@@ -3,16 +3,16 @@ namespace ToyBlockChain.Core
     /// <summary>
     /// Represents an account of a user.
     /// </summary>
-    public class AccountUser : Account
+    public class UserAccount : Account
     {
         public const string TYPE = "user";
 
-        public AccountUser(string address, string type, string state)
+        public UserAccount(string address, string type, string state)
             : base(address, type, state)
         {
         }
 
-        public AccountUser(string serializedString) : base(serializedString)
+        public UserAccount(string serializedString) : base(serializedString)
         {
         }
 

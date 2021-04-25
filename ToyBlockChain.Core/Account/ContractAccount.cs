@@ -6,26 +6,26 @@ namespace ToyBlockChain.Core
     /// <summary>
     /// Represents an account of a contract.
     /// </summary>
-    public abstract class AccountContract : Account
+    public abstract class ContractAccount : Account
     {
         public const string TYPE = "contract";
 
-        public AccountContract(string address, string type, string state)
+        public ContractAccount(string address, string type, string state)
             : base(address, type, state)
         {
         }
 
-        public AccountContract(string serializedString) : base(serializedString)
+        public ContractAccount(string serializedString) : base(serializedString)
         {
         }
 
-        public static Account AccountContractFactory(
+        public static Account ContractAccountFactory(
             string address, string type, string state)
         {
             // Note: If statement is used since ADDRESS is derived on runtime.
-            if (address == AccountContractRockPaperScissors.ADDRESS)
+            if (address == RockPaperScissorsContractAccount.ADDRESS)
             {
-                return new AccountContractRockPaperScissors(
+                return new RockPaperScissorsContractAccount(
                     address, type, state);
             }
             else
@@ -36,19 +36,19 @@ namespace ToyBlockChain.Core
         }
     }
 
-    public class AccountContractRockPaperScissors : AccountContract
+    public class RockPaperScissorsContractAccount : ContractAccount
     {
         public static readonly string NAME = "RockPaperScissors";
         public static readonly string ADDRESS = CryptoUtil
             .ComputeHashString(NAME);
 
-        public AccountContractRockPaperScissors(
+        public RockPaperScissorsContractAccount(
             string address, string type, string state)
             : base(address, type, state)
         {
         }
 
-        public AccountContractRockPaperScissors(string serializedString)
+        public RockPaperScissorsContractAccount(string serializedString)
             : base(serializedString)
         {
         }
