@@ -106,11 +106,11 @@ namespace ToyBlockChain.Core
                     "one of the accounts in transaction "
                     + "is not found in the catalogue");
             }
-            else if ((_catalogue[transaction.Sender].Count + 1)
-                != transaction.Count)
+            else if ((_catalogue[transaction.Sender].Nonce)
+                != transaction.Nonce)
             {
                 throw new TransactionInvalidForCatalogueException(
-                    "transaction count is invalid");
+                    "transaction nonce is invalid");
             }
         }
 

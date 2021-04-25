@@ -11,7 +11,7 @@ namespace ToyBlockChain.Core
         public const string SEPARATOR = "<A>";
 
         protected string _type;
-        protected int _count;
+        protected int _nonce;
         protected string _address;
         protected string _state;
 
@@ -19,7 +19,7 @@ namespace ToyBlockChain.Core
         {
             _address = address;
             _type = type;
-            _count = 0;
+            _nonce = 0;
             _state = state;
         }
 
@@ -28,7 +28,7 @@ namespace ToyBlockChain.Core
             string[] substrings = serializedString.Split(SEPARATOR);
             _address = substrings[0];
             _type = substrings[1];
-            _count = Int32.Parse(substrings[2]);
+            _nonce = Int32.Parse(substrings[2]);
             _state = substrings[3];
         }
 
@@ -77,11 +77,11 @@ namespace ToyBlockChain.Core
             }
         }
 
-        public int Count
+        public int Nonce
         {
             get
             {
-                return _count;
+                return _nonce;
             }
         }
 
@@ -106,7 +106,7 @@ namespace ToyBlockChain.Core
             return String.Join(
                 SEPARATOR,
                 new string[] {
-                    Address, Type, Count.ToString(), State });
+                    Address, Type, Nonce.ToString(), State });
         }
 
         public byte[] ToSerializedBytes()
@@ -121,7 +121,7 @@ namespace ToyBlockChain.Core
                 + "Type: {1}\n"
                 + "Count: {2}\n"
                 + "State: {3}",
-                Address, Type, Count, State);
+                Address, Type, Nonce, State);
         }
 
         public static Account AccountFactory(

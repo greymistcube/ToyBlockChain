@@ -88,11 +88,13 @@ namespace ToyBlockChain.Service
 
         private Transaction CreateRegisterTransaction()
         {
+            int nonce = 0;
             long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
+            string recipient = _identity.Address;
             Operation operation = Operation.OperationFactory(
                 OperationOnUser.TARGET, OperationOnUserRegister.MOVE, "");
             Transaction transaction = new Transaction(
-                _identity.Address, 1, operation, _identity.Address,
+                _identity.Address, nonce, operation, recipient,
                 timestamp, _identity.PublicKey, null);
             return transaction;
         }
@@ -100,7 +102,7 @@ namespace ToyBlockChain.Service
         private Transaction CreateMessageTransaction(
             Dictionary<string, Account> accountCatalogue)
         {
-            int count = accountCatalogue[_identity.Address].Count;
+            int nonce = accountCatalogue[_identity.Address].Nonce;
             string message = GetRandomMessage();
             long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
             string recipient = GetRandomUserRecipient(accountCatalogue);
@@ -108,7 +110,7 @@ namespace ToyBlockChain.Service
             Operation operation = Operation.OperationFactory(
                 OperationOnUser.TARGET, OperationOnUserMessage.MOVE, message);
             Transaction transaction = new Transaction(
-                _identity.Address, count + 1, operation, recipient,
+                _identity.Address, nonce, operation, recipient,
                 timestamp, _identity.PublicKey, null);
             return transaction;
         }

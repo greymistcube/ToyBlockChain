@@ -19,14 +19,14 @@ namespace ToyBlockChain.Core
         internal override void ConsumeTransactionAsSender(
             Transaction transaction)
         {
-            if (transaction.Count != _count + 1)
+            if (transaction.Nonce != _nonce)
             {
                 throw new TransactionInvalidForAccountException(
                     "transaction count is invalid");
             }
             else
             {
-                _count = _count + 1;
+                _nonce = _nonce + 1;
             }
         }
 
