@@ -129,10 +129,10 @@ namespace ToyBlockChain.Core
         {
             switch (type)
             {
-                case AccountUser.TYPE:
-                    return new AccountUser(address, type, state);
-                case AccountContract.TYPE:
-                    return AccountContract.AccountContractFactory(
+                case UserAccount.TYPE:
+                    return new UserAccount(address, type, state);
+                case ContractAccount.TYPE:
+                    return ContractAccount.ContractAccountFactory(
                         address, type, state);
                 default:
                     throw new NotImplementedException($"invalid type: {type}");
