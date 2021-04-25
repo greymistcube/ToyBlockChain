@@ -32,29 +32,6 @@ namespace ToyBlockChain.Core
             _state = substrings[3];
         }
 
-        internal void ConsumeTransaction(Transaction transaction)
-        {
-            if (transaction.Sender != _address
-                && transaction.Recipient != _address)
-            {
-                throw new TransactionInvalidForAccountException(
-                    "transaction does not involve this account");
-            }
-            else if (transaction.Sender == _address)
-            {
-                ConsumeTransactionAsSender(transaction);
-            }
-            else if (transaction.Recipient == _address)
-            {
-                ConsumeTransactionAsRecipient(transaction);
-            }
-            else
-            {
-                throw new ArgumentException(
-                    "something went wrong");
-            }
-        }
-
         internal abstract void ConsumeTransactionAsSender(
             Transaction transaction);
 

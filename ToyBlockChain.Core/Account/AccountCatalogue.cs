@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using ToyBlockChain.Util;
 
 namespace ToyBlockChain.Core
 {
@@ -62,15 +63,10 @@ namespace ToyBlockChain.Core
         {
             if (_catalogue.ContainsKey(account.Address))
             {
-                throw new AccountInCatalogueException(
+                throw new ArgumentException(
                     $"account already exists in catalogue: {account.Address}");
             }
             _catalogue.Add(account.Address, account);
-        }
-
-        internal bool HasAccount(Account account)
-        {
-            return _catalogue.ContainsKey(account.Address);
         }
 
         internal bool HasAccount(string address)
@@ -99,18 +95,27 @@ namespace ToyBlockChain.Core
         /// </summary>
         internal void ValidateTransaction(Transaction transaction)
         {
-            if (!HasAccount(transaction.Sender)
-                || !(HasAccount(transaction.Recipient)))
+            if (HasAccount(transaction.Sender))
             {
-                throw new TransactionInvalidForCatalogueException(
-                    "one of the accounts in transaction "
-                    + "is not found in the catalogue");
+                if (transaction.Nonce != _catalogue[transaction.Sender].Nonce)
+                {
+                    throw new TransactionInvalidForCatalogueException(
+                        "transaction nonce does not match account nonce");
+                }
+                else if (!HasAccount(transaction.Recipient))
+                {
+                    throw new TransactionInvalidForCatalogueException(
+                        "recipient account not found in the catalogue");
+                }
             }
-            else if ((_catalogue[transaction.Sender].Nonce)
-                != transaction.Nonce)
+            else
             {
-                throw new TransactionInvalidForCatalogueException(
-                    "transaction nonce is invalid");
+                if (!(transaction.Operation is OperationOnUserRegister))
+                {
+                    throw new TransactionInvalidForCatalogueException(
+                        "transaction for a non-existant sender account "
+                        + "must be a registration transaction");
+                }
             }
         }
 
@@ -121,12 +126,35 @@ namespace ToyBlockChain.Core
             return;
         }
 
+        /// <summary>
+        /// Consumes given transaction.
+        /// </summary>
         internal void ConsumeTransaction(Transaction transaction)
         {
-            _catalogue[transaction.Sender]
-                .ConsumeTransactionAsSender(transaction);
-            _catalogue[transaction.Recipient]
-                .ConsumeTransactionAsRecipient(transaction);
+            if (!HasAccount(transaction.Sender))
+            {
+                AddAccount(Account.AccountFactory(
+                    transaction.Sender, UserAccount.TYPE,
+                    UserAccount.INIT_STATE));
+            }
+            Account senderAccount = _catalogue[transaction.Sender];
+            Account recipientAccount = _catalogue[transaction.Recipient];
+            senderAccount.ConsumeTransactionAsSender(transaction);
+            recipientAccount.ConsumeTransactionAsRecipient(transaction);
+
+            Logger.Log(
+                $"[Info] Catalogue: Sender account {senderAccount.LogId} "
+                + $"and recipient account {recipientAccount.LogId} "
+                + $"consumed Transaction {transaction.LogId}",
+                Logger.INFO, ConsoleColor.Green);
+            Logger.Log(
+                "[Debug] Catalogue: sender account detail:\n"
+                + $"{senderAccount.ToString()}",
+                Logger.DEBUG, ConsoleColor.Red);
+            Logger.Log(
+                "[Debug] Catalogue: recipient account detail:\n"
+                + $"{recipientAccount.ToString()}",
+                Logger.DEBUG, ConsoleColor.Red);
         }
 
         public string ToSerializedString()

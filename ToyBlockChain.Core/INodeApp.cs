@@ -9,7 +9,6 @@ namespace ToyBlockChain.Core
     public interface INodeApp
     {
         void SyncBlockChain(string serializedString);
-        void SyncAccountCatalogue(string serializedString);
         void SyncTransactionPool(string serializedString);
 
         string GetBlockChainSerializedString();
@@ -22,11 +21,6 @@ namespace ToyBlockChain.Core
         void AddBlockToChain(Block block);
 
         /// <summary>
-        /// Adds given account to the catalogue.
-        /// </summary>
-        void AddAccountToCatalogue(Account account);
-
-        /// <summary>
         /// Adds given transaction to the pool.
         /// </summary>
         void AddTransactionToPool(Transaction transaction);
@@ -37,11 +31,6 @@ namespace ToyBlockChain.Core
         void INodeApp.SyncBlockChain(string serializedString)
         {
             _blockChain.Sync(serializedString);
-        }
-
-        void INodeApp.SyncAccountCatalogue(string serializedString)
-        {
-            _accountCatalogue.Sync(serializedString);
         }
 
         void INodeApp.SyncTransactionPool(string serializedString)
@@ -67,11 +56,6 @@ namespace ToyBlockChain.Core
         void INodeApp.AddBlockToChain(Block block)
         {
             AddBlockToBlockChain(block);
-        }
-
-        void INodeApp.AddAccountToCatalogue(Account account)
-        {
-            AddAccountToCatalogue(account);
         }
 
         void INodeApp.AddTransactionToPool(Transaction transaction)
