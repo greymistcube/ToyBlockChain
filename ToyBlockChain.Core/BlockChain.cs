@@ -13,8 +13,8 @@ namespace ToyBlockChain.Core
         public const int MIN_DIFFICULTY = 8;
         public const int MAX_DIFFICULTY = 256;
         public const int MOVING_AVERAGE_LENGTH = 8;
-        public const int MINING_INTERVAL_LOWER_LIMIT = 4;
-        public const int MINING_INTERVAL_UPPER_LIMIT = 8;
+        public const int MIN_MINING_INTERVAL = 4;
+        public const int MAX_MINING_INTERVAL = 8;
 
         private List<Block> _chain;
         private int _difficulty;
@@ -106,9 +106,9 @@ namespace ToyBlockChain.Core
         /// <c>MOVING_AVERAGE_LENGTH - 1</c> blocks in the last chunk.
         /// <br/>
         /// If the average is lower than
-        /// <see cref="MINING_INTERVAL_LOWER_LIMIT"/>, the target
+        /// <see cref="MIN_MINING_INTERVAL"/>, the target
         /// difficulty is raised. If the average is higher than
-        /// <see cref="MINING_INTERVAL_UPPER_LIMIT"/>, the target
+        /// <see cref="MAX_MINING_INTERVAL"/>, the target
         /// difficulty is lowerd.
         /// <br/>
         /// Note that the terget difficulty is never lowered below
@@ -132,11 +132,11 @@ namespace ToyBlockChain.Core
                 double simpleMovingAverage = ((
                     endTimestamp - startTimestamp)
                     / (MOVING_AVERAGE_LENGTH - 1));
-                if (simpleMovingAverage < MINING_INTERVAL_LOWER_LIMIT)
+                if (simpleMovingAverage < MIN_MINING_INTERVAL)
                 {
                     _difficulty = Math.Min(MAX_DIFFICULTY, _difficulty + 1);
                 }
-                else if (MINING_INTERVAL_UPPER_LIMIT < simpleMovingAverage)
+                else if (MAX_MINING_INTERVAL < simpleMovingAverage)
                 {
                     _difficulty = Math.Max(MIN_DIFFICULTY, _difficulty - 1);
                 }
