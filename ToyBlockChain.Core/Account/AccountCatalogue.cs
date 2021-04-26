@@ -108,7 +108,7 @@ namespace ToyBlockChain.Core
             }
             else
             {
-                if (!(transaction.Operation is OperationOnUserRegister))
+                if (transaction.Operation.Type != OperationOnUserRegister.TYPE)
                 {
                     throw new TransactionInvalidForCatalogueException(
                         "transaction for a non-existant sender account "

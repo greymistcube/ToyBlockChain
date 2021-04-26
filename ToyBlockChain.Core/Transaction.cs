@@ -115,7 +115,7 @@ namespace ToyBlockChain.Core
             string[] substrings = serializedString.Split(SEPARATOR);
             _sender = substrings[0];
             _nonce = Int32.Parse(substrings[1]);
-            _operation = Operation.OperationFactory(substrings[2]);
+            _operation = new Operation(substrings[2]);
             _recipient = substrings[3];
             _timestamp = Int64.Parse(substrings[4]);
             _publicKey = substrings[5];
@@ -146,7 +146,8 @@ namespace ToyBlockChain.Core
                 throw new TransactionUnsoundException(
                     "signature is not valid");
             }
-            else if (_nonce == 0 && !(_operation is OperationOnUserRegister))
+            else if (
+                _nonce == 0 && _operation.Type != OperationOnUserRegister.TYPE)
             {
                 throw new TransactionUnsoundException(
                     "zero nonce must be an account registering transaction");

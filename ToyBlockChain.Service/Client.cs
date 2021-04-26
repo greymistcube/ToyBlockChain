@@ -91,8 +91,8 @@ namespace ToyBlockChain.Service
             int nonce = 0;
             long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
             string recipient = _identity.Address;
-            Operation operation = Operation.OperationFactory(
-                OperationOnUser.TARGET, OperationOnUserRegister.MOVE, "");
+            Operation operation = new OperationOnUserRegister(
+                OperationOnUserRegister.TYPE, "");
             Transaction transaction = new Transaction(
                 _identity.Address, nonce, operation, recipient,
                 timestamp, _identity.PublicKey, null);
@@ -107,8 +107,8 @@ namespace ToyBlockChain.Service
             long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
             string recipient = GetRandomUserRecipient(accountCatalogue);
 
-            Operation operation = Operation.OperationFactory(
-                OperationOnUser.TARGET, OperationOnUserMessage.MOVE, message);
+            Operation operation = new OperationOnUserMessage(
+                OperationOnUserMessage.TYPE, message);
             Transaction transaction = new Transaction(
                 _identity.Address, nonce, operation, recipient,
                 timestamp, _identity.PublicKey, null);

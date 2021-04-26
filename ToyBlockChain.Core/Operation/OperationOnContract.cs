@@ -4,45 +4,27 @@ namespace ToyBlockChain.Core
 {
     public abstract class OperationOnContract : Operation
     {
-        public const string TARGET = "contract";
-
-        public OperationOnContract(string target, string move, string value)
-            : base(target, move, value)
+        public OperationOnContract(string type, string data) : base(type, data)
         {
-        }
-
-        internal static Operation OperationOnContractFactory(
-            string target, string move, string value)
-        {
-            switch (move)
-            {
-                case OperationOnContractPlay.MOVE:
-                    return new OperationOnContractPlay(target, move, value);
-                case OperationOnContractReveal.MOVE:
-                    return new OperationOnContractReveal(target, move, value);
-                default:
-                    throw new ArgumentException($"invalid move: {move}");
-            }
         }
     }
 
     public class OperationOnContractPlay : OperationOnContract
     {
-        public const string MOVE = "play";
+        public const string TYPE = "play";
 
-        public OperationOnContractPlay(string target, string move, string value)
-            : base(target, move, value)
+        public OperationOnContractPlay(string type, string data)
+            : base(type, data)
         {
         }
     }
 
     public class OperationOnContractReveal : OperationOnContract
     {
-        public const string MOVE = "reveal";
+        public const string TYPE = "reveal";
 
-        public OperationOnContractReveal(
-            string target, string move, string value)
-            : base(target, move, value)
+        public OperationOnContractReveal(string type, string data)
+            : base(type, data)
         {
         }
     }
