@@ -9,9 +9,9 @@ namespace ToyBlockChain.Core
     public class BlockChain
     {
         public const string SEPARATOR = "<BC>";
-        public const int DIFFICULTY_INIT = DIFFICULTY_MIN;
-        public const int DIFFICULTY_MIN = 8;
-        public const int DIFFICULTY_MAX = 256;
+        public const int INIT_DIFFICULTY = MIN_DIFFICULTY;
+        public const int MIN_DIFFICULTY = 8;
+        public const int MAX_DIFFICULTY = 256;
         public const int MOVING_AVERAGE_LENGTH = 8;
         public const int MINING_INTERVAL_LOWER_LIMIT = 4;
         public const int MINING_INTERVAL_UPPER_LIMIT = 8;
@@ -112,14 +112,14 @@ namespace ToyBlockChain.Core
         /// difficulty is lowerd.
         /// <br/>
         /// Note that the terget difficulty is never lowered below
-        /// <see cref="DIFFICULTY_MIN"/> or raised above
-        /// <see cref="DIFFICULTY_MAX"/>.
+        /// <see cref="MIN_DIFFICULTY"/> or raised above
+        /// <see cref="MAX_DIFFICULTY"/>.
         /// </summary>
         private void AdjustDifficulty()
         {
             if (_chain.Count < MOVING_AVERAGE_LENGTH)
             {
-                _difficulty = DIFFICULTY_INIT;
+                _difficulty = INIT_DIFFICULTY;
             }
             else
             {
@@ -134,11 +134,11 @@ namespace ToyBlockChain.Core
                     / (MOVING_AVERAGE_LENGTH - 1));
                 if (simpleMovingAverage < MINING_INTERVAL_LOWER_LIMIT)
                 {
-                    _difficulty = Math.Min(DIFFICULTY_MAX, _difficulty + 1);
+                    _difficulty = Math.Min(MAX_DIFFICULTY, _difficulty + 1);
                 }
                 else if (MINING_INTERVAL_UPPER_LIMIT < simpleMovingAverage)
                 {
-                    _difficulty = Math.Max(DIFFICULTY_MIN, _difficulty - 1);
+                    _difficulty = Math.Max(MIN_DIFFICULTY, _difficulty - 1);
                 }
             }
         }
