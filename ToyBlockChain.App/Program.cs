@@ -66,10 +66,17 @@ namespace ToyBlockChain.App
 
         static void Main(string[] args)
         {
+            Init(args);
+            Run();
+        }
+
+        static void Init(string[] args)
+        {
             Options options = new Options();
             ParserResult<Options> result = Parser.Default
                 .ParseArguments<Options>(args)
-                .WithParsed<Options>(o => {
+                .WithParsed<Options>(o =>
+                {
                     options = o;
                 });
             if (result.Tag == ParserResultType.NotParsed)
@@ -128,7 +135,10 @@ namespace ToyBlockChain.App
                 Address address = GetRandomAddress();
                 SyncNode(address);
             }
+        }
 
+        static void Run()
+        {
             Thread clientThread = null;
             Thread minerThread = null;
             Thread listenThread = null;
