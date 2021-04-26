@@ -30,7 +30,16 @@ namespace ToyBlockChain.Core
     {
         void INodeApp.SyncBlockChain(string serializedString)
         {
-            _blockChain.Sync(serializedString);
+            if (serializedString != null && serializedString.Length > 0)
+            {
+                string[] blockStrings = serializedString
+                    .Split(BlockChain.SEPARATOR);
+                foreach (string blockString in blockStrings)
+                {
+                    Block block = new Block(blockString);
+                    AddBlockToBlockChain(block);
+                }
+            }
         }
 
         void INodeApp.SyncTransactionPool(string serializedString)

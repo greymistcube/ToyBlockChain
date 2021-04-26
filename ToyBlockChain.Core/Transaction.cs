@@ -158,7 +158,7 @@ namespace ToyBlockChain.Core
             return String.Format(
                 "Sender: {0}\n"
                 + "Count: {1}\n"
-                + "Action: {2}\n"
+                + "Operation: {2}\n"
                 + "Recipient: {3}\n"
                 + "Timestamp: {4}\n"
                 + "Public Key: {5}\n"
