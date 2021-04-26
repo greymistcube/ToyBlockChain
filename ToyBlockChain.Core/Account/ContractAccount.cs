@@ -10,23 +10,19 @@ namespace ToyBlockChain.Core
     {
         public const string TYPE = "contract";
 
-        public ContractAccount(string address, string type, string state)
-            : base(address, type, state)
-        {
-        }
-
-        public ContractAccount(string serializedString) : base(serializedString)
+        public ContractAccount(string address, string type)
+            : base(address, type)
         {
         }
 
         public static Account ContractAccountFactory(
-            string address, string type, string state)
+            string address, string type)
         {
             // Note: If statement is used since ADDRESS is derived on runtime.
             if (address == RockPaperScissorsContractAccount.ADDRESS)
             {
                 return new RockPaperScissorsContractAccount(
-                    address, type, state);
+                    address, type);
             }
             else
             {
@@ -41,16 +37,12 @@ namespace ToyBlockChain.Core
         public static readonly string NAME = "RockPaperScissors";
         public static readonly string ADDRESS = CryptoUtil
             .ComputeHashString(NAME);
+        public static readonly string INIT_STATE = "";
 
-        public RockPaperScissorsContractAccount(
-            string address, string type, string state)
-            : base(address, type, state)
+        public RockPaperScissorsContractAccount(string address, string type)
+            : base(address, type)
         {
-        }
-
-        public RockPaperScissorsContractAccount(string serializedString)
-            : base(serializedString)
-        {
+            _state = INIT_STATE;
         }
 
         internal override void ConsumeTransactionAsSender(

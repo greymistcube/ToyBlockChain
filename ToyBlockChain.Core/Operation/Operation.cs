@@ -24,42 +24,39 @@ namespace ToyBlockChain.Core
         }
     }
 
-    public abstract class Operation
+    public class Operation
     {
-        protected string _target;
-        protected string _move;
-        protected string _value;
+        protected string _type;
+        protected string _data;
 
         public const string SEPARATOR = "<O>";
 
-        public Operation(string target, string move, string value)
+        public Operation(string type, string data)
         {
-            _target = target;
-            _move = move;
-            _value = value;
+            _type = type;
+            _data = data;
         }
 
-        public string Target
+        public Operation(string serializedString)
+        {
+            string[] substrings = serializedString.Split(SEPARATOR);
+            _type = substrings[0];
+            _data = substrings[1];
+        }
+
+        public string Type
         {
             get
             {
-                return _target;
+                return _type;
             }
         }
 
-        public string Move
+        public string Data
         {
             get
             {
-                return _move;
-            }
-        }
-
-        public string Value
-        {
-            get
-            {
-                return _value;
+                return _data;
             }
         }
 
@@ -68,30 +65,7 @@ namespace ToyBlockChain.Core
             return String.Join(
                 SEPARATOR,
                 new string[] {
-                    Target, Move, Value });
-        }
-
-        public static Operation OperationFactory(
-            string target, string move, string value)
-        {
-            switch (target)
-            {
-                case OperationOnUser.TARGET:
-                    return OperationOnUser.OperationOnUserFactory(
-                        target, move, value);
-                case OperationOnContract.TARGET:
-                    return OperationOnContract.OperationOnContractFactory(
-                        target, move, value);
-                default:
-                    throw new ArgumentException($"invalid target: {target}");
-            }
-        }
-
-        public static Operation OperationFactory(string serializedString)
-        {
-            string[] substrings = serializedString.Split(SEPARATOR);
-            return OperationFactory(
-                substrings[0], substrings[1], substrings[2]);
+                    Type, Data });
         }
     }
 }

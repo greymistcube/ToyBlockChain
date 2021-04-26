@@ -15,21 +15,11 @@ namespace ToyBlockChain.Core
         protected string _address;
         protected string _state;
 
-        protected Account(string address, string type, string state)
+        protected Account(string address, string type)
         {
             _address = address;
             _type = type;
             _nonce = 0;
-            _state = state;
-        }
-
-        protected Account(string serializedString)
-        {
-            string[] substrings = serializedString.Split(SEPARATOR);
-            _address = substrings[0];
-            _type = substrings[1];
-            _nonce = Int32.Parse(substrings[2]);
-            _state = substrings[3];
         }
 
         internal abstract void ConsumeTransactionAsSender(
@@ -101,25 +91,18 @@ namespace ToyBlockChain.Core
                 Address, Type, Nonce, State);
         }
 
-        public static Account AccountFactory(
-            string address, string type, string state)
+        public static Account AccountFactory(string address, string type)
         {
             switch (type)
             {
                 case UserAccount.TYPE:
-                    return new UserAccount(address, type, state);
+                    return new UserAccount(address, type);
                 case ContractAccount.TYPE:
                     return ContractAccount.ContractAccountFactory(
-                        address, type, state);
+                        address, type);
                 default:
                     throw new NotImplementedException($"invalid type: {type}");
             }
-        }
-
-        public static Account AccountFactory(string serializedString)
-        {
-            string[] substrings = serializedString.Split(SEPARATOR);
-            return AccountFactory(substrings[0], substrings[1], substrings[2]);
         }
     }
 }

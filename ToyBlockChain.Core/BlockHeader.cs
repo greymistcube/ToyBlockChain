@@ -183,8 +183,9 @@ namespace ToyBlockChain.Core
             return String.Join(
                 SEPARATOR,
                 new string[] {
-                    Index.ToString(), PreviousHashString, TransactionHashString, Miner,
-                    Timestamp.ToString(), Nonce, Difficulty.ToString() });
+                    Index.ToString(), PreviousHashString, TransactionHashString,
+                    Miner, Timestamp.ToString(), Nonce,
+                    Difficulty.ToString() });
         }
 
         public byte[] ToSerializedBytes()
