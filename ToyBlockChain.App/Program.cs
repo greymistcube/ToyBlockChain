@@ -19,6 +19,8 @@ namespace ToyBlockChain.App
         private static bool _minerFlag;
         private static bool _clientFlag;
         private static bool _clearFlag;
+        private static double _failRate;
+
         private static Address _SEED_ADDRESS = new Address(
             Const.IP_ADDRESS, Const.PORT_NUM_SEED);
         private static Address _address;
@@ -55,6 +57,11 @@ namespace ToyBlockChain.App
                 Default = false, Required = false,
                 HelpText = "Screen clear between outputs.")]
             public bool ClearFlag { get; set; }
+
+            [Option('f', "fail",
+                Default = 0.0, Required = false,
+                HelpText = "Failure rate for announcements.")]
+            public double FailRate { get; set; }
         }
 
         static void Main(string[] args)
@@ -76,6 +83,7 @@ namespace ToyBlockChain.App
             _minerFlag = options.MinerFlag;
             _clientFlag = options.ClientFlag;
             _clearFlag = options.ClearFlag;
+            _failRate = options.FailRate;
 
             // Set logging level.
             Logger.LogLevel = _logLevel;
@@ -181,6 +189,7 @@ namespace ToyBlockChain.App
                     $"cannot sync to self: {address.ToSerializedString()}");
             }
 
+            // _node = new Node();
             SyncBlockChain(address);
             SyncTransactionPool(address);
         }
@@ -301,21 +310,28 @@ namespace ToyBlockChain.App
         /// </summary>
         private static void Announce(Payload outboundPayload)
         {
-            foreach (Address address in _routingTable.Table)
+            Random random = new Random();
+            double p = random.NextDouble();
+            // Force address announcement to always succeed.
+            if (outboundPayload.Header == Protocol.ANNOUNCE_ADDRESS
+                || _failRate < p)
             {
-                if (!_address.Equals(address))
+                foreach (Address address in _routingTable.Table)
                 {
-                    // connect and prepare to stream
-                    TcpClient client = new TcpClient(
-                        address.IpAddress, address.PortNumber);
-                    NetworkStream stream = client.GetStream();
+                    if (!_address.Equals(address))
+                    {
+                        // connect and prepare to stream
+                        TcpClient client = new TcpClient(
+                            address.IpAddress, address.PortNumber);
+                        NetworkStream stream = client.GetStream();
 
-                    // send data
-                    StreamHandler.WritePayload(stream, outboundPayload);
+                        // send data
+                        StreamHandler.WritePayload(stream, outboundPayload);
 
-                    // cleanup
-                    stream.Close();
-                    client.Close();
+                        // cleanup
+                        stream.Close();
+                        client.Close();
+                    }
                 }
             }
         }
@@ -455,7 +471,12 @@ namespace ToyBlockChain.App
                 }
                 catch (BlockInvalidCriticalException)
                 {
-                    throw new NotImplementedException();
+                    Logger.Log(
+                        $"[Info] App: Chain falling behind, "
+                        + "attempting to resync.");
+                    Address address = GetRandomAddress();
+                    SyncBlockChain(address);
+                    SyncTransactionPool(address);
                 }
             }
             else
@@ -478,8 +499,6 @@ namespace ToyBlockChain.App
                     "[Info] App: Routing table synced.",
                     Logger.INFO, ConsoleColor.Blue);
             }
-            // TODO: Major security hole.
-            // Currently blindly trusts received data without any validation.
             else if (header == Protocol.RESPONSE_BLOCKCHAIN)
             {
                 lock (_node)

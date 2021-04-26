@@ -32,6 +32,10 @@ namespace ToyBlockChain.Core
         {
             if (serializedString != null && serializedString.Length > 0)
             {
+                // TODO: Bad placement.
+                _accountCatalogue.Dump();
+                _blockChain.Dump();
+                _transactionPool.Dump();
                 string[] blockStrings = serializedString
                     .Split(BlockChain.SEPARATOR);
                 foreach (string blockString in blockStrings)
