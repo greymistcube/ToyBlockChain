@@ -18,6 +18,7 @@ namespace ToyBlockChain.App
         private static int _logLevel;
         private static bool _minerFlag;
         private static bool _clientFlag;
+        private static bool _clearFlag;
         private static Address _SEED_ADDRESS = new Address(
             Const.IP_ADDRESS, Const.PORT_NUM_SEED);
         private static Address _address;
@@ -74,9 +75,11 @@ namespace ToyBlockChain.App
             _logLevel = options.LogLevel;
             _minerFlag = options.MinerFlag;
             _clientFlag = options.ClientFlag;
+            _clearFlag = options.ClearFlag;
 
             // Set logging level.
             Logger.LogLevel = _logLevel;
+            Logger.Clear = _clearFlag;
 
             Payload outboundPayload;
 
