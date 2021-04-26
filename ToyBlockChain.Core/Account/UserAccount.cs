@@ -10,13 +10,10 @@ namespace ToyBlockChain.Core
         public const string TYPE = "user";
         public const string INIT_STATE = "";
 
-        public UserAccount(string address, string type, string state)
-            : base(address, type, state)
+        public UserAccount(string address, string type)
+            : base(address, type)
         {
-        }
-
-        public UserAccount(string serializedString) : base(serializedString)
-        {
+            _state = INIT_STATE;
         }
 
         internal override void ConsumeTransactionAsSender(

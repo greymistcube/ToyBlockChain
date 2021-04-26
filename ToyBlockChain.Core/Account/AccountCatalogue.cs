@@ -125,8 +125,7 @@ namespace ToyBlockChain.Core
             if (!HasAccount(transaction.Sender))
             {
                 AddAccount(Account.AccountFactory(
-                    transaction.Sender, UserAccount.TYPE,
-                    UserAccount.INIT_STATE));
+                    transaction.Sender, UserAccount.TYPE));
             }
             Account senderAccount = _catalogue[transaction.Sender];
             Account recipientAccount = _catalogue[transaction.Recipient];

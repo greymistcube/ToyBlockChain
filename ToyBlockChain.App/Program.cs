@@ -127,7 +127,7 @@ namespace ToyBlockChain.App
             {
                 _identity = new Identity();
                 _account = Account.AccountFactory(
-                    _identity.Address, UserAccount.TYPE, "");
+                    _identity.Address, UserAccount.TYPE);
 
                 if (_minerFlag)
                 {
