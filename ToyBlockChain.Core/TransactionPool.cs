@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToyBlockChain.Util;
 
 namespace ToyBlockChain.Core
 {
@@ -32,6 +33,25 @@ namespace ToyBlockChain.Core
             }
         }
 
+        /// <summary>
+        /// Dumps everything.
+        /// </summary>
+        internal void Dump()
+        {
+            _poolByHash = new Dictionary<string, Transaction>();
+            _poolBySender = new Dictionary<string, Transaction>();
+        }
+
+        internal void ValidateBlock(Block block)
+        {
+            if (!_poolByHash.ContainsKey(block.Transaction.HashString))
+            {
+                throw new BlockInvalidException(
+                    "block transaction not found in pool: "
+                    + $"{block.Transaction.HashString}");
+            }
+        }
+
         internal void ValidateTransaction(Transaction transaction)
         {
             if (HasTransaction(transaction))
@@ -48,20 +68,18 @@ namespace ToyBlockChain.Core
             }
         }
 
-        internal void ValidateBlock(Block block)
-        {
-            if (!_poolByHash.ContainsKey(block.Transaction.HashString))
-            {
-                throw new TransactionInvalidForPoolException(
-                    "block transaction not found in pool: "
-                    + $"{block.Transaction.HashString}");
-            }
-        }
-
         public void AddTransaction(Transaction transaction)
         {
             _poolByHash.Add(transaction.HashString, transaction);
             _poolBySender.Add(transaction.Sender, transaction);
+            Logger.Log(
+                $"[Info] Pool: Transaction {transaction.LogId} "
+                + "added to the pool",
+                Logger.INFO, ConsoleColor.Green);
+            Logger.Log(
+                "[Debug] Pool: transaction detail:\n"
+                + $"{transaction.ToString()}",
+                Logger.DEBUG, ConsoleColor.Red);
         }
 
         public void RemoveTransaction(Transaction transaction)

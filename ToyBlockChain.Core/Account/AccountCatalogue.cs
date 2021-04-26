@@ -44,19 +44,12 @@ namespace ToyBlockChain.Core
             _catalogue = new Dictionary<string, Account>();
         }
 
-        public void Sync(string serializedString)
+        /// <summary>
+        /// Dumps everything.
+        /// </summary>
+        internal void Dump()
         {
             _catalogue = new Dictionary<string, Account>();
-            if (serializedString != null && serializedString.Length > 0)
-            {
-                string[] accountStrings = serializedString.Split(SEPARATOR);
-                foreach (string accountString in accountStrings)
-                {
-                    // TODO: Placeholder implementation.
-                    Account account = Account.AccountFactory(accountString);
-                    _catalogue.Add(account.Address, account);
-                }
-            }
         }
 
         public void AddAccount(Account account)
@@ -67,6 +60,14 @@ namespace ToyBlockChain.Core
                     $"account already exists in catalogue: {account.Address}");
             }
             _catalogue.Add(account.Address, account);
+            Logger.Log(
+                $"[Info] Catalogue: Account {account.LogId} "
+                + "added to the catalogue",
+                Logger.INFO, ConsoleColor.Green);
+            Logger.Log(
+                "[Debug] Catalogue: account detail:\n "
+                + $"{account.ToString()}",
+                Logger.DEBUG, ConsoleColor.Red);
         }
 
         internal bool HasAccount(string address)
@@ -82,12 +83,9 @@ namespace ToyBlockChain.Core
             }
         }
 
-        internal List<string> Addresses
+        internal void ValidateBlock(Block block)
         {
-            get
-            {
-                return new List<string>(_catalogue.Keys.ToList());
-            }
+            return;
         }
 
         /// <summary>
@@ -117,13 +115,6 @@ namespace ToyBlockChain.Core
                         + "must be a registration transaction");
                 }
             }
-        }
-
-        internal void ValidateBlock(Block block)
-        {
-            // Assuming block contains only transactions in the pool,
-            // there is nothing to validate.
-            return;
         }
 
         /// <summary>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ToyBlockChain.Util;
 
 namespace ToyBlockChain.Core
 {
@@ -24,7 +25,7 @@ namespace ToyBlockChain.Core
             return;
         }
 
-        public void Sync(string serializedString)
+        internal void Sync(string serializedString)
         {
             _chain = new List<Block>();
             if (serializedString != null && serializedString.Length > 0)
@@ -37,6 +38,14 @@ namespace ToyBlockChain.Core
                 }
             }
             AdjustDifficulty();
+        }
+
+        /// <summary>
+        /// Dumps everything.
+        /// </summary>
+        internal void Dump()
+        {
+            _chain = new List<Block>();
         }
 
         internal void ValidateBlock(Block block)
@@ -72,10 +81,23 @@ namespace ToyBlockChain.Core
             }
         }
 
+        internal void ValidateTransaction(Transaction transaction)
+        {
+            return;
+        }
+
         internal void AddBlock(Block block)
         {
             _chain.Add(block);
             AdjustDifficulty();
+            Logger.Log(
+                $"[Info] Chain: Block {block.LogId} "
+                + "added to the chain",
+                Logger.INFO, ConsoleColor.Green);
+            Logger.Log(
+                "[Debug] Chain: block detail:\n"
+                + $"{block.ToString()}",
+                Logger.DEBUG, ConsoleColor.Red);
         }
 
         /// <summary>
@@ -118,15 +140,6 @@ namespace ToyBlockChain.Core
                 {
                     _difficulty = Math.Max(DIFFICULTY_MIN, _difficulty - 1);
                 }
-            }
-        }
-
-        internal void ValidateTransaction(Transaction transaction)
-        {
-            if (HasTransaction(transaction))
-            {
-                throw new TransactionInvalidForChainException(
-                    "given transaction is in the chain");
             }
         }
 

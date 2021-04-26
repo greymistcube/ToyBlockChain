@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using ToyBlockChain.Util;
 
 namespace ToyBlockChain.Core
 {
@@ -29,8 +27,8 @@ namespace ToyBlockChain.Core
         public Node()
         {
             _blockChain = new BlockChain();
-            _accountCatalogue = new AccountCatalogue();
             _transactionPool = new TransactionPool();
+            _accountCatalogue = new AccountCatalogue();
         }
 
         /// <summary>
@@ -40,37 +38,11 @@ namespace ToyBlockChain.Core
         {
             // Check soundness and validity for safe operation.
             block.CheckSoundness();
-            _transactionPool.ValidateBlock(block);
-            _accountCatalogue.ValidateBlock(block);
-            _blockChain.ValidateBlock(block);
+            ValidateBlock(block);
 
             _transactionPool.RemoveTransaction(block.Transaction);
-            _blockChain.AddBlock(block);
             _accountCatalogue.ConsumeTransaction(block.Transaction);
-            Logger.Log(
-                $"[Info] Node: Block {block.LogId} "
-                + "added to chain",
-                Logger.INFO, ConsoleColor.Green);
-            Logger.Log(
-                "[Debug] Node: block detail:\n"
-                + $"{block.ToString()}",
-                Logger.DEBUG, ConsoleColor.Red);
-        }
-
-        /// <summary>
-        /// Adds given account to the catalogue.
-        /// </summary>
-        internal void AddAccountToCatalogue(Account account)
-        {
-            _accountCatalogue.AddAccount(account);
-            Logger.Log(
-                $"[Info] Node: Account {account.LogId} "
-                + "added to catalogue",
-                Logger.INFO, ConsoleColor.Green);
-            Logger.Log(
-                "[Debug] Node: account detail:\n "
-                + $"{account.ToString()}",
-                Logger.DEBUG, ConsoleColor.Red);
+            _blockChain.AddBlock(block);
         }
 
         /// <summary>
@@ -80,37 +52,38 @@ namespace ToyBlockChain.Core
         {
             // Check soundness and validity for safe operation.
             transaction.CheckSoundness();
+            ValidateTransaction(transaction);
+
+            _transactionPool.AddTransaction(transaction);
+        }
+
+        /// <summary>
+        /// Checks if given block can be safely accepted to this node.
+        /// </summary>
+        private void ValidateBlock(Block block)
+        {
+            _blockChain.ValidateBlock(block);
+            _accountCatalogue.ValidateBlock(block);
+            // In case the transaction of given block is not found in the pool,
+            // try to add it to the pool on the fly.
+            try
+            {
+                _transactionPool.ValidateBlock(block);
+            }
+            catch (BlockInvalidException)
+            {
+                AddTransactionToPool(block.Transaction);
+            }
+        }
+
+        /// <summary>
+        /// Checks if given transaction can be safely accepted to this node.
+        /// </summary>
+        private void ValidateTransaction(Transaction transaction)
+        {
             _blockChain.ValidateTransaction(transaction);
             _accountCatalogue.ValidateTransaction(transaction);
             _transactionPool.ValidateTransaction(transaction);
-
-            _transactionPool.AddTransaction(transaction);
-            Logger.Log(
-                $"[Info] Node: Transaction {transaction.LogId} "
-                + "added to pool",
-                Logger.INFO, ConsoleColor.Green);
-            Logger.Log(
-                "[Debug] Node: transaction detail:\n"
-                + $"{transaction.ToString()}",
-                Logger.DEBUG, ConsoleColor.Red);
-        }
-
-        /// <summary>
-        /// Checks if given transaction is in the blockchain.
-        /// Mainly used to prevent the same transaction getting
-        /// added to the chain more than once.
-        /// </summary>
-        internal bool HasTransactionInChain(Transaction transaction)
-        {
-            return _blockChain.HasTransaction(transaction);
-        }
-
-        /// <summary>
-        /// Checks if given transaction is in the transaction pool.
-        /// </summary>
-        internal bool HasTransactionInPool(Transaction transaction)
-        {
-            return _transactionPool.HasTransaction(transaction);
         }
     }
 }
