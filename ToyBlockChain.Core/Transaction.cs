@@ -147,7 +147,8 @@ namespace ToyBlockChain.Core
                     "signature is not valid");
             }
             else if (
-                _nonce == 0 && _operation.Type != OperationOnUserRegister.TYPE)
+                _nonce == 0
+                && _operation.Type != UserTargetedOperation.REGISTER)
             {
                 throw new TransactionUnsoundException(
                     "zero nonce must be an account registering transaction");

@@ -34,9 +34,9 @@ namespace ToyBlockChain.Core
         {
             switch (transaction.Operation.Type)
             {
-                case OperationOnUserRegister.TYPE:
+                case UserTargetedOperation.REGISTER:
                     return;
-                case OperationOnUserMessage.TYPE:
+                case UserTargetedOperation.MESSAGE:
                     _state = transaction.Operation.Data;
                     return;
                 default:
