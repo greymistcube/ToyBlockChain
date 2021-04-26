@@ -42,6 +42,16 @@ namespace ToyBlockChain.Core
             _poolBySender = new Dictionary<string, Transaction>();
         }
 
+        internal void ValidateBlock(Block block)
+        {
+            if (!_poolByHash.ContainsKey(block.Transaction.HashString))
+            {
+                throw new BlockInvalidException(
+                    "block transaction not found in pool: "
+                    + $"{block.Transaction.HashString}");
+            }
+        }
+
         internal void ValidateTransaction(Transaction transaction)
         {
             if (HasTransaction(transaction))
@@ -55,16 +65,6 @@ namespace ToyBlockChain.Core
                 throw new TransactionInvalidForPoolException(
                     "transaction with the same sender already exists in pool: "
                     + $"{transaction.HashString}");
-            }
-        }
-
-        internal void ValidateBlock(Block block)
-        {
-            if (!_poolByHash.ContainsKey(block.Transaction.HashString))
-            {
-                throw new TransactionInvalidForPoolException(
-                    "block transaction not found in pool: "
-                    + $"{block.Transaction.HashString}");
             }
         }
 

@@ -38,21 +38,11 @@ namespace ToyBlockChain.Core
         {
             // Check soundness and validity for safe operation.
             block.CheckSoundness();
-            _transactionPool.ValidateBlock(block);
-            _accountCatalogue.ValidateBlock(block);
-            _blockChain.ValidateBlock(block);
+            ValidateBlock(block);
 
             _transactionPool.RemoveTransaction(block.Transaction);
             _accountCatalogue.ConsumeTransaction(block.Transaction);
             _blockChain.AddBlock(block);
-        }
-
-        /// <summary>
-        /// Adds given account to the catalogue.
-        /// </summary>
-        internal void AddAccountToCatalogue(Account account)
-        {
-            _accountCatalogue.AddAccount(account);
         }
 
         /// <summary>
@@ -62,29 +52,38 @@ namespace ToyBlockChain.Core
         {
             // Check soundness and validity for safe operation.
             transaction.CheckSoundness();
-            _blockChain.ValidateTransaction(transaction);
-            _accountCatalogue.ValidateTransaction(transaction);
-            _transactionPool.ValidateTransaction(transaction);
+            ValidateTransaction(transaction);
 
             _transactionPool.AddTransaction(transaction);
         }
 
         /// <summary>
-        /// Checks if given transaction is in the blockchain.
-        /// Mainly used to prevent the same transaction getting
-        /// added to the chain more than once.
+        /// Checks if given block can be safely accepted to this node.
         /// </summary>
-        internal bool HasTransactionInChain(Transaction transaction)
+        private void ValidateBlock(Block block)
         {
-            return _blockChain.HasTransaction(transaction);
+            _blockChain.ValidateBlock(block);
+            _accountCatalogue.ValidateBlock(block);
+            // In case the transaction of given block is not found in the pool,
+            // try to add it to the pool on the fly.
+            try
+            {
+                _transactionPool.ValidateBlock(block);
+            }
+            catch (BlockInvalidException)
+            {
+                AddTransactionToPool(block.Transaction);
+            }
         }
 
         /// <summary>
-        /// Checks if given transaction is in the transaction pool.
+        /// Checks if given transaction can be safely accepted to this node.
         /// </summary>
-        internal bool HasTransactionInPool(Transaction transaction)
+        private void ValidateTransaction(Transaction transaction)
         {
-            return _transactionPool.HasTransaction(transaction);
+            _blockChain.ValidateTransaction(transaction);
+            _accountCatalogue.ValidateTransaction(transaction);
+            _transactionPool.ValidateTransaction(transaction);
         }
     }
 }

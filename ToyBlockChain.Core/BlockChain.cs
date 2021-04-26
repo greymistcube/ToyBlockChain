@@ -81,6 +81,11 @@ namespace ToyBlockChain.Core
             }
         }
 
+        internal void ValidateTransaction(Transaction transaction)
+        {
+            return;
+        }
+
         internal void AddBlock(Block block)
         {
             _chain.Add(block);
@@ -135,15 +140,6 @@ namespace ToyBlockChain.Core
                 {
                     _difficulty = Math.Max(DIFFICULTY_MIN, _difficulty - 1);
                 }
-            }
-        }
-
-        internal void ValidateTransaction(Transaction transaction)
-        {
-            if (HasTransaction(transaction))
-            {
-                throw new TransactionInvalidForChainException(
-                    "given transaction is in the chain");
             }
         }
 
