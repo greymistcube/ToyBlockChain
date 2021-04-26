@@ -16,7 +16,9 @@ dotnet run --project ToyBlockChain.App -- -s
 to start running a seed node. Additional nodes can be
 run with various options. Run with `--help` to see available options.
 
-## Resources
+## Study Notes
 
 * [Architecture](./Docs/Architecture.md)
+* [Node](./Docs/Node.md)
+* [Validity](./Docs/Validity.md)
 * [Validation](./Docs/Validation.md)

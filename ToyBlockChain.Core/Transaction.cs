@@ -16,34 +16,21 @@ namespace ToyBlockChain.Core
         }
     }
 
-    public class TransactionInvalidInternalException
-        : TransactionInvalidException
+    public class TransactionUnsoundException
+        : Exception
     {
-        public TransactionInvalidInternalException()
+        public TransactionUnsoundException()
         {
         }
 
-        public TransactionInvalidInternalException(string message)
-            : base(message)
-        {
-        }
-    }
-
-    public class TransactionInvalidExternalException
-        : TransactionInvalidException
-    {
-        public TransactionInvalidExternalException()
-        {
-        }
-
-        public TransactionInvalidExternalException(string message)
+        public TransactionUnsoundException(string message)
             : base(message)
         {
         }
     }
 
     public class TransactionInvalidForPoolException
-        : TransactionInvalidExternalException
+        : TransactionInvalidException
     {
         public TransactionInvalidForPoolException()
         {
@@ -56,7 +43,7 @@ namespace ToyBlockChain.Core
     }
 
     public class TransactionInvalidForChainException
-        : TransactionInvalidExternalException
+        : TransactionInvalidException
     {
         public TransactionInvalidForChainException()
         {
@@ -69,7 +56,7 @@ namespace ToyBlockChain.Core
     }
 
     public class TransactionInvalidForCatalogueException
-        : TransactionInvalidExternalException
+        : TransactionInvalidException
     {
         public TransactionInvalidForCatalogueException()
         {
@@ -96,10 +83,10 @@ namespace ToyBlockChain.Core
 
     public class Transaction
     {
-        public const string SEPARATOR = "<T>";
+        public const string SEPARATOR = "<TX>";
         private readonly string _sender;
-        private readonly int _count;
-        private readonly string _action;
+        private readonly int _nonce;
+        private readonly Operation _operation;
         private readonly string _recipient;
         private readonly long _timestamp;
         private readonly string _publicKey;
@@ -107,16 +94,16 @@ namespace ToyBlockChain.Core
 
         public Transaction(
             string sender,
-            int count,
-            string action,
+            int nonce,
+            Operation operation,
             string recipient,
             long timestamp,
             string publicKey,
             string signature = null)
         {
             _sender = sender;
-            _count = count;
-            _action = action;
+            _nonce = nonce;
+            _operation = operation;
             _recipient = recipient;
             _timestamp = timestamp;
             _publicKey = publicKey;
@@ -127,8 +114,8 @@ namespace ToyBlockChain.Core
         {
             string[] substrings = serializedString.Split(SEPARATOR);
             _sender = substrings[0];
-            _count = Int32.Parse(substrings[1]);
-            _action = substrings[2];
+            _nonce = Int32.Parse(substrings[1]);
+            _operation = Operation.OperationFactory(substrings[2]);
             _recipient = substrings[3];
             _timestamp = Int64.Parse(substrings[4]);
             _publicKey = substrings[5];
@@ -144,11 +131,11 @@ namespace ToyBlockChain.Core
             _signature = signature;
         }
 
-        public void Validate()
+        public void CheckSoundness()
         {
             if (Sender != CryptoUtil.ComputeHashString(PublicKey))
             {
-                throw new TransactionInvalidInternalException(
+                throw new TransactionUnsoundException(
                     "sender identity does not match public key");
             }
             else if (!CryptoUtil.Verify(
@@ -156,8 +143,13 @@ namespace ToyBlockChain.Core
                 Signature,
                 CryptoUtil.ExtractRSAParameters(PublicKey)))
             {
-                throw new TransactionInvalidInternalException(
+                throw new TransactionUnsoundException(
                     "signature is not valid");
+            }
+            else if (_nonce == 0 && !(_operation is OperationOnUserRegister))
+            {
+                throw new TransactionUnsoundException(
+                    "zero nonce must be an account registering transaction");
             }
         }
 
@@ -166,13 +158,13 @@ namespace ToyBlockChain.Core
             return String.Format(
                 "Sender: {0}\n"
                 + "Count: {1}\n"
-                + "Action: {2}\n"
+                + "Operation: {2}\n"
                 + "Recipient: {3}\n"
                 + "Timestamp: {4}\n"
                 + "Public Key: {5}\n"
                 + "Signature: {6}",
-                Sender, Count, Action, Recipient, Timestamp,
-                PublicKey, Signature);
+                Sender, Nonce, Operation.ToSerializedString(), Recipient,
+                Timestamp, PublicKey, Signature);
         }
 
         public string ToSerializedString()
@@ -180,8 +172,8 @@ namespace ToyBlockChain.Core
             return String.Join(
                 SEPARATOR,
                 new string[] {
-                    Sender, Count.ToString(), Action, Recipient,
-                    Timestamp.ToString(), PublicKey, Signature });
+                    Sender, Nonce.ToString(), Operation.ToSerializedString(),
+                    Recipient, Timestamp.ToString(), PublicKey, Signature });
         }
 
         public byte[] ToSerializedBytes()
@@ -194,8 +186,8 @@ namespace ToyBlockChain.Core
             return String.Join(
                 SEPARATOR,
                 new string[] {
-                    Sender, Count.ToString(), Action, Recipient,
-                    Timestamp.ToString(), PublicKey });
+                    Sender, Nonce.ToString(), Operation.ToSerializedString(),
+                    Recipient, Timestamp.ToString(), PublicKey });
         }
 
         public byte[] HashBytes
@@ -231,19 +223,19 @@ namespace ToyBlockChain.Core
             }
         }
 
-        public int Count
+        public int Nonce
         {
             get
             {
-                return _count;
+                return _nonce;
             }
         }
 
-        public string Action
+        public Operation Operation
         {
             get
             {
-                return _action;
+                return _operation;
             }
         }
 

@@ -44,7 +44,7 @@ namespace ToyBlockChain.Network
                 + $"{outboundPayload.Header}",
                 Logger.INFO, ConsoleColor.Magenta);
             Logger.Log(
-                "[Debug] Network: sent payload: "
+                "[Debug] Network: sent payload:\n"
                 + $"{outboundPayload.ToSerializedString()}",
                 Logger.DEBUG, ConsoleColor.Red);
         }

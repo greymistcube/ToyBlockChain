@@ -14,60 +14,36 @@ namespace ToyBlockChain.Core
         }
     }
 
-    public class BlockInvalidInternalException : BlockInvalidException
+    public class BlockUnsoundException : Exception
     {
-        public BlockInvalidInternalException()
+        public BlockUnsoundException()
         {
         }
 
-        public BlockInvalidInternalException(string message) : base(message)
+        public BlockUnsoundException(string message) : base(message)
         {
         }
     }
 
-    public class BlockInvalidExternalException : BlockInvalidException
+    public class BlockInvalidIgnorableException : BlockInvalidException
     {
-        public BlockInvalidExternalException()
+        public BlockInvalidIgnorableException()
         {
         }
 
-        public BlockInvalidExternalException(string message) : base(message)
-        {
-        }
-    }
-
-    public class BlockInvalidForChainException : BlockInvalidExternalException
-    {
-        public BlockInvalidForChainException()
-        {
-        }
-
-        public BlockInvalidForChainException(string message) : base(message)
-        {
-        }
-    }
-
-    public class BlockInvalidForChainIgnorableException
-        : BlockInvalidForChainException
-    {
-        public BlockInvalidForChainIgnorableException()
-        {
-        }
-
-        public BlockInvalidForChainIgnorableException(string message)
+        public BlockInvalidIgnorableException(string message)
             : base(message)
         {
         }
     }
 
-    public class BlockInvalidForChainCriticalException
-        : BlockInvalidForChainException
+    public class BlockInvalidCriticalException : BlockInvalidException
     {
-        public BlockInvalidForChainCriticalException()
+        public BlockInvalidCriticalException()
         {
         }
 
-        public BlockInvalidForChainCriticalException(string message)
+        public BlockInvalidCriticalException(string message)
             : base(message)
         {
         }
@@ -75,7 +51,7 @@ namespace ToyBlockChain.Core
 
     public class Block
     {
-        public const string SEPARATOR = "<B>";
+        public const string SEPARATOR = "<BK>";
         private readonly Transaction _transaction;
         private readonly BlockHeader _blockHeader;
 
@@ -148,24 +124,24 @@ namespace ToyBlockChain.Core
             }
         }
 
-        public void Validate()
+        public void CheckSoundness()
         {
             if (_blockHeader.TransactionHashString != _transaction.HashString)
             {
-                throw new BlockInvalidInternalException(
+                throw new BlockUnsoundException(
                     "block header transaction hash does not match "
                     + "the hash of the transaction");
             }
             try
             {
-                _blockHeader.Validate();
-                _transaction.Validate();
+                _blockHeader.CheckSoundness();
+                _transaction.CheckSoundness();
             }
             catch (Exception ex) when (
-                ex is BlockHeaderInvalidInternalException
-                || ex is TransactionInvalidInternalException)
+                ex is BlockHeaderUnsoundException
+                || ex is TransactionUnsoundException)
             {
-                throw new BlockInvalidInternalException(ex.Message);
+                throw new BlockUnsoundException(ex.Message);
             }
         }
 

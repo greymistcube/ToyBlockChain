@@ -87,10 +87,10 @@ namespace ToyBlockChain.Service
                     try
                     {
                         Block block = Pick(transaction);
-                        block.Validate();
+                        block.CheckSoundness();
                         return block;
                     }
-                    catch (BlockInvalidException)
+                    catch (BlockUnsoundException)
                     {
                         continue;
                     }
