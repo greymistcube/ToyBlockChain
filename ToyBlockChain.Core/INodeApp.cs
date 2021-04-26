@@ -8,6 +8,7 @@ namespace ToyBlockChain.Core
     /// </summary>
     public interface INodeApp
     {
+        void Dump();
         void SyncBlockChain(string serializedString);
         void SyncTransactionPool(string serializedString);
 
@@ -28,14 +29,17 @@ namespace ToyBlockChain.Core
 
     public partial class Node : INodeApp
     {
+        void INodeApp.Dump()
+        {
+            _blockChain.Dump();
+            _transactionPool.Dump();
+            _accountCatalogue.Dump();
+        }
+
         void INodeApp.SyncBlockChain(string serializedString)
         {
             if (serializedString != null && serializedString.Length > 0)
             {
-                // TODO: Bad placement.
-                _accountCatalogue.Dump();
-                _blockChain.Dump();
-                _transactionPool.Dump();
                 string[] blockStrings = serializedString
                     .Split(BlockChain.SEPARATOR);
                 foreach (string blockString in blockStrings)
