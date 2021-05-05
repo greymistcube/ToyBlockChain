@@ -14,7 +14,7 @@ namespace ToyBlockChain.Network
         public const string ANNOUNCE_ADDRESS = "<ANAD>";
         public const string ANNOUNCE_TRANSACTION = "<ANTX>";
         public const string ANNOUNCE_BLOCK = "<ANBK>";
-        public const int BUFFER_SIZE = 65536;
+        public const int BUFFER_SIZE = 16777216;
         public const int HEADER_SIZE = 6;
         public static readonly string[] REQUEST = new string[] {
             REQUEST_ROUTING_TABLE,

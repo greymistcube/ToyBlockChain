@@ -7,6 +7,7 @@ namespace ToyBlockChain.Util
         public const int INFO = 1;
         public const int DEBUG = 2;
         private static int _logLevel = 0;
+        private static bool _clear = false;
 
         public static int LogLevel
         {
@@ -20,6 +21,18 @@ namespace ToyBlockChain.Util
             }
         }
 
+        public static bool Clear
+        {
+            get
+            {
+                return _clear;
+            }
+            set
+            {
+                _clear = value;
+            }
+        }
+
         /// <summary>
         /// Simple helper method to log output.
         /// </summary>
@@ -30,9 +43,9 @@ namespace ToyBlockChain.Util
         {
             if(textLevel <= _logLevel)
             {
-                    Console.ForegroundColor = color;
-                    Console.WriteLine(text);
-                    Console.ResetColor();
+                Console.ForegroundColor = color;
+                Console.WriteLine(text);
+                Console.ResetColor();
             }
         }
     }

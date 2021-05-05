@@ -13,12 +13,10 @@ namespace ToyBlockChain.Service
     {
         private INodeClient _node;
         private Identity _identity;
-
-        public delegate void AnnounceDelegate(Payload payload);
-        private AnnounceDelegate Announce;
+        private Action<Payload> Announce;
 
         public Client(
-            INodeClient node, Identity identity, AnnounceDelegate Func)
+            INodeClient node, Identity identity, Action<Payload> Func)
         {
             _node = node;
             _identity = identity;

@@ -25,9 +25,7 @@ namespace ToyBlockChain.Service
         public static int NONCE_LENGTH = 16;
         private readonly INodeMiner _node;
         private Identity _identity;
-
-        public delegate void AnnounceDelegate(Payload payload);
-        private AnnounceDelegate Announce;
+        private Action<Payload> Announce;
 
         /// <summary>
         /// The class representing a miner in a blockchain ecosystem.
@@ -36,7 +34,7 @@ namespace ToyBlockChain.Service
         /// and "mine" a valid <see cref="Block"/> containing such
         /// <see cref="Transaction"/>.
         /// </summary>
-        public Miner(INodeMiner node, Identity identity, AnnounceDelegate Func)
+        public Miner(INodeMiner node, Identity identity, Action<Payload> Func)
         {
             _node = node;
             _identity = identity;
