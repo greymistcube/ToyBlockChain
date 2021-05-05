@@ -134,11 +134,15 @@ namespace ToyBlockChain.Core
                     / (MOVING_AVERAGE_LENGTH - 1));
                 if (simpleMovingAverage < MIN_MINING_INTERVAL)
                 {
-                    _difficulty = Math.Min(MAX_DIFFICULTY, _difficulty + 1);
+                    _difficulty = Math.Min(
+                        MAX_DIFFICULTY,
+                        _chain[startIndex].BlockHeader.Difficulty + 1);
                 }
                 else if (MAX_MINING_INTERVAL < simpleMovingAverage)
                 {
-                    _difficulty = Math.Max(MIN_DIFFICULTY, _difficulty - 1);
+                    _difficulty = Math.Max(
+                        MIN_DIFFICULTY,
+                        _chain[startIndex].BlockHeader.Difficulty - 1);
                 }
             }
         }
