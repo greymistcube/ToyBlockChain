@@ -10,13 +10,10 @@ namespace ToyBlockChain.Core
         public const string TYPE = "user";
         public const string INIT_STATE = "";
 
-        public UserAccount(string address, string type, string state)
-            : base(address, type, state)
+        public UserAccount(string address, string type)
+            : base(address, type)
         {
-        }
-
-        public UserAccount(string serializedString) : base(serializedString)
-        {
+            _state = INIT_STATE;
         }
 
         internal override void ConsumeTransactionAsSender(
@@ -35,25 +32,16 @@ namespace ToyBlockChain.Core
         internal override void ConsumeTransactionAsRecipient(
             Transaction transaction)
         {
-            if (transaction.Operation.Target != OperationOnUser.TARGET)
+            switch (transaction.Operation.Type)
             {
-                throw new ArgumentException(
-                    "invalid target for operation: "
-                    + $"{transaction.Operation.Target}");
-            }
-            else
-            {
-                switch (transaction.Operation.Move)
-                {
-                    case OperationOnUserRegister.MOVE:
-                        return;
-                    case OperationOnUserMessage.MOVE:
-                        _state = transaction.Operation.Value;
-                        return;
-                    default:
-                        throw new ArgumentException(
-                            "unknown operation given");
-                }
+                case UserTargetedOperation.REGISTER:
+                    return;
+                case UserTargetedOperation.MESSAGE:
+                    _state = transaction.Operation.Data;
+                    return;
+                default:
+                    throw new ArgumentException(
+                        "unknown operation given");
             }
         }
     }

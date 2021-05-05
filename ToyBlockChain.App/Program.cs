@@ -12,12 +12,15 @@ using ToyBlockChain.Util;
 
 namespace ToyBlockChain.App
 {
-    public class Program
+    public partial class Program
     {
         private static bool _seedFlag;
         private static int _logLevel;
         private static bool _minerFlag;
         private static bool _clientFlag;
+        private static bool _clearFlag;
+        private static double _failRate;
+
         private static Address _SEED_ADDRESS = new Address(
             Const.IP_ADDRESS, Const.PORT_NUM_SEED);
         private static Address _address;
@@ -54,14 +57,26 @@ namespace ToyBlockChain.App
                 Default = false, Required = false,
                 HelpText = "Screen clear between outputs.")]
             public bool ClearFlag { get; set; }
+
+            [Option('f', "fail",
+                Default = 0.0, Required = false,
+                HelpText = "Failure rate for announcements.")]
+            public double FailRate { get; set; }
         }
 
         static void Main(string[] args)
         {
+            Init(args);
+            Run();
+        }
+
+        static void Init(string[] args)
+        {
             Options options = new Options();
             ParserResult<Options> result = Parser.Default
                 .ParseArguments<Options>(args)
-                .WithParsed<Options>(o => {
+                .WithParsed<Options>(o =>
+                {
                     options = o;
                 });
             if (result.Tag == ParserResultType.NotParsed)
@@ -74,9 +89,12 @@ namespace ToyBlockChain.App
             _logLevel = options.LogLevel;
             _minerFlag = options.MinerFlag;
             _clientFlag = options.ClientFlag;
+            _clearFlag = options.ClearFlag;
+            _failRate = options.FailRate;
 
             // Set logging level.
             Logger.LogLevel = _logLevel;
+            Logger.Clear = _clearFlag;
 
             Payload outboundPayload;
 
@@ -117,7 +135,10 @@ namespace ToyBlockChain.App
                 Address address = GetRandomAddress();
                 SyncNode(address);
             }
+        }
 
+        static void Run()
+        {
             Thread clientThread = null;
             Thread minerThread = null;
             Thread listenThread = null;
@@ -127,7 +148,7 @@ namespace ToyBlockChain.App
             {
                 _identity = new Identity();
                 _account = Account.AccountFactory(
-                    _identity.Address, UserAccount.TYPE, "");
+                    _identity.Address, UserAccount.TYPE);
 
                 if (_minerFlag)
                 {
@@ -178,6 +199,7 @@ namespace ToyBlockChain.App
                     $"cannot sync to self: {address.ToSerializedString()}");
             }
 
+            _node.Dump();
             SyncBlockChain(address);
             SyncTransactionPool(address);
         }
@@ -192,60 +214,6 @@ namespace ToyBlockChain.App
         {
             Request(
                 address, new Payload(Protocol.REQUEST_TRANSACTION_POOL, ""));
-        }
-
-        private static Address GetLocalAddress()
-        {
-            if (_seedFlag)
-            {
-                return _SEED_ADDRESS;
-            }
-            else
-            {
-                // Generate a new random address that is not already in
-                // the routing table.
-                Random rnd = new Random();
-                while (true)
-                {
-                    Address address = new Address(
-                        Const.IP_ADDRESS,
-                        rnd.Next(Const.PORT_NUM_MIN, Const.PORT_NUM_MAX));
-                    if (!_routingTable.Table.Contains(address))
-                    {
-                        return address;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Get a random address from the routing table excluding
-        /// this node's address.
-        /// </summary>
-        private static Address GetRandomAddress()
-        {
-            if (_routingTable.Table.Count <= 1)
-            {
-                throw new MethodAccessException(
-                    "invalid access; routing table size too small: "
-                    + $"{_routingTable.Table.Count}");
-            }
-            else
-            {
-                Address address;
-                Random rnd = new Random();
-                int idx;
-
-                idx = rnd.Next(_routingTable.Table.Count);
-                address = _routingTable.Table[idx];
-                if (_address.Equals(address))
-                {
-                    idx = (idx + 1) + rnd.Next(_routingTable.Table.Count - 1);
-                    idx = idx % _routingTable.Table.Count;
-                    address = _routingTable.Table[idx];
-                }
-                return address;
-            }
         }
 
         private static void Listen(Address address)
@@ -264,10 +232,25 @@ namespace ToyBlockChain.App
                 NetworkStream stream = client.GetStream();
 
                 Payload inboundPayload = StreamHandler.ReadPayload(stream);
-                ProcessInboundPayload(stream, inboundPayload);
+                string header = inboundPayload.Header;
 
-                stream.Close();
-                client.Close();
+                if (Protocol.REQUEST.Contains(header))
+                {
+                    ProcessRequestPayload(stream, inboundPayload);
+                    stream.Close();
+                    client.Close();
+                }
+                else if (Protocol.ANNOUNCE.Contains(header))
+                {
+                    stream.Close();
+                    client.Close();
+                    ProcessAnnouncePayload(inboundPayload);
+                }
+                else
+                {
+                    throw new ArgumentException(
+                        $"invalid protocol header: {header}");
+                }
             }
         }
 
@@ -286,7 +269,7 @@ namespace ToyBlockChain.App
 
             // receive data and process
             Payload inboundPayload = StreamHandler.ReadPayload(stream);
-            ProcessInboundPayload(null, inboundPayload);
+            ProcessResponsePayload(inboundPayload);
 
             // cleanup
             stream.Close();
@@ -298,209 +281,29 @@ namespace ToyBlockChain.App
         /// </summary>
         private static void Announce(Payload outboundPayload)
         {
-            foreach (Address address in _routingTable.Table)
+            Random random = new Random();
+            double p = random.NextDouble();
+            // Force address announcement to always succeed.
+            if (outboundPayload.Header == Protocol.ANNOUNCE_ADDRESS
+                || _failRate < p)
             {
-                if (!_address.Equals(address))
+                foreach (Address address in _routingTable.Table)
                 {
-                    // connect and prepare to stream
-                    TcpClient client = new TcpClient(
-                        address.IpAddress, address.PortNumber);
-                    NetworkStream stream = client.GetStream();
-
-                    // send data
-                    StreamHandler.WritePayload(stream, outboundPayload);
-
-                    // cleanup
-                    stream.Close();
-                    client.Close();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Processes an incoming payload.
-        /// </summary>
-        private static void ProcessInboundPayload(
-            NetworkStream stream, Payload inboundPayload)
-        {
-            string header = inboundPayload.Header;
-            if (Protocol.REQUEST.Contains(header))
-            {
-                ProcessRequestPayload(stream, inboundPayload);
-            }
-            else if (Protocol.ANNOUNCE.Contains(header))
-            {
-                ProcessAnnouncePayload(inboundPayload);
-            }
-            else if (Protocol.RESPONSE.Contains(header))
-            {
-                ProcessResponsePayload(inboundPayload);
-            }
-            else
-            {
-                throw new ArgumentException(
-                    $"invalid protocol header: {header}");
-            }
-        }
-
-        /// <summary>
-        /// Processes an incoming payload with a request header.
-        /// </summary>
-        private static void ProcessRequestPayload(
-            NetworkStream stream, Payload inboundPayload)
-        {
-            string header = inboundPayload.Header;
-            if (header == Protocol.REQUEST_ROUTING_TABLE)
-            {
-                Payload outboundPayload = new Payload(
-                    Protocol.RESPONSE_ROUTING_TABLE,
-                    _routingTable.ToSerializedString());
-                StreamHandler.WritePayload(stream, outboundPayload);
-            }
-            else if (header == Protocol.REQUEST_BLOCKCHAIN)
-            {
-                lock (_node)
-                {
-                    Payload outboundPayload = new Payload(
-                        Protocol.RESPONSE_BLOCKCHAIN,
-                        _node.GetBlockChainSerializedString());
-                    StreamHandler.WritePayload(stream, outboundPayload);
-                }
-            }
-            else if (header == Protocol.REQUEST_TRANSACTION_POOL)
-            {
-                lock (_node)
-                {
-                    Payload outboundPayload = new Payload(
-                        Protocol.RESPONSE_TRANSACTION_POOL,
-                        _node.GetTransactionPoolSerializedString());
-                    StreamHandler.WritePayload(stream, outboundPayload);
-                }
-            }
-            else
-            {
-                throw new ArgumentException(
-                    $"invalid protocol header: {header}");
-            }
-        }
-
-        /// <summary>
-        /// Processes an incoming payload with an announce header.
-        /// </summary>
-        private static void ProcessAnnouncePayload(Payload inboundPayload)
-        {
-            string header = inboundPayload.Header;
-            if (header == Protocol.ANNOUNCE_ADDRESS)
-            {
-                Address address = new Address(inboundPayload.Body);
-                _routingTable.AddAddress(address);
-                Logger.Log(
-                    $"[Info] App: Address {address.PortNumber} "
-                    + "added to routing table",
-                    Logger.INFO, ConsoleColor.Blue);
-            }
-            else if (header == Protocol.ANNOUNCE_TRANSACTION)
-            {
-                Transaction transaction = new Transaction(
-                    inboundPayload.Body);
-                try
-                {
-                    lock (_node)
+                    if (!_address.Equals(address))
                     {
-                        _node.AddTransactionToPool(transaction);
-                    }
-                    Announce(inboundPayload);
-                }
-                catch (TransactionInvalidException ex)
-                {
-                    Logger.Log(
-                        $"[Info] App: Transaction {transaction.LogId} ignored",
-                        Logger.INFO, ConsoleColor.Blue);
-                    Logger.Log(
-                        $"[Debug] App: {ex.Message}",
-                        Logger.DEBUG, ConsoleColor.Red);
-                }
-            }
-            else if (header == Protocol.ANNOUNCE_BLOCK)
-            {
-                Block block = new Block(inboundPayload.Body);
-                try
-                {
-                    lock (_node)
-                    {
-                        _node.AddBlockToChain(block);
-                    }
-                    Announce(inboundPayload);
-                }
-                catch (TransactionInvalidException ex)
-                {
-                    Logger.Log(
-                        $"[Info] App: Block {block.LogId} ignored",
-                        Logger.INFO, ConsoleColor.Blue);
-                    Logger.Log(
-                        $"[Debug] App: {ex.Message}",
-                        Logger.DEBUG, ConsoleColor.Red);
-                }
-                catch (BlockInvalidIgnorableException ex)
-                {
-                    Logger.Log(
-                        $"[Info] App: Block {block.LogId} ignored",
-                        Logger.INFO, ConsoleColor.Blue);
-                    Logger.Log(
-                        $"[Debug] App: {ex.Message}",
-                        Logger.DEBUG, ConsoleColor.Red);
-                }
-                catch (BlockInvalidCriticalException)
-                {
-                    throw new NotImplementedException();
-                }
-            }
-            else
-            {
-                throw new ArgumentException(
-                    $"invalid protocol header: {header}");
-            }
-        }
+                        // connect and prepare to stream
+                        TcpClient client = new TcpClient(
+                            address.IpAddress, address.PortNumber);
+                        NetworkStream stream = client.GetStream();
 
-        /// <summary>
-        /// Processes an incoming payload with a response header.
-        /// </summary>
-        private static void ProcessResponsePayload(Payload inboundPayload)
-        {
-            string header = inboundPayload.Header;
-            if (header == Protocol.RESPONSE_ROUTING_TABLE)
-            {
-                _routingTable.Sync(inboundPayload.Body);
-                Logger.Log(
-                    "[Info] App: Routing table synced.",
-                    Logger.INFO, ConsoleColor.Blue);
-            }
-            // TODO: Major security hole.
-            // Currently blindly trusts received data without any validation.
-            else if (header == Protocol.RESPONSE_BLOCKCHAIN)
-            {
-                lock (_node)
-                {
-                    _node.SyncBlockChain(inboundPayload.Body);
+                        // send data
+                        StreamHandler.WritePayload(stream, outboundPayload);
+
+                        // cleanup
+                        stream.Close();
+                        client.Close();
+                    }
                 }
-                Logger.Log(
-                    "[Info] App: Blockchain synced.",
-                    Logger.INFO, ConsoleColor.Blue);
-            }
-            else if (header == Protocol.RESPONSE_TRANSACTION_POOL)
-            {
-                lock (_node)
-                {
-                    _node.SyncTransactionPool(inboundPayload.Body);
-                }
-                Logger.Log(
-                    "[Info] App: Transaction pool synced.",
-                    Logger.INFO, ConsoleColor.Blue);
-            }
-            else
-            {
-                throw new ArgumentException(
-                    $"invalid protocol header: {header}");
             }
         }
     }
